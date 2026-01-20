@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard IA - Outils de Productivité & Création</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #0a0e27 0%, #16213e 100%);
+        color: #e8eaf6;
+        min-height: 100vh;
+      }
+
+      .main-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(10, 14, 39, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        z-index: 1000;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+        transform: translateY(-100%);
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .main-nav:hover,
+      .main-nav.show {
+        transform: translateY(0);
+      }
+
+      /* Zone de détection en haut à droite de l'écran */
+      .nav-trigger {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 150px;
+        height: 50px;
+        z-index: 999;
+        pointer-events: auto;
+      }
+
+      .nav-trigger::before {
+        content: '☰';
+        position: absolute;
+        top: 0;
+        right: 10px;
+        background: rgba(102, 126, 234, 0.8);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 0 0 12px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 12px rgba(102, 126, 234, 0.3);
+        opacity: 1;
+      }
+
+      .nav-trigger:hover::before {
+        background: rgba(102, 126, 234, 1);
+        padding: 8px 16px;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5);
+      }
+
+      .nav-trigger.hidden::before {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .nav-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .nav-logo {
+        font-size: 20px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .nav-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .nav-btn {
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.05);
+        color: #b8c5d6;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.12);
+        transform: translateY(-1px);
+      }
+
+      .nav-btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+      }
+
+      .app-frame {
+        width: 100%;
+        border: none;
+        min-height: 100vh;
+        margin-top: 0;
+      }
+
+      @media (max-width: 768px) {
+        .nav-container {
+          flex-direction: column;
+          gap: 12px;
+          padding: 12px 16px;
+        }
+
+        .nav-buttons {
+          width: 100%;
+        }
+
+        .nav-btn {
+          flex: 1 1 calc(50% - 6px);
+          text-align: center;
+          min-width: 140px;
+        }
+
+        .app-frame {
+          margin-top: 0;
+          min-height: 100vh;
+        }
+
+        .nav-trigger::before {
+          font-size: 12px;
+          padding: 6px 20px;
+        }
+
+        .nav-trigger {
+          width: 120px;
+          height: 40px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="nav-trigger"></div>
+    
+    <nav class="main-nav">
+      <div class="nav-container">
+        <div class="nav-logo">🚀 Dashboard Tasks</div>
+        <div class="nav-buttons">
+          <a href="#" class="nav-btn" id="btn-project" data-app="project">
+            🗂️ Gestion Projet
+          </a>
+          <a href="#" class="nav-btn" id="btn-workflow" data-app="workflow">
+            🔄 Workflows
+          </a>
+          <a href="#" class="nav-btn" id="btn-rappels" data-app="rappels">
+            🔔 Rappels
+          </a>
+          <a href="#" class="nav-btn" id="btn-kanban" data-app="kanban">
+            📋 Kanban
+          </a>
+          <a href="#" class="nav-btn" id="btn-prompt" data-app="prompt">
+            ✏️ Prompts
+          </a>
+          <a href="#" class="nav-btn" id="btn-info-maps" data-app="info-maps">
+            🗺️ Info-Maps
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <iframe
+      id="app-frame"
+      class="app-frame"
+      src="apps/project/project.html"
+    ></iframe>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const app = urlParams.get("app") || "project";
+
+      const buttons = document.querySelectorAll(".nav-btn");
+      const frame = document.getElementById("app-frame");
+
+      const appPaths = {
+        project: "apps/project/project.html",
+        workflow: "apps/workflow/workflow-generator.html",
+        rappels: "apps/rappels/rappels.html",
+        kanban: "apps/kanban-lite/kanban.html",
+        prompt: "apps/prompt/prompt.html",
+        "info-maps": "apps/mindmap/info-maps-integrated.html",  // ← MODIFIÉ ICI
+      };
+
+      function setActive(appName) {
+        buttons.forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.app === appName);
+        });
+
+        if (appPaths[appName]) {
+          frame.src = appPaths[appName];
+        }
+      }
+
+      setActive(app);
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const appName = btn.dataset.app;
+          window.history.pushState({}, "", "?app=" + appName);
+          setActive(appName);
+        });
+      });
+
+      window.addEventListener("popstate", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const app = urlParams.get("app") || "project";
+        setActive(app);
+      });
+
+      // Gestion du hover sur la zone de trigger
+      const navTrigger = document.querySelector('.nav-trigger');
+      const mainNav = document.querySelector('.main-nav');
+      let hideTimeout;
+
+      // Fonction pour afficher la nav
+      function showNav() {
+        clearTimeout(hideTimeout);
+        mainNav.classList.add('show');
+        navTrigger.classList.add('hidden');
+      }
+
+      // Fonction pour masquer la nav avec une micro-marge de sécurité
+      function hideNav() {
+        clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => {
+          mainNav.classList.remove('show');
+          navTrigger.classList.remove('hidden');
+        }, 50); // Juste 50ms pour éviter les masquages accidentels
+      }
+
+      // Hover sur la zone de trigger
+      navTrigger.addEventListener('mouseenter', showNav);
+
+      // Suivi de la souris pour afficher uniquement dans le coin haut à droite
+      document.addEventListener('mousemove', (e) => {
+        const windowWidth = window.innerWidth;
+        // Si la souris est dans le coin haut à droite (50px du haut, 200px de la droite)
+        if (e.clientY < 50 && e.clientX > windowWidth - 200) {
+          showNav();
+        }
+      });
+
+      // Quand la souris quitte la navbar, masquer rapidement
+      mainNav.addEventListener('mouseleave', hideNav);
+      
+      // Annuler le masquage si on revient sur la nav
+      mainNav.addEventListener('mouseenter', () => {
+        clearTimeout(hideTimeout);
+      });
+
+      // Support tactile pour mobile
+      let touchStartY = 0;
+      let touchStartX = 0;
+      
+      document.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+        
+        // Tap en dehors de la nav pour fermer
+        if (!mainNav.contains(e.target) && !navTrigger.contains(e.target)) {
+          if (e.touches[0].clientY > 100) {
+            hideNav();
+          }
+        }
+      });
+
+      document.addEventListener('touchmove', (e) => {
+        const touchY = e.touches[0].clientY;
+        const touchX = e.touches[0].clientX;
+        const windowWidth = window.innerWidth;
+        
+        // Swipe depuis le coin haut à droite
+        if (touchStartY < 50 && touchStartX > windowWidth - 200 && touchY > touchStartY + 20) {
+          showNav();
+        }
+      });
+
+      // Tap sur l'indicateur
+      navTrigger.addEventListener('click', showNav);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Générateur de Workflows - Vue Unifiée</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+/* ========================================== */
+/* STYLES INTÉGRÉS - Pas de fichier externe */
+/* ========================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  background: linear-gradient(135deg, #0a0e27 0%, #16213e 100%);
+  color: #e8eaf6;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.view-container {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================== */
+/* NIVEAU 1 : VUE RÉSUMÉ - STYLES */
+/* ========================================== */
+
+#summary-view {
+  padding-top: 80px;
+}
+
+#summary-view > h1 {
+  text-align: center;
+  color: #ffffff;
+  font-size: 48px;
+  font-weight: 800;
+  margin: 16px 0 8px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 32px 0;
+  letter-spacing: 0.01em;
+}
+
+/* Section Info */
+.info-section {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.info-toggle {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8eaf6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 14px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.info-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.info-content {
+  display: none;
+  margin-top: 20px;
+  color: #b8c5d6;
+  line-height: 1.8;
+}
+
+.info-content p {
+  margin-bottom: 16px;
+}
+
+/* Boutons d'action */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #0a0e27 0%, #16213e 100%);
+  padding: 16px 20px;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.filter-input {
+  flex: 1;
+  min-width: 250px;
+  max-width: 400px;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8eaf6;
+  transition: all 0.3s ease;
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.create-workflow-btn {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  white-space: nowrap;
+}
+
+.create-workflow-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.btn-reset,
+.import-workflow-btn,
+.view-toggle-btn {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #e8eaf6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-reset:hover,
+.import-workflow-btn:hover,
+.view-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Grille hexagonale des workflows */
+.workflows-hexagon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 48px 32px;
+  margin-top: 48px;
+  padding: 20px;
+}
+
+.hexagon-workflow {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.hexagon-workflow:hover {
+  transform: translateY(-8px) scale(1.05);
+  filter: brightness(1.1);
+}
+
+.hexagon-shape {
+  width: 200px;
+  height: 230px;
+  margin: 0 auto;
+  position: relative;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  border: 2px solid rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 30px 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.hexagon-workflow:hover .hexagon-shape {
+  border-color: rgba(102, 126, 234, 0.8);
+  box-shadow: 0 12px 48px rgba(102, 126, 234, 0.4);
+}
+
+.hexagon-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 12px;
+  word-break: break-word;
+  max-width: 160px;
+}
+
+.hexagon-info {
+  font-size: 13px;
+  color: #b8c5d6;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.hexagon-steps {
+  font-size: 14px;
+  font-weight: 600;
+  color: #667eea;
+  margin-top: 8px;
+}
+
+.hexagon-subprocesses {
+  font-size: 12px;
+  color: #f093fb;
+  margin-top: 4px;
+}
+
+.hexagon-actions {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.hexagon-workflow:hover .hexagon-actions {
+  opacity: 1;
+}
+
+.hexagon-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.hexagon-delete-btn {
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+}
+
+.hexagon-delete-btn:hover {
+  background: rgba(239, 68, 68, 1);
+  transform: scale(1.1);
+}
+
+.color-badge-mini {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.color-badge-mini.color-red {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.color-badge-mini.color-red.active,
+.color-badge-mini.color-red:hover {
+  background: #ef4444;
+  color: white;
+  border-color: white;
+  transform: scale(1.1);
+}
+
+.color-badge-mini.color-orange {
+  background: rgba(249, 115, 22, 0.3);
+  color: #f97316;
+}
+
+.color-badge-mini.color-orange.active,
+.color-badge-mini.color-orange:hover {
+  background: #f97316;
+  color: white;
+  border-color: white;
+  transform: scale(1.1);
+}
+
+.color-badge-mini.color-green {
+  background: rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.color-badge-mini.color-green.active,
+.color-badge-mini.color-green:hover {
+  background: #22c55e;
+  color: white;
+  border-color: white;
+  transform: scale(1.1);
+}
+
+/* Classes de couleur pour les hexagones */
+.hexagon-color-red .hexagon-shape {
+  border-color: #ef4444 !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(239, 68, 68, 0.1) 100%);
+}
+
+.hexagon-color-orange .hexagon-shape {
+  border-color: #f97316 !important;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.3) 0%, rgba(249, 115, 22, 0.1) 100%);
+}
+
+.hexagon-color-green .hexagon-shape {
+  border-color: #22c55e !important;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(34, 197, 94, 0.1) 100%);
+}
+
+/* État vide */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #b8c5d6;
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.empty-state-subtext {
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+/* ========================================== */
+/* NIVEAU 2 : VUE DIAGRAMME - STYLES */
+/* ========================================== */
+
+#diagram-view {
+  padding-top: 100px;
+}
+
+.editor-header {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  backdrop-filter: blur(10px);
+  flex-wrap: wrap;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.back-btn {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  color: #b8c5d6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(-2px);
+}
+
+.workflow-title-input {
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8eaf6;
+  transition: all 0.3s ease;
+}
+
+.workflow-title-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.editor-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.save-btn {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(74, 222, 128, 0.3);
+  white-space: nowrap;
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+}
+
+.export-btn {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  white-space: nowrap;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.delete-btn {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Canvas du diagramme */
+.diagram-canvas {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 40px;
+  min-height: 600px;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* Diagramme vertical stylisé */
+.diagram-vertical-styled {
+  position: relative;
+  padding: 60px 40px;
+  min-height: 500px;
+}
+
+.diagram-connections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.diagram-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 140px;
+  margin: 100px 0;
+  z-index: 1;
+}
+
+.diagram-row.row-left {
+  flex-direction: row;
+}
+
+.diagram-row.row-right {
+  flex-direction: row-reverse;
+}
+
+/* Badge de mois/étape */
+.month-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Nœud hexagonal stylisé */
+.diagram-node-styled {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.node-hexagon {
+  width: 120px;
+  height: 138px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  border: 3px solid rgba(102, 126, 234, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.diagram-node-styled:hover .node-hexagon {
+  border-color: rgba(102, 126, 234, 0.9);
+  transform: scale(1.1);
+  box-shadow: 0 12px 48px rgba(102, 126, 234, 0.4);
+}
+
+.diagram-node-styled.input-node .node-hexagon {
+  border-color: #4ade80;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.3) 0%, rgba(74, 222, 128, 0.1) 100%);
+}
+
+.diagram-node-styled.output-node .node-hexagon {
+  border-color: #f87171;
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.3) 0%, rgba(248, 113, 113, 0.1) 100%);
+}
+
+/* Détails du nœud */
+.node-details {
+  min-width: 380px;
+  max-width: 520px;
+}
+
+.node-details.details-right {
+  text-align: left;
+}
+
+.node-details.details-left {
+  text-align: right;
+}
+
+.node-title-box {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px 24px;
+  backdrop-filter: blur(10px);
+}
+
+/* Diagramme horizontal stylisé */
+.diagram-horizontal-styled {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 120px;
+  padding: 40px;
+  min-width: max-content;
+}
+
+.diagram-connections-h {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.diagram-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  z-index: 1;
+}
+
+.month-badge-h {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  min-width: 80px;
+  text-align: center;
+}
+
+.node-details-h {
+  min-width: 280px;
+  max-width: 350px;
+  text-align: center;
+}
+
+/* Icône et texte des nœuds */
+.diagram-node-icon {
+  font-size: 40px;
+  text-align: center;
+}
+
+.diagram-node-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 8px;
+  word-break: break-word;
+}
+
+.diagram-node-subtitle {
+  font-size: 12px;
+  color: #b8c5d6;
+  margin-top: 8px;
+}
+
+.diagram-subprocess-badge {
+  background: rgba(102, 126, 234, 0.3);
+  color: #667eea;
+  border-radius: 12px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 8px 0;
+  display: inline-block;
+}
+
+/* Anciens styles de diagramme (fallback) */
+
+/* ========================================== */
+/* NIVEAU 3 : VUE CARTES - STYLES */
+/* ========================================== */
+
+#cards-view {
+  padding-top: 240px;
+}
+
+.current-process-title {
+  flex: 1;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+}
+
+/* Sélecteur de nombre de cartes */
+.card-size-selector {
+  text-align: center;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.card-size-selector label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #b8c5d6;
+}
+
+.size-btn {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.05);
+  color: #b8c5d6;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 24px;
+  margin: 0 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.size-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.size-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+/* Fil d'Ariane */
+.breadcrumb-container {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+  position: fixed;
+  top: 160px;
+  left: 0;
+  right: 0;
+  z-index: 98;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.breadcrumb-item {
+  color: #b8c5d6;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.breadcrumb-item:not(.active):hover {
+  background: rgba(102, 126, 234, 0.15);
+  color: #667eea;
+}
+
+.breadcrumb-item.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.breadcrumb-separator {
+  color: #667eea;
+  font-size: 14px;
+}
+
+/* Canvas des cartes */
+.cards-canvas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  padding: 20px 0;
+}
+
+/* Carte individuelle */
+.process-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  cursor: move;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.process-card:hover {
+  border-color: rgba(102, 126, 234, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.process-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.process-card.drag-over {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+/* Types de cartes */
+.process-card.input-card {
+  border-color: #4ade80;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(74, 222, 128, 0.02) 100%);
+}
+
+.process-card.output-card {
+  border-color: #f87171;
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.1) 0%, rgba(248, 113, 113, 0.02) 100%);
+}
+
+/* Contenu de la carte */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.card-icon {
+  font-size: 28px;
+}
+
+.card-order {
+  font-size: 12px;
+  font-weight: 600;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.2);
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-left: auto;
+}
+
+.card-title-input {
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8eaf6;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.card-title-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.card-description {
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #b8c5d6;
+  min-height: 80px;
+  resize: vertical;
+  transition: all 0.3s ease;
+}
+
+.card-description:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+/* Actions de la carte */
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.card-btn {
+  flex: 1;
+  min-width: 120px;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-subprocess {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-subprocess:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-code {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.btn-code:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.btn-delete-subprocess {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete-subprocess:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+/* Badges de couleur sur les cartes */
+.card-color-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.color-badge {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.color-badge.active {
+  border-color: white;
+  transform: scale(1.2);
+}
+
+.color-badge.color-none {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.color-badge.color-red {
+  background: #ef4444;
+}
+
+.color-badge.color-orange {
+  background: #f97316;
+}
+
+.color-badge.color-green {
+  background: #22c55e;
+}
+
+/* ========================================== */
+/* MODALES */
+/* ========================================== */
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
+  margin: 5% auto;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 800px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-content h2 {
+  color: #ffffff;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.close-modal {
+  color: #b8c5d6;
+  float: right;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+  margin-top: -8px;
+}
+
+.close-modal:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+#code-textarea {
+  width: 100%;
+  min-height: 300px;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #e8eaf6;
+  resize: vertical;
+}
+
+#code-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.save-code-btn {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: #ffffff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 16px;
+  box-shadow: 0 4px 16px rgba(74, 222, 128, 0.3);
+}
+
+.save-code-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+}
+
+/* Modale arborescence */
+.tree-modal-content {
+  max-width: 1000px;
+}
+
+.tree-container {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* ========================================== */
+/* RESPONSIVE */
+/* ========================================== */
+
+@media (max-width: 768px) {
+  body {
+    padding: 16px 12px;
+  }
+
+  #summary-view > h1 {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filter-input {
+    max-width: 100%;
+  }
+
+  .workflows-hexagon-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 32px 16px;
+  }
+
+  .hexagon-shape {
+    width: 160px;
+    height: 184px;
+  }
+
+  .editor-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .editor-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .diagram-canvas {
+    padding: 20px;
+  }
+
+  .diagram-row {
+    flex-direction: column !important;
+    gap: 20px;
+    margin: 40px 0;
+  }
+
+  .month-badge {
+    order: -1;
+  }
+
+  .node-details {
+    min-width: auto;
+    max-width: 100%;
+    text-align: center !important;
+  }
+
+  .diagram-horizontal-styled {
+    flex-direction: column;
+    gap: 40px;
+    padding: 20px;
+  }
+
+  .node-hexagon {
+    width: 100px;
+    height: 115px;
+  }
+
+  .diagram-node-icon {
+    font-size: 32px;
+  }
+
+  .cards-canvas {
+    grid-template-columns: 1fr;
+  }
+
+  .card-size-selector {
+    padding: 12px;
+  }
+
+  .size-btn {
+    padding: 8px 16px;
+    margin: 4px;
+    font-size: 13px;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+    margin: 10% auto;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+    </style>
+  </head>
+
+  <body>
+    <!-- ========================================== -->
+    <!-- NIVEAU 1 : VUE RÉSUMÉ (PASTILLES HEXAGONALES) -->
+    <!-- ========================================== -->
+    <div id="summary-view" class="view-container">
+      <h1>⚡ Générateur de Workflows</h1>
+      <p class="subtitle">Créez et organisez vos processus facilement</p>
+
+      <div class="info-section">
+        <button class="info-toggle" onclick="toggleInfo()">
+          Informations sur le générateur ▼
+        </button>
+        <div id="infoContent" class="info-content">
+          <p>
+            <strong>Comment ça marche ?</strong><br />
+            Ce générateur vous aide à décomposer et visualiser vos workflows en
+            sous-processus logiques hiérarchiques. Créez un nouveau workflow,
+            définissez vos entrées et sorties, puis organisez les étapes
+            intermédiaires.
+          </p>
+          <p>
+            <strong>Navigation en 3 niveaux :</strong><br />
+            • <strong>Niveau 1 - Résumé</strong> : Vue d'ensemble de tous vos workflows sous forme de pastilles hexagonales<br />
+            • <strong>Niveau 2 - Diagramme</strong> : Vue détaillée du workflow avec tous les processus et sous-processus<br />
+            • <strong>Niveau 3 - Cartes</strong> : Édition détaillée des cartes de chaque sous-processus
+          </p>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <input
+          type="text"
+          id="filter-workflows"
+          class="filter-input"
+          placeholder="🔍 Filtrer les workflows..."
+          oninput="filterWorkflows()"
+        />
+
+        <button class="create-workflow-btn" onclick="createNewWorkflow()">
+          ✨ Nouveau Workflow
+        </button>
+
+        <button
+          class="btn-reset"
+          onclick="if(confirm('Voulez-vous réinitialiser tous les workflows ?')) { localStorage.removeItem('workflows'); location.reload(); }"
+          title="Réinitialiser tous les workflows"
+        >
+          🔄
+        </button>
+
+        <label for="import-workflow" class="import-workflow-btn">
+          📤 Importer
+        </label>
+        <input
+          type="file"
+          id="import-workflow"
+          accept="application/json"
+          style="display: none"
+          onchange="importWorkflowJSON(event)"
+        />
+      </div>
+
+      <!-- Liste des workflows en pastilles hexagonales -->
+      <div id="workflows-list" class="workflows-hexagon-grid"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- NIVEAU 2 : VUE DIAGRAMME -->
+    <!-- ========================================== -->
+    <div id="diagram-view" class="view-container" style="display: none">
+      <div class="editor-header">
+        <button class="back-btn" onclick="backToSummary()">← Retour</button>
+        <input
+          type="text"
+          id="workflow-title-diagram"
+          class="workflow-title-input"
+          placeholder="Titre du workflow"
+          onchange="updateWorkflowTitle(this.value)"
+        />
+        <div class="editor-actions">
+          <button class="save-btn" onclick="saveWorkflow()">
+            💾 Sauvegarder
+          </button>
+          <button class="export-btn" onclick="exportWorkflowJSON()">
+            📥 Export JSON
+          </button>
+          <button class="view-toggle-btn" onclick="toggleDiagramOrientation()" id="orientationBtn">
+            ↔️ Horizontal
+          </button>
+          <button class="delete-btn" onclick="deleteCurrentWorkflow()">
+            🗑️ Supprimer
+          </button>
+        </div>
+      </div>
+
+      <!-- Canvas du diagramme -->
+      <div id="diagram-canvas" class="diagram-canvas"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- NIVEAU 3 : VUE CARTES -->
+    <!-- ========================================== -->
+    <div id="cards-view" class="view-container" style="display: none">
+      <div class="editor-header">
+        <button class="back-btn" onclick="backToDiagram()">← Retour au diagramme</button>
+        <div class="current-process-title" id="current-process-title"></div>
+        <div class="editor-actions">
+          <button class="save-btn" onclick="saveWorkflow()">
+            💾 Sauvegarder
+          </button>
+        </div>
+      </div>
+
+      <!-- Sélecteur de nombre de cartes -->
+      <div class="card-size-selector">
+        <label>Nombre de cartes :</label>
+        <button class="size-btn" data-size="4" onclick="setCardCount(4)">4 cartes</button>
+        <button class="size-btn" data-size="6" onclick="setCardCount(6)">6 cartes</button>
+        <button class="size-btn" data-size="9" onclick="setCardCount(9)">9 cartes</button>
+        <button class="size-btn active" data-size="12" onclick="setCardCount(12)">12 cartes</button>
+        <button class="size-btn" data-size="16" onclick="setCardCount(16)">16 cartes</button>
+        <button class="size-btn" data-size="20" onclick="setCardCount(20)">20 cartes</button>
+      </div>
+
+      <!-- Fil d'Ariane -->
+      <div id="breadcrumb" class="breadcrumb-container"></div>
+
+      <!-- Canvas des cartes -->
+      <div id="cards-canvas" class="cards-canvas"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODALES -->
+    <!-- ========================================== -->
+    
+    <!-- Modale pour le code Python -->
+    <div id="code-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeCodeModal()">&times;</span>
+        <h2>Code Python pour cette carte</h2>
+        <textarea id="code-textarea"></textarea>
+        <button class="save-code-btn" onclick="saveCode()">Sauvegarder</button>
+      </div>
+    </div>
+
+    <!-- Modale Arborescence -->
+    <div id="tree-modal" class="modal">
+      <div class="modal-content tree-modal-content">
+        <span class="close-modal" onclick="closeTreeView()">&times;</span>
+        <h2>Arborescence du Workflow</h2>
+        <div id="tree-container" class="tree-container"></div>
+      </div>
+    </div>
+
+    <script>
+// ============================================================================
+// ÉTAT GLOBAL DE L'APPLICATION
+// ============================================================================
+let workflows = [];
+let currentWorkflow = null;
+let currentView = 'summary'; // 'summary', 'diagram', 'cards'
+let navigationPath = []; // Chemin pour la navigation dans les sous-processus
+let currentCardCount = 12;
+let draggedCard = null;
+let currentEditingCardId = null;
+let diagramOrientation = 'vertical'; // 'vertical' ou 'horizontal'
+
+// ============================================================================
+// INITIALISATION
+// ============================================================================
+document.addEventListener("DOMContentLoaded", () => {
+  loadWorkflows();
+  showSummaryView();
+});
+
+// ============================================================================
+// GESTION DES WORKFLOWS (CHARGEMENT/SAUVEGARDE)
+// ============================================================================
+function loadWorkflows() {
+  const saved = localStorage.getItem("workflows");
+  workflows = saved ? JSON.parse(saved) : [];
+  
+  workflows.forEach(workflow => {
+    if (workflow.description === undefined) {
+      workflow.description = "";
+    }
+  });
+  
+  if (workflows.length > 0) {
+    saveWorkflows();
+  }
+}
+
+function saveWorkflows() {
+  localStorage.setItem("workflows", JSON.stringify(workflows));
+}
+
+function saveWorkflow() {
+  if (!currentWorkflow) return;
+  
+  const index = workflows.findIndex(w => w.id === currentWorkflow.id);
+  if (index !== -1) {
+    workflows[index] = currentWorkflow;
+    saveWorkflows();
+    showNotification("✅ Workflow sauvegardé!");
+  }
+}
+
+// ============================================================================
+// NIVEAU 1 : VUE RÉSUMÉ (PASTILLES HEXAGONALES)
+// ============================================================================
+function showSummaryView() {
+  currentView = 'summary';
+  document.getElementById('summary-view').style.display = 'block';
+  document.getElementById('diagram-view').style.display = 'none';
+  document.getElementById('cards-view').style.display = 'none';
+  
+  renderWorkflowsHexagons();
+}
+
+function renderWorkflowsHexagons() {
+  const container = document.getElementById("workflows-list");
+
+  if (workflows.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <div class="empty-state-text">Aucun workflow créé</div>
+        <div class="empty-state-subtext">Cliquez sur "Nouveau Workflow" pour commencer</div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = workflows
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .map(workflow => generateHexagonCard(workflow))
+    .join("");
+}
+
+function generateHexagonCard(workflow) {
+  const totalSteps = workflow.cards?.length || 0;
+  const subProcessCount = countTotalSubProcesses(workflow.cards || []);
+  const colorClass = workflow.color !== "none" ? `hexagon-color-${workflow.color}` : "";
+  
+  return `
+    <div class="hexagon-workflow ${colorClass}" onclick="openDiagramView(${workflow.id})">
+      <div class="hexagon-actions">
+        <button class="color-badge-mini color-red ${workflow.color === 'red' ? 'active' : ''}" 
+                onclick="event.stopPropagation(); setWorkflowColor(${workflow.id}, 'red')" 
+                title="Rouge">●</button>
+        <button class="color-badge-mini color-orange ${workflow.color === 'orange' ? 'active' : ''}" 
+                onclick="event.stopPropagation(); setWorkflowColor(${workflow.id}, 'orange')" 
+                title="Orange">●</button>
+        <button class="color-badge-mini color-green ${workflow.color === 'green' ? 'active' : ''}" 
+                onclick="event.stopPropagation(); setWorkflowColor(${workflow.id}, 'green')" 
+                title="Vert">●</button>
+        <button class="hexagon-action-btn hexagon-delete-btn" 
+                onclick="event.stopPropagation(); deleteWorkflowFromList(${workflow.id})">
+          🗑️
+        </button>
+      </div>
+      
+      <div class="hexagon-shape">
+        <div class="hexagon-title">${escapeHtml(workflow.title)}</div>
+        <div class="hexagon-info">
+          ${formatDate(workflow.createdAt)}
+        </div>
+        <div class="hexagon-steps">${totalSteps} étapes</div>
+        ${subProcessCount > 0 ? `<div class="hexagon-subprocesses">${subProcessCount} sous-processus</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function createNewWorkflow() {
+  const newWorkflow = {
+    id: Date.now(),
+    title: "Nouveau Workflow",
+    description: "",
+    createdAt: new Date().toISOString(),
+    cardCount: 12,
+    cards: initializeCards(12),
+    titleEdited: false,
+    color: "none",
+  };
+
+  workflows.push(newWorkflow);
+  saveWorkflows();
+  openDiagramView(newWorkflow.id);
+}
+
+function initializeCards(count) {
+  const cards = [];
+  for (let i = 0; i < count; i++) {
+    const isInput = i === 0;
+    const isOutput = i === count - 1;
+
+    cards.push({
+      id: Date.now() + i,
+      order: i + 1,
+      type: isInput ? "input" : isOutput ? "output" : "process",
+      title: isInput ? "INPUT" : isOutput ? "OUTPUT" : `Sous-processus ${i}`,
+      description: isInput
+        ? "Décrivez les données d'entrée..."
+        : isOutput
+        ? "Décrivez les données de sortie..."
+        : "Décrivez ce sous-processus...",
+      titleEdited: false,
+      descriptionEdited: false,
+      color: "none",
+      code: "",
+      subProcess: null,
+    });
+  }
+  return cards;
+}
+
+function filterWorkflows() {
+  const filterInput = document.getElementById("filter-workflows");
+  const filterValue = filterInput.value.toLowerCase().trim();
+  const hexagons = document.querySelectorAll(".hexagon-workflow");
+
+  hexagons.forEach((hexagon) => {
+    const title = hexagon.querySelector(".hexagon-title")?.textContent.toLowerCase() || "";
+    if (title.includes(filterValue)) {
+      hexagon.style.display = "";
+    } else {
+      hexagon.style.display = "none";
+    }
+  });
+}
+
+function setWorkflowColor(workflowId, color) {
+  const workflow = workflows.find(w => w.id === workflowId);
+  if (workflow) {
+    workflow.color = workflow.color === color ? "none" : color;
+    saveWorkflows();
+    renderWorkflowsHexagons();
+  }
+}
+
+function deleteWorkflowFromList(workflowId) {
+  if (confirm("Êtes-vous sûr de vouloir supprimer ce workflow ?")) {
+    workflows = workflows.filter(w => w.id !== workflowId);
+    saveWorkflows();
+    renderWorkflowsHexagons();
+    showNotification("🗑️ Workflow supprimé");
+  }
+}
+
+// ============================================================================
+// NIVEAU 2 : VUE DIAGRAMME
+// ============================================================================
+function openDiagramView(workflowId) {
+  currentWorkflow = workflows.find(w => w.id === workflowId);
+  if (!currentWorkflow) {
+    console.error("Workflow non trouvé");
+    return;
+  }
+
+  currentView = 'diagram';
+  navigationPath = [];
+  
+  document.getElementById('summary-view').style.display = 'none';
+  document.getElementById('diagram-view').style.display = 'block';
+  document.getElementById('cards-view').style.display = 'none';
+  
+  document.getElementById('workflow-title-diagram').value = currentWorkflow.title;
+  
+  renderDiagram();
+}
+
+function backToSummary() {
+  showSummaryView();
+}
+
+function toggleDiagramOrientation() {
+  diagramOrientation = diagramOrientation === 'vertical' ? 'horizontal' : 'vertical';
+  document.getElementById('orientationBtn').textContent = diagramOrientation === 'vertical' ? '↔️ Horizontal' : '⬇️ Vertical';
+  renderDiagram();
+}
+
+function renderDiagram() {
+  const canvas = document.getElementById('diagram-canvas');
+  const cards = currentWorkflow.cards || [];
+  
+  if (diagramOrientation === 'vertical') {
+    canvas.innerHTML = generateVerticalDiagram(cards);
+  } else {
+    canvas.innerHTML = generateHorizontalDiagram(cards);
+  }
+}
+
+function generateVerticalDiagram(cards) {
+  const nodes = cards.map((card, index) => {
+    const stepNumber = index + 1;
+    return generateDiagramNodeStyled(card, index, cards.length, stepNumber);
+  }).join('');
+  
+  return `
+    <div class="diagram-vertical-styled">
+      <svg class="diagram-connections" xmlns="http://www.w3.org/2000/svg">
+        ${generateVerticalConnections(cards.length)}
+      </svg>
+      ${nodes}
+    </div>
+  `;
+}
+
+function generateVerticalConnections(count) {
+  let connections = '';
+  for (let i = 0; i < count - 1; i++) {
+    const y1 = 200 + (i * 370);
+    const y2 = 200 + ((i + 1) * 370);
+    connections += `
+      <line x1="50%" y1="${y1}" x2="50%" y2="${y2}" 
+            stroke="rgba(102, 126, 234, 0.4)" 
+            stroke-width="3" 
+            stroke-dasharray="5,5">
+        <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+      </line>
+      <polygon points="50%,${y2 - 10} 50%,${y2} 50%,${y2 - 10}" 
+               fill="rgba(102, 126, 234, 0.6)"/>
+    `;
+  }
+  return connections;
+}
+
+function generateDiagramNodeStyled(card, index, total, label) {
+  const isInput = card.type === 'input' || index === 0;
+  const isOutput = card.type === 'output' || index === total - 1;
+  const hasSubProcess = card.subProcess !== null;
+  const subProcessCount = hasSubProcess ? (card.subProcess.cards?.length || 0) : 0;
+  
+  const nodeClass = isInput ? 'input-node' : isOutput ? 'output-node' : '';
+  const icon = getProcessIcon(card, index, total);
+  
+  const clickAction = hasSubProcess 
+    ? `onclick="openCardsView(${card.id})"` 
+    : `onclick="createSubProcess(${card.id})"`;
+  
+  const isLeft = index % 2 === 0;
+  
+  return `
+    <div class="diagram-row ${isLeft ? 'row-left' : 'row-right'}">
+      ${isLeft ? `<div class="month-badge">${label}</div>` : ''}
+      
+      <div class="diagram-node-styled ${nodeClass}" ${clickAction}>
+        <div class="node-hexagon">
+          <div class="diagram-node-icon">${icon}</div>
+        </div>
+      </div>
+      
+      ${!isLeft ? `<div class="month-badge">${label}</div>` : ''}
+      
+      <div class="node-details ${isLeft ? 'details-right' : 'details-left'}">
+        <div class="node-title-box">
+          <div class="diagram-node-title">${escapeHtml(card.title)}</div>
+          ${hasSubProcess ? `<div class="diagram-subprocess-badge">${subProcessCount} cartes</div>` : ''}
+          <div class="diagram-node-subtitle">${hasSubProcess ? 'Cliquez pour voir' : 'Cliquez pour créer'}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function generateHorizontalDiagram(cards) {
+  const nodes = cards.map((card, index) => {
+    const stepNumber = index + 1;
+    return generateDiagramNodeHorizontal(card, index, cards.length, stepNumber);
+  }).join('');
+  
+  return `
+    <div class="diagram-horizontal-styled">
+      <svg class="diagram-connections-h" xmlns="http://www.w3.org/2000/svg">
+        ${generateHorizontalConnections(cards.length)}
+      </svg>
+      ${nodes}
+    </div>
+  `;
+}
+
+function generateHorizontalConnections(count) {
+  let connections = '';
+  for (let i = 0; i < count - 1; i++) {
+    const x1 = 200 + (i * 400);
+    const x2 = 200 + ((i + 1) * 400);
+    connections += `
+      <line x1="${x1}" y1="50%" x2="${x2}" y2="50%" 
+            stroke="rgba(102, 126, 234, 0.4)" 
+            stroke-width="3" 
+            stroke-dasharray="5,5">
+        <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+      </line>
+      <polygon points="${x2 - 10},50% ${x2},50% ${x2 - 10},50%" 
+               fill="rgba(102, 126, 234, 0.6)"/>
+    `;
+  }
+  return connections;
+}
+
+function generateDiagramNodeHorizontal(card, index, total, label) {
+  const isInput = card.type === 'input' || index === 0;
+  const isOutput = card.type === 'output' || index === total - 1;
+  const hasSubProcess = card.subProcess !== null;
+  const subProcessCount = hasSubProcess ? (card.subProcess.cards?.length || 0) : 0;
+  
+  const nodeClass = isInput ? 'input-node' : isOutput ? 'output-node' : '';
+  const icon = getProcessIcon(card, index, total);
+  
+  const clickAction = hasSubProcess 
+    ? `onclick="openCardsView(${card.id})"` 
+    : `onclick="createSubProcess(${card.id})"`;
+  
+  return `
+    <div class="diagram-column">
+      <div class="month-badge-h">${label}</div>
+      
+      <div class="diagram-node-styled ${nodeClass}" ${clickAction}>
+        <div class="node-hexagon">
+          <div class="diagram-node-icon">${icon}</div>
+        </div>
+      </div>
+      
+      <div class="node-details-h">
+        <div class="node-title-box">
+          <div class="diagram-node-title">${escapeHtml(card.title)}</div>
+          ${hasSubProcess ? `<div class="diagram-subprocess-badge">${subProcessCount} cartes</div>` : ''}
+          <div class="diagram-node-subtitle">${hasSubProcess ? 'Cliquez pour voir' : 'Cliquez pour créer'}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function generateDiagramNode(card, index, total) {
+  const isInput = card.type === 'input' || index === 0;
+  const isOutput = card.type === 'output' || index === total - 1;
+  const hasSubProcess = card.subProcess !== null;
+  const subProcessCount = hasSubProcess ? (card.subProcess.cards?.length || 0) : 0;
+  
+  const nodeClass = isInput ? 'input-node' : isOutput ? 'output-node' : '';
+  const icon = getProcessIcon(card, index, total);
+  
+  const clickAction = hasSubProcess 
+    ? `onclick="openCardsView(${card.id})"` 
+    : `onclick="createSubProcess(${card.id})"`;
+  
+  return `
+    <div class="diagram-node ${nodeClass}" ${clickAction}>
+      <div class="diagram-node-icon">${icon}</div>
+      <div class="diagram-node-title">${escapeHtml(card.title)}</div>
+      ${hasSubProcess ? `<div class="diagram-subprocess-badge">${subProcessCount} cartes</div>` : ''}
+      <div class="diagram-node-subtitle">${hasSubProcess ? 'Cliquez pour voir' : 'Cliquez pour créer'}</div>
+    </div>
+  `;
+}
+
+function getProcessIcon(card, index, total) {
+  if (card.type === 'input' || index === 0) return '📥';
+  if (card.type === 'output' || index === total - 1) return '📤';
+  if (card.subProcess) return '📊';
+  return '🔧';
+}
+
+function updateWorkflowTitle(newTitle) {
+  if (currentWorkflow) {
+    currentWorkflow.title = newTitle;
+    currentWorkflow.titleEdited = true;
+    saveWorkflows();
+  }
+}
+
+function deleteCurrentWorkflow() {
+  if (!currentWorkflow) return;
+  
+  if (confirm("Êtes-vous sûr de vouloir supprimer ce workflow ?")) {
+    workflows = workflows.filter(w => w.id !== currentWorkflow.id);
+    saveWorkflows();
+    currentWorkflow = null;
+    showSummaryView();
+    showNotification("🗑️ Workflow supprimé");
+  }
+}
+
+// ============================================================================
+// NIVEAU 3 : VUE CARTES
+// ============================================================================
+function openCardsView(cardId) {
+  navigationPath.push(cardId);
+  
+  currentView = 'cards';
+  document.getElementById('summary-view').style.display = 'none';
+  document.getElementById('diagram-view').style.display = 'none';
+  document.getElementById('cards-view').style.display = 'block';
+  
+  const card = findCardInContext(cardId);
+  
+  if (card) {
+    document.getElementById('current-process-title').textContent = card.title;
+  }
+  
+  renderBreadcrumb();
+  updateCardCountButtons();
+  renderCardsCanvas();
+}
+
+function createSubProcess(cardId) {
+  const card = findCardById(currentWorkflow.cards, cardId);
+  if (!card) return;
+  
+  if (!card.subProcess) {
+    card.subProcess = {
+      cardCount: 9,
+      cards: initializeCards(9)
+    };
+    saveWorkflows();
+    showNotification("✅ Sous-processus créé!");
+  }
+  
+  openCardsView(cardId);
+}
+
+function backToDiagram() {
+  navigationPath = [];
+  renderDiagram();
+  
+  currentView = 'diagram';
+  document.getElementById('summary-view').style.display = 'none';
+  document.getElementById('diagram-view').style.display = 'block';
+  document.getElementById('cards-view').style.display = 'none';
+}
+
+function getCurrentContext() {
+  let context = currentWorkflow;
+  
+  for (let cardId of navigationPath) {
+    const card = context.cards.find(c => c.id === cardId);
+    if (card && card.subProcess) {
+      context = card.subProcess;
+    }
+  }
+  
+  return context;
+}
+
+function findCardInContext(cardId) {
+  let context = currentWorkflow;
+  
+  for (let i = 0; i < navigationPath.length - 1; i++) {
+    const card = context.cards.find(c => c.id === navigationPath[i]);
+    if (card && card.subProcess) {
+      context = card.subProcess;
+    }
+  }
+  
+  return context.cards.find(c => c.id === cardId);
+}
+
+function findCardById(cards, cardId) {
+  for (let card of cards) {
+    if (card.id === cardId) return card;
+    if (card.subProcess && card.subProcess.cards) {
+      const found = findCardById(card.subProcess.cards, cardId);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function renderBreadcrumb() {
+  const breadcrumbContainer = document.getElementById("breadcrumb");
+
+  if (navigationPath.length === 0) {
+    breadcrumbContainer.innerHTML = `
+      <span class="breadcrumb-item active">
+        🏠 ${escapeHtml(currentWorkflow.title)}
+      </span>
+    `;
+    return;
+  }
+
+  let html = `<a class="breadcrumb-item" onclick="navigateToLevel(-1)">🏠 ${escapeHtml(currentWorkflow.title)}</a>`;
+
+  let context = currentWorkflow;
+  navigationPath.forEach((cardId, index) => {
+    const card = context.cards.find(c => c.id === cardId);
+    if (card) {
+      const isLast = index === navigationPath.length - 1;
+      if (isLast) {
+        html += `<span class="breadcrumb-separator">→</span><span class="breadcrumb-item active">${escapeHtml(card.title)}</span>`;
+      } else {
+        html += `<span class="breadcrumb-separator">→</span><a class="breadcrumb-item" onclick="navigateToLevel(${index})">${escapeHtml(card.title)}</a>`;
+      }
+      if (card.subProcess) {
+        context = card.subProcess;
+      }
+    }
+  });
+
+  breadcrumbContainer.innerHTML = html;
+}
+
+function navigateToLevel(level) {
+  if (level === -1) {
+    backToDiagram();
+  } else {
+    navigationPath = navigationPath.slice(0, level + 1);
+    const cardId = navigationPath[level];
+    openCardsView(cardId);
+  }
+}
+
+function setCardCount(count) {
+  const context = getCurrentContext();
+  const oldCards = context.cards;
+  context.cardCount = count;
+  context.cards = initializeCards(count);
+
+  oldCards.forEach((oldCard, index) => {
+    if (index < count) {
+      context.cards[index].title = oldCard.title;
+      context.cards[index].description = oldCard.description;
+      context.cards[index].titleEdited = oldCard.titleEdited || false;
+      context.cards[index].descriptionEdited = oldCard.descriptionEdited || false;
+      context.cards[index].color = oldCard.color || "none";
+      context.cards[index].code = oldCard.code || "";
+      context.cards[index].subProcess = oldCard.subProcess;
+    }
+  });
+
+  updateCardCountButtons();
+  saveWorkflows();
+  renderCardsCanvas();
+  showNotification(`✅ ${count} cartes configurées`);
+}
+
+function updateCardCountButtons() {
+  const context = getCurrentContext();
+  document.querySelectorAll(".size-btn").forEach(btn => {
+    btn.classList.toggle("active", parseInt(btn.dataset.size) === context.cardCount);
+  });
+}
+
+function renderCardsCanvas() {
+  const canvas = document.getElementById('cards-canvas');
+  const context = getCurrentContext();
+  const cards = context.cards || [];
+  
+  canvas.innerHTML = cards.map(card => generateCardHTML(card)).join('');
+  
+  setupDragAndDrop();
+}
+
+function generateCardHTML(card) {
+  const isInput = card.type === 'input';
+  const isOutput = card.type === 'output';
+  const cardClass = isInput ? 'input-card' : isOutput ? 'output-card' : '';
+  const icon = isInput ? '📥' : isOutput ? '📤' : card.subProcess ? '📊' : '🔧';
+  
+  return `
+    <div class="process-card ${cardClass}" 
+         draggable="true" 
+         data-card-id="${card.id}"
+         ondragstart="handleCardDragStart(event)"
+         ondragend="handleCardDragEnd(event)"
+         ondragover="handleCardDragOver(event)"
+         ondrop="handleCardDrop(event)">
+      
+      <div class="card-header">
+        <div class="card-icon">${icon}</div>
+        <div class="card-order">#${card.order}</div>
+      </div>
+      
+      <input type="text" 
+             class="card-title-input" 
+             value="${escapeHtml(card.title)}"
+             onchange="updateCardTitle(${card.id}, this.value)"
+             ${isInput || isOutput ? 'readonly' : ''}>
+      
+      <textarea class="card-description" 
+                onchange="updateCardDescription(${card.id}, this.value)"
+                placeholder="Description...">${escapeHtml(card.description)}</textarea>
+      
+      <div class="card-color-badges">
+        <div class="color-badge color-none ${card.color === 'none' ? 'active' : ''}" 
+             onclick="setCardColor(${card.id}, 'none')"></div>
+        <div class="color-badge color-red ${card.color === 'red' ? 'active' : ''}" 
+             onclick="setCardColor(${card.id}, 'red')"></div>
+        <div class="color-badge color-orange ${card.color === 'orange' ? 'active' : ''}" 
+             onclick="setCardColor(${card.id}, 'orange')"></div>
+        <div class="color-badge color-green ${card.color === 'green' ? 'active' : ''}" 
+             onclick="setCardColor(${card.id}, 'green')"></div>
+      </div>
+      
+      ${!isInput && !isOutput ? `
+        <div class="card-actions">
+          ${card.subProcess 
+            ? `<button class="card-btn btn-subprocess" onclick="openSubProcessLevel(${card.id})">
+                📊 Voir sous-processus (${card.subProcess.cards?.length || 0})
+              </button>
+              <button class="card-btn btn-delete-subprocess" onclick="deleteSubProcess(${card.id})">
+                🗑️ Supprimer
+              </button>`
+            : `<button class="card-btn btn-subprocess" onclick="createSubProcess(${card.id})">
+                ➕ Créer sous-processus
+              </button>`
+          }
+          <button class="card-btn btn-code" onclick="openCodeModal(${card.id})">
+            💻 Code Python
+          </button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function openSubProcessLevel(cardId) {
+  openCardsView(cardId);
+}
+
+function deleteSubProcess(cardId) {
+  if (confirm("Supprimer le sous-processus et toutes ses données ?")) {
+    const card = findCardById(currentWorkflow.cards, cardId);
+    if (card) {
+      card.subProcess = null;
+      saveWorkflows();
+      renderCardsCanvas();
+      showNotification("🗑️ Sous-processus supprimé");
+    }
+  }
+}
+
+function updateCardTitle(cardId, newTitle) {
+  const card = findCardById(currentWorkflow.cards, cardId);
+  if (card) {
+    card.title = newTitle;
+    card.titleEdited = true;
+    saveWorkflows();
+  }
+}
+
+function updateCardDescription(cardId, newDescription) {
+  const card = findCardById(currentWorkflow.cards, cardId);
+  if (card) {
+    card.description = newDescription;
+    card.descriptionEdited = true;
+    saveWorkflows();
+  }
+}
+
+function setCardColor(cardId, color) {
+  const card = findCardById(currentWorkflow.cards, cardId);
+  if (card) {
+    card.color = color;
+    saveWorkflows();
+    renderCardsCanvas();
+  }
+}
+
+// ============================================================================
+// DRAG & DROP
+// ============================================================================
+function setupDragAndDrop() {
+  const cards = document.querySelectorAll('.process-card');
+  cards.forEach(card => {
+    card.addEventListener('dragstart', handleCardDragStart);
+    card.addEventListener('dragend', handleCardDragEnd);
+    card.addEventListener('dragover', handleCardDragOver);
+    card.addEventListener('drop', handleCardDrop);
+  });
+}
+
+function handleCardDragStart(e) {
+  draggedCard = e.target;
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/html', e.target.innerHTML);
+}
+
+function handleCardDragEnd(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.drag-over').forEach(el => {
+    el.classList.remove('drag-over');
+  });
+}
+
+function handleCardDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  e.dataTransfer.dropEffect = 'move';
+  
+  const target = e.target.closest('.process-card');
+  if (target && target !== draggedCard) {
+    target.classList.add('drag-over');
+  }
+  
+  return false;
+}
+
+function handleCardDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  
+  const target = e.target.closest('.process-card');
+  if (draggedCard && target && draggedCard !== target) {
+    const draggedId = parseInt(draggedCard.dataset.cardId);
+    const targetId = parseInt(target.dataset.cardId);
+    
+    swapCards(draggedId, targetId);
+  }
+  
+  target?.classList.remove('drag-over');
+  return false;
+}
+
+function swapCards(cardId1, cardId2) {
+  const context = getCurrentContext();
+  const card1Index = context.cards.findIndex(c => c.id === cardId1);
+  const card2Index = context.cards.findIndex(c => c.id === cardId2);
+  
+  if (card1Index !== -1 && card2Index !== -1) {
+    const tempOrder = context.cards[card1Index].order;
+    context.cards[card1Index].order = context.cards[card2Index].order;
+    context.cards[card2Index].order = tempOrder;
+    
+    [context.cards[card1Index], context.cards[card2Index]] = 
+    [context.cards[card2Index], context.cards[card1Index]];
+    
+    saveWorkflows();
+    renderCardsCanvas();
+    showNotification("🔄 Cartes échangées");
+  }
+}
+
+// ============================================================================
+// MODALES
+// ============================================================================
+function openCodeModal(cardId) {
+  currentEditingCardId = cardId;
+  const card = findCardById(currentWorkflow.cards, cardId);
+  
+  if (card) {
+    document.getElementById('code-textarea').value = card.code || '';
+    document.getElementById('code-modal').style.display = 'block';
+  }
+}
+
+function closeCodeModal() {
+  document.getElementById('code-modal').style.display = 'none';
+  currentEditingCardId = null;
+}
+
+function saveCode() {
+  if (!currentEditingCardId) return;
+  
+  const card = findCardById(currentWorkflow.cards, currentEditingCardId);
+  if (card) {
+    card.code = document.getElementById('code-textarea').value;
+    saveWorkflows();
+    closeCodeModal();
+    showNotification("💾 Code sauvegardé!");
+  }
+}
+
+// ============================================================================
+// IMPORT/EXPORT
+// ============================================================================
+function exportWorkflowJSON() {
+  if (!currentWorkflow) return;
+  
+  const dataStr = JSON.stringify(currentWorkflow, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `workflow_${currentWorkflow.title.replace(/\s+/g, '_')}_${Date.now()}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+  showNotification("📥 Workflow exporté!");
+}
+
+function importWorkflowJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedWorkflow = JSON.parse(e.target.result);
+      importedWorkflow.id = Date.now();
+      importedWorkflow.createdAt = new Date().toISOString();
+      importedWorkflow.title = importedWorkflow.title + " (Importé)";
+      
+      workflows.push(importedWorkflow);
+      saveWorkflows();
+      renderWorkflowsHexagons();
+      showNotification("✅ Workflow importé!");
+    } catch (error) {
+      alert("Erreur lors de l'import du fichier JSON");
+      console.error(error);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ============================================================================
+// UTILITAIRES
+// ============================================================================
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text ? text.replace(/[&<>"']/g, m => map[m]) : '';
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+}
+
+function countTotalSubProcesses(cards) {
+  let count = 0;
+  cards.forEach(card => {
+    if (card.subProcess) {
+      count++;
+      if (card.subProcess.cards) {
+        count += countTotalSubProcesses(card.subProcess.cards);
+      }
+    }
+  });
+  return count;
+}
+
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.textContent = message;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    animation: slideIn 0.3s ease-out;
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease-out';
+    setTimeout(() => notification.remove(), 300);
+  }, 2000);
+}
+
+function toggleInfo() {
+  const infoContent = document.getElementById("infoContent");
+  const infoToggle = document.querySelector(".info-toggle");
+
+  if (infoContent.style.display === "none" || infoContent.style.display === "") {
+    infoContent.style.display = "block";
+    infoToggle.textContent = "Informations sur le générateur ▲";
+  } else {
+    infoContent.style.display = "none";
+    infoToggle.textContent = "Informations sur le générateur ▼";
+  }
+}
+
+window.onclick = function(event) {
+  const codeModal = document.getElementById('code-modal');
+  const treeModal = document.getElementById('tree-modal');
+  
+  if (event.target === codeModal) {
+    closeCodeModal();
+  }
+  if (event.target === treeModal) {
+    closeTreeView();
+  }
+}
+
+function closeTreeView() {
+  document.getElementById('tree-modal').style.display = 'none';
+}
+    </script>
+  </body>
+</html>

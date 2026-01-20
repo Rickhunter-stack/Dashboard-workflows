@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stack Complète pour Héberger des Applications Python</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 1.2em;
+            margin-bottom: 50px;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            text-align: center;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .warning-box strong {
+            font-size: 1.3em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .main-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        
+        .actor {
+            flex: 1;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        .actor.internet {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+        
+        .actor.nginx {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .actor.uvicorn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .actor.python {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        .actor.systemd {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+        
+        .actor.certbot {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .actor.ufw {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .actor.fail2ban {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+        
+        .actor-icon {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .actor-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .actor-description {
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .actor-tech {
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.2);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        
+        .arrow {
+            font-size: 3em;
+            color: #475569;
+            text-align: center;
+            min-width: 50px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2em;
+            color: #1e293b;
+            margin: 50px 0 30px 0;
+            font-weight: bold;
+        }
+        
+        .architecture-box {
+            background: #f1f5f9;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .architecture-box h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .step-number {
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        .legend {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .legend h2 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .legend-item h3 {
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .legend-item p {
+            color: #475569;
+            line-height: 1.6;
+        }
+        
+        .legend-item ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        
+        .legend-item ul li {
+            padding: 5px 0;
+            color: #475569;
+        }
+        
+        .legend-item ul li:before {
+            content: "→ ";
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        
+        .example {
+            background: #e0f2fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #0c4a6e;
+        }
+        
+        .checklist {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            border: 2px solid #16a34a;
+        }
+        
+        .checklist h2 {
+            color: #166534;
+            margin-bottom: 20px;
+        }
+        
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist ul li {
+            padding: 10px 0;
+            color: #166534;
+            font-size: 1.05em;
+            border-bottom: 1px solid rgba(22, 163, 74, 0.2);
+        }
+        
+        .checklist ul li:before {
+            content: "✅ ";
+            margin-right: 10px;
+        }
+        
+        .summary-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            text-align: center;
+            border: 2px solid #f59e0b;
+        }
+        
+        .summary-box h2 {
+            color: #92400e;
+            margin-bottom: 20px;
+        }
+        
+        .summary-box p {
+            color: #78350f;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+        }
+        
+        .code-block .comment {
+            color: #94a3b8;
+        }
+        
+        .security {
+            border-left-color: #ef4444 !important;
+        }
+        
+        .security h3 {
+            color: #dc2626 !important;
+        }
+        
+        @media (max-width: 768px) {
+            .flow-row {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .legend-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Stack Complète pour Héberger des Applications Python</h1>
+        <p class="subtitle">Nginx, Uvicorn/Gunicorn, systemd, Certbot, ufw, fail2ban</p>
+        
+        <!-- Avertissement général -->
+        <div class="warning-box">
+            <strong>🎯 Objectif</strong>
+            Héberger plusieurs sites et applications Python sur un même serveur de manière rapide, sécurisée et stable
+        </div>
+        
+        <!-- Flux principal de requête -->
+        <h2 class="section-title">🌐 Flux d'une Requête HTTP/HTTPS</h2>
+        
+        <div class="main-flow">
+            <div class="flow-row">
+                <div class="actor internet">
+                    <div class="actor-icon">🌍</div>
+                    <div class="actor-title">Internet</div>
+                    <div class="actor-description">
+                        L'utilisateur envoie une requête HTTP/HTTPS depuis son navigateur
+                    </div>
+                    <div class="actor-tech">
+                        <strong>Protocoles :</strong><br>
+                        HTTP (port 80)<br>
+                        HTTPS (port 443)
+                    </div>
+                </div>
+                
+                <div class="arrow">↓</div>
+                
+                <div class="actor ufw">
+                    <div class="actor-icon">🔥</div>
+                    <div class="actor-title">ufw (Pare-feu)</div>
+                    <div class="actor-description">
+                        Filtre les connexions entrantes et autorise uniquement les ports nécessaires
+                    </div>
+                    <div class="actor-tech">
+                        <strong>Ports ouverts :</strong><br>
+                        22 (SSH), 80 (HTTP), 443 (HTTPS)<br>
+                        Tous les autres ports : fermés
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flow-row">
+                <div class="actor nginx">
+                    <div class="actor-icon">🔀</div>
+                    <div class="actor-title">Nginx (Reverse Proxy)</div>
+                    <div class="actor-description">
+                        Serveur web frontal qui reçoit toutes les requêtes et les distribue
+                    </div>
+                    <div class="actor-tech">
+                        <strong>Rôles :</strong><br>
+                        • Servir fichiers statiques (HTML, CSS, JS, images)<br>
+                        • Router vers les apps Python (FastAPI, Flask)<br>
+                        • Gérer HTTPS et certificats SSL<br>
+                        • Virtual hosts pour plusieurs sites
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flow-row">
+                <div class="actor uvicorn">
+                    <div class="actor-icon">⚡</div>
+                    <div class="actor-title">Uvicorn / Gunicorn</div>
+                    <div class="actor-description">
+                        Serveur d'application ASGI/WSGI qui exécute le code Python
+                    </div>
+                    <div class="actor-tech">
+                        <strong>Choix :</strong><br>
+                        • <strong>Uvicorn :</strong> Rapide, moderne (ASGI) pour FastAPI<br>
+                        • <strong>Gunicorn :</strong> Éprouvé, stable (WSGI) pour Flask<br>
+                        Communication via socket UNIX ou port local
+                    </div>
+                </div>
+                
+                <div class="arrow">↓</div>
+                
+                <div class="actor python">
+                    <div class="actor-icon">🐍</div>
+                    <div class="actor-title">Application Python</div>
+                    <div class="actor-description">
+                        Votre code (FastAPI, Flask, Django) qui génère les réponses
+                    </div>
+                    <div class="actor-tech">
+                        <strong>Frameworks supportés :</strong><br>
+                        FastAPI, Flask, Django, Starlette<br>
+                        Retourne JSON, HTML, dashboards...
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Composants de gestion et sécurité -->
+        <h2 class="section-title">🛠️ Composants de Gestion et Sécurité</h2>
+        
+        <div class="legend-grid">
+            <div class="legend-item">
+                <div class="actor-icon" style="font-size: 2em;">⚙️</div>
+                <h3>systemd</h3>
+                <p>Gestionnaire de services du système qui assure que vos applications tournent en permanence</p>
+                <div class="actor-tech" style="background: #f1f5f9; color: #475569; margin-top: 15px;">
+                    <strong>Fonctions :</strong><br>
+                    • Démarrage automatique au boot<br>
+                    • Redémarrage automatique si crash<br>
+                    • Gestion des logs via journalctl<br>
+                    • Contrôle via systemctl
+                </div>
+            </div>
+            
+            <div class="legend-item">
+                <div class="actor-icon" style="font-size: 2em;">🔒</div>
+                <h3>Certbot + Let's Encrypt</h3>
+                <p>Automatisation de la création et du renouvellement des certificats SSL/TLS pour HTTPS</p>
+                <div class="actor-tech" style="background: #f1f5f9; color: #475569; margin-top: 15px;">
+                    <strong>Avantages :</strong><br>
+                    • Certificats gratuits et valides<br>
+                    • Renouvellement automatique (90 jours)<br>
+                    • Configuration auto de Nginx<br>
+                    • Validation de domaine automatique
+                </div>
+            </div>
+            
+            <div class="legend-item security">
+                <div class="actor-icon" style="font-size: 2em;">🛡️</div>
+                <h3>fail2ban</h3>
+                <p>Protection anti-bruteforce qui surveille les logs et bannit les IPs malveillantes</p>
+                <div class="actor-tech" style="background: #f1f5f9; color: #475569; margin-top: 15px;">
+                    <strong>Protection :</strong><br>
+                    • Détecte les tentatives SSH répétées<br>
+                    • Bannit automatiquement via iptables/ufw<br>
+                    • Surveille Nginx, SSH, et autres services<br>
+                    • Configuration automatique
+                </div>
+            </div>
+        </div>
+        
+        <!-- Architecture détaillée -->
+        <h2 class="section-title">🏗️ Architecture Technique Détaillée</h2>
+        
+        <div class="architecture-box">
+            <h3>📁 Structure des Fichiers</h3>
+            <div class="code-block">
+/srv/apps/
+├── dashboard1/
+│   ├── venv/                    <span class="comment"># Environnement virtuel Python</span>
+│   ├── app.py                   <span class="comment"># Code de l'application</span>
+│   ├── requirements.txt
+│   └── run/
+│       └── uvicorn.sock         <span class="comment"># Socket pour communication avec Nginx</span>
+│
+├── api-backend/
+│   ├── venv/
+│   ├── main.py
+│   └── run/
+│       └── uvicorn.sock
+│
+/etc/nginx/
+├── nginx.conf                   <span class="comment"># Configuration principale</span>
+└── sites-available/
+    ├── dashboard1.conf          <span class="comment"># Virtual host 1</span>
+    └── api-backend.conf         <span class="comment"># Virtual host 2</span>
+
+/etc/systemd/system/
+├── dashboard1.service           <span class="comment"># Service systemd pour app 1</span>
+└── api-backend.service          <span class="comment"># Service systemd pour app 2</span>
+
+/etc/letsencrypt/
+└── live/
+    ├── monsite.com/
+    │   ├── fullchain.pem        <span class="comment"># Certificat SSL</span>
+    │   └── privkey.pem          <span class="comment"># Clé privée</span>
+    └── api.monsite.com/
+            </div>
+        </div>
+        
+        <!-- Configuration Nginx -->
+        <div class="legend">
+            <h2>🔀 Configuration Nginx (Reverse Proxy)</h2>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <h3>Fichiers statiques</h3>
+                    <p>Nginx sert directement les fichiers HTML, CSS, JS, images sans passer par Python</p>
+                    <div class="example">
+location /static/ {<br>
+&nbsp;&nbsp;alias /srv/apps/dashboard1/static/;<br>
+&nbsp;&nbsp;expires 30d;<br>
+}
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Proxy vers Python</h3>
+                    <p>Les requêtes dynamiques sont transmises à l'app Python via socket UNIX</p>
+                    <div class="example">
+location / {<br>
+&nbsp;&nbsp;proxy_pass http://unix:/srv/apps/dashboard1/run/uvicorn.sock;<br>
+&nbsp;&nbsp;proxy_set_header Host $host;<br>
+&nbsp;&nbsp;proxy_set_header X-Real-IP $remote_addr;<br>
+}
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>HTTPS automatique</h3>
+                    <p>Certbot configure automatiquement SSL et les redirections HTTP → HTTPS</p>
+                    <div class="example">
+listen 443 ssl http2;<br>
+ssl_certificate /etc/letsencrypt/live/monsite.com/fullchain.pem;<br>
+ssl_certificate_key /etc/letsencrypt/live/monsite.com/privkey.pem;
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Configuration systemd -->
+        <div class="legend" style="background: #e0e7ff;">
+            <h2 style="color: #3730a3;">⚙️ Configuration systemd (Gestion des Services)</h2>
+            <p style="color: #475569; margin-bottom: 20px;">Exemple de service systemd pour une application FastAPI</p>
+            
+            <div class="code-block">
+<span class="comment"># /etc/systemd/system/dashboard1.service</span>
+
+[Unit]
+Description=Dashboard Application (FastAPI)
+After=network.target
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/srv/apps/dashboard1
+Environment="PATH=/srv/apps/dashboard1/venv/bin"
+ExecStart=/srv/apps/dashboard1/venv/bin/uvicorn app:app \
+    --uds /srv/apps/dashboard1/run/uvicorn.sock \
+    --workers 4
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+            </div>
+            
+            <div class="legend-grid" style="margin-top: 20px;">
+                <div class="legend-item" style="border-left-color: #6366f1;">
+                    <h3 style="color: #3730a3;">Commandes essentielles</h3>
+                    <div class="example">
+<span class="comment"># Activer le service au démarrage</span><br>
+sudo systemctl enable dashboard1<br><br>
+<span class="comment"># Démarrer le service</span><br>
+sudo systemctl start dashboard1<br><br>
+<span class="comment"># Voir le statut</span><br>
+sudo systemctl status dashboard1<br><br>
+<span class="comment"># Redémarrer après modification</span><br>
+sudo systemctl restart dashboard1<br><br>
+<span class="comment"># Voir les logs</span><br>
+sudo journalctl -u dashboard1 -f
+                    </div>
+                </div>
+                
+                <div class="legend-item" style="border-left-color: #6366f1;">
+                    <h3 style="color: #3730a3;">Avantages de systemd</h3>
+                    <ul>
+                        <li>Démarrage automatique au boot du serveur</li>
+                        <li>Redémarrage automatique en cas de crash</li>
+                        <li>Gestion centralisée des logs</li>
+                        <li>Contrôle des ressources (CPU, mémoire)</li>
+                        <li>Dépendances entre services</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sécurité -->
+        <div class="legend">
+            <h2>🔒 Sécurité : ufw + fail2ban + HTTPS</h2>
+            <div class="legend-grid">
+                <div class="legend-item security">
+                    <h3>ufw (Uncomplicated Firewall)</h3>
+                    <p>Pare-feu simple qui contrôle les connexions entrantes</p>
+                    <div class="example">
+<span class="comment"># Autoriser SSH, HTTP, HTTPS</span><br>
+sudo ufw allow 22/tcp<br>
+sudo ufw allow 80/tcp<br>
+sudo ufw allow 443/tcp<br><br>
+<span class="comment"># Activer le pare-feu</span><br>
+sudo ufw enable<br><br>
+<span class="comment"># Voir le statut</span><br>
+sudo ufw status
+                    </div>
+                </div>
+                
+                <div class="legend-item security">
+                    <h3>fail2ban</h3>
+                    <p>Détection et blocage automatique des tentatives d'intrusion</p>
+                    <div class="example">
+<span class="comment"># Installation</span><br>
+sudo apt install fail2ban<br><br>
+<span class="comment"># Configuration auto pour SSH et Nginx</span><br>
+sudo systemctl enable fail2ban<br>
+sudo systemctl start fail2ban<br><br>
+<span class="comment"># Voir les IPs bannies</span><br>
+sudo fail2ban-client status sshd
+                    </div>
+                </div>
+                
+                <div class="legend-item security">
+                    <h3>Certbot (HTTPS)</h3>
+                    <p>Installation automatique des certificats SSL</p>
+                    <div class="example">
+<span class="comment"># Installation</span><br>
+sudo apt install certbot python3-certbot-nginx<br><br>
+<span class="comment"># Générer le certificat</span><br>
+sudo certbot --nginx -d monsite.com -d www.monsite.com<br><br>
+<span class="comment"># Renouvellement auto (cron)</span><br>
+sudo certbot renew --dry-run
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Choix du serveur d'application -->
+        <div class="legend" style="background: #fef3c7; border: 2px solid #f59e0b;">
+            <h2 style="color: #92400e;">⚡ Uvicorn vs Gunicorn : Quel serveur choisir ?</h2>
+            <div class="legend-grid">
+                <div class="legend-item" style="border-left-color: #f59e0b;">
+                    <h3 style="color: #92400e;">✅ Uvicorn (recommandé pour FastAPI)</h3>
+                    <ul>
+                        <li><strong>ASGI</strong> : Support natif des WebSockets et async/await</li>
+                        <li><strong>Rapide</strong> : Hautes performances pour les apps modernes</li>
+                        <li><strong>Léger</strong> : Consommation mémoire optimisée</li>
+                        <li><strong>Moderne</strong> : Conçu pour Python 3.7+</li>
+                    </ul>
+                    <div class="example">
+uvicorn app:app --uds /run/app.sock --workers 4
+                    </div>
+                </div>
+                
+                <div class="legend-item" style="border-left-color: #f59e0b;">
+                    <h3 style="color: #92400e;">✅ Gunicorn (classique pour Flask)</h3>
+                    <ul>
+                        <li><strong>WSGI</strong> : Standard éprouvé depuis des années</li>
+                        <li><strong>Stable</strong> : Production-ready avec gestion des workers</li>
+                        <li><strong>Compatible</strong> : Flask, Django, Pyramid</li>
+                        <li><strong>Options</strong> : Nombreuses options de configuration</li>
+                    </ul>
+                    <div class="example">
+gunicorn app:app --bind unix:/run/app.sock --workers 4
+                    </div>
+                </div>
+            </div>
+            <p style="margin-top: 20px; color: #78350f; font-size: 1.05em; text-align: center;">
+                <strong>💡 Conseil :</strong> FastAPI/Starlette → Uvicorn | Flask/Django → Gunicorn
+            </p>
+        </div>
+        
+        <!-- Résumé des couches -->
+        <div class="legend">
+            <h2>📊 Résumé : Empilement des Couches (Stack)</h2>
+            <div class="architecture-box">
+                <div class="code-block" style="font-size: 1.1em; text-align: center; line-height: 2;">
+🌍 <strong>Internet</strong><br>
+↓<br>
+🔥 <strong>ufw</strong> (Pare-feu : filtre les ports)<br>
+↓<br>
+🛡️ <strong>fail2ban</strong> (Protection anti-bruteforce)<br>
+↓<br>
+🔒 <strong>Nginx + HTTPS/Certbot</strong> (Reverse proxy, SSL, routing)<br>
+↓<br>
+⚡ <strong>Uvicorn/Gunicorn</strong> (Serveur d'application ASGI/WSGI)<br>
+↓<br>
+🐍 <strong>Ton code Python</strong> (FastAPI, Flask, Django)<br>
+↑<br>
+⚙️ <strong>systemd</strong> (Gestion et supervision des services)
+                </div>
+            </div>
+            
+            <div class="legend-grid" style="margin-top: 30px;">
+                <div class="legend-item">
+                    <h3>🔀 Nginx</h3>
+                    <p><strong>Point d'entrée frontal</strong><br>Gère HTTPS, sert les fichiers statiques, route vers les apps Python</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>⚡ Uvicorn/Gunicorn</h3>
+                    <p><strong>Serveur d'application</strong><br>Exécute le code Python et communique avec Nginx via socket UNIX</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>⚙️ systemd</h3>
+                    <p><strong>Gestionnaire de services</strong><br>Lance les apps au boot, les redémarre si crash, gère les logs</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>🔒 Certbot</h3>
+                    <p><strong>Certificats SSL</strong><br>HTTPS automatique avec Let's Encrypt, renouvellement tous les 90 jours</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>🔥 ufw</h3>
+                    <p><strong>Pare-feu</strong><br>N'autorise que les ports 22 (SSH), 80 (HTTP), 443 (HTTPS)</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>🛡️ fail2ban</h3>
+                    <p><strong>Anti-bruteforce</strong><br>Banni automatiquement les IPs qui tentent trop d'attaques</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Checklist d'installation -->
+        <div class="checklist">
+            <h2>✅ Checklist d'Installation Complète (Ubuntu 22.04 / Debian 12)</h2>
+            <ul>
+                <li><strong>Mise à jour du système :</strong> sudo apt update && sudo apt upgrade</li>
+                <li><strong>Installation Nginx :</strong> sudo apt install nginx</li>
+                <li><strong>Installation Python et venv :</strong> sudo apt install python3 python3-pip python3-venv</li>
+                <li><strong>Création environnement virtuel :</strong> python3 -m venv /srv/apps/mon-app/venv</li>
+                <li><strong>Installation FastAPI/Flask :</strong> pip install fastapi uvicorn (ou flask gunicorn)</li>
+                <li><strong>Configuration service systemd :</strong> Créer /etc/systemd/system/mon-app.service</li>
+                <li><strong>Activation du service :</strong> sudo systemctl enable mon-app && sudo systemctl start mon-app</li>
+                <li><strong>Configuration Nginx :</strong> Créer /etc/nginx/sites-available/mon-app.conf</li>
+                <li><strong>Activation du site :</strong> sudo ln -s /etc/nginx/sites-available/mon-app.conf /etc/nginx/sites-enabled/</li>
+                <li><strong>Test Nginx :</strong> sudo nginx -t && sudo systemctl reload nginx</li>
+                <li><strong>Installation Certbot :</strong> sudo apt install certbot python3-certbot-nginx</li>
+                <li><strong>Génération certificat SSL :</strong> sudo certbot --nginx -d monsite.com</li>
+                <li><strong>Configuration ufw :</strong> sudo ufw allow 22/80/443 && sudo ufw enable</li>
+                <li><strong>Installation fail2ban :</strong> sudo apt install fail2ban && sudo systemctl enable fail2ban</li>
+                <li><strong>Test final :</strong> Accéder à https://monsite.com et vérifier que tout fonctionne</li>
+            </ul>
+        </div>
+        
+        <!-- Lexique -->
+        <div class="legend">
+            <h2>📚 Lexique des Termes Techniques</h2>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <h3>Reverse Proxy</h3>
+                    <p>Serveur intermédiaire qui reçoit les requêtes des clients et les transmet aux serveurs backends. Nginx joue ce rôle en distribuant les requêtes vers les apps Python.</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>ASGI / WSGI</h3>
+                    <p><strong>ASGI</strong> (Asynchronous Server Gateway Interface) : Standard moderne supportant async/await et WebSockets. <strong>WSGI</strong> (Web Server Gateway Interface) : Standard plus ancien, synchrone uniquement.</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Socket UNIX</h3>
+                    <p>Fichier de communication local plus rapide qu'un port TCP. Nginx et Uvicorn communiquent via /run/app.sock au lieu de localhost:8000.</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Virtual Host</h3>
+                    <p>Configuration Nginx permettant d'héberger plusieurs sites/domaines sur le même serveur. Chaque domaine a sa propre config dans /etc/nginx/sites-available/.</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>systemd</h3>
+                    <p>Gestionnaire de services et d'initialisation présent sur la plupart des distributions Linux modernes (Ubuntu, Debian, Fedora, etc.). Remplace les anciens scripts init.d.</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Let's Encrypt</h3>
+                    <p>Autorité de certification gratuite qui délivre des certificats SSL/TLS valides et reconnus par tous les navigateurs. Renouvellement automatique tous les 90 jours via Certbot.</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Certbot</h3>
+                    <p>Outil en ligne de commande qui automatise la génération, l'installation et le renouvellement des certificats Let's Encrypt. S'intègre directement avec Nginx.</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>ufw</h3>
+                    <p><strong>Uncomplicated Firewall</strong> : Interface simplifiée pour iptables qui permet de gérer facilement les règles de pare-feu sur Ubuntu/Debian.</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>fail2ban</h3>
+                    <p>Service qui surveille les logs système (SSH, Nginx, etc.) et banni automatiquement les adresses IP qui présentent des comportements malveillants (tentatives répétées de connexion).</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Workers</h3>
+                    <p>Processus parallèles qui exécutent votre application. Plus de workers = plus de requêtes simultanées. Règle générale : 2-4 workers par cœur CPU.</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>journalctl</h3>
+                    <p>Commande pour consulter les logs systemd. Permet de voir en temps réel ce qui se passe dans vos services (erreurs, démarrages, crashs).</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>HTTP/2</h3>
+                    <p>Version moderne du protocole HTTP qui améliore les performances (multiplexage, compression des headers). Activé automatiquement par Certbot dans Nginx.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Résumé final -->
+        <div class="summary-box">
+            <h2>🎯 En résumé : Stack Production en 6 Couches</h2>
+            <p>
+                <strong>1.</strong> 🌍 Internet envoie requête →
+                <strong>2.</strong> 🔥 ufw filtre les ports →
+                <strong>3.</strong> 🔒 Nginx gère HTTPS et route →
+                <strong>4.</strong> ⚡ Uvicorn/Gunicorn exécute Python →
+                <strong>5.</strong> 🐍 Ton code génère la réponse →
+                <strong>6.</strong> ⚙️ systemd supervise tout
+            </p>
+            <p style="margin-top: 20px; font-size: 1.2em;">
+                <strong>🔑 Le principe clé :</strong> Chaque couche a un rôle précis et communique avec les autres de manière optimisée !
+            </p>
+            <p style="margin-top: 15px; font-size: 1em;">
+                <strong>🛡️ Sécurité :</strong> fail2ban + ufw + HTTPS (Certbot) = Serveur protégé et professionnel
+            </p>
+        </div>
+    </div>
+</body>
+</html>

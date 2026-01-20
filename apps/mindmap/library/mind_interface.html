@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mind Map - Interface Vérification Prescriptions</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      .container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 15px;
+        color: white;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .header h1 {
+        font-size: 2.2em;
+        font-weight: 700;
+        margin-bottom: 5px;
+        letter-spacing: -0.5px;
+      }
+
+      .header p {
+        font-size: 0.95em;
+        opacity: 0.95;
+        font-weight: 400;
+      }
+
+      .mindmap-wrapper {
+        flex: 1;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .mindmap-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .mindmap {
+        position: absolute;
+        transform-origin: 0 0;
+        transition: transform 0.3s ease;
+      }
+
+      svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+      }
+
+      .node {
+        position: absolute;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        padding: 10px;
+      }
+
+      .node:hover {
+        transform: scale(1.12) translateY(-2px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+      }
+
+      .node.selected {
+        transform: scale(1.12);
+        box-shadow: 0 0 0 5px rgba(255, 215, 0, 0.6),
+          0 12px 35px rgba(0, 0, 0, 0.25);
+      }
+
+      .node.large {
+        width: 170px;
+        height: 170px;
+        font-size: 1.3em;
+      }
+
+      .node.medium {
+        width: 140px;
+        height: 140px;
+        font-size: 1.05em;
+      }
+
+      .node.small {
+        width: 115px;
+        height: 115px;
+        font-size: 0.9em;
+      }
+
+      .bg-blue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .bg-purple {
+        background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+      }
+      .bg-purple-light {
+        background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+      }
+      .bg-green {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+      .bg-green-light {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      }
+      .bg-orange {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      }
+      .bg-orange-light {
+        background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+      }
+      .bg-red {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      }
+      .bg-red-light {
+        background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+      }
+      .bg-cyan {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+      }
+      .bg-cyan-light {
+        background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+      }
+      .bg-pink {
+        background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+      }
+      .bg-pink-light {
+        background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+      }
+
+      .controls {
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .control-row {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+      }
+
+      .control-btn {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+      }
+
+      .control-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .control-btn:active {
+        transform: translateY(0);
+      }
+
+      .description-box {
+        position: absolute;
+        bottom: 30px;
+        left: 30px;
+        right: 180px;
+        background: white;
+        padding: 28px 32px;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        border-left: 5px solid #667eea;
+        z-index: 2;
+        display: none;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .description-box.active {
+        display: block;
+        animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .description-box h3 {
+        color: #1e293b;
+        font-size: 1.6em;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+
+      .description-box .subtitle {
+        color: #64748b;
+        font-size: 0.95em;
+        margin-bottom: 16px;
+        font-style: italic;
+      }
+
+      .description-box .content {
+        color: #475569;
+        font-size: 1.02em;
+        line-height: 1.7;
+      }
+
+      .description-box ul {
+        margin: 12px 0;
+        padding-left: 20px;
+      }
+
+      .description-box li {
+        margin: 8px 0;
+        color: #475569;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 24px;
+        background: none;
+        border: none;
+        font-size: 1.8em;
+        color: #94a3b8;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+      }
+
+      .close-btn:hover {
+        color: #1e293b;
+        background: #f1f5f9;
+      }
+
+      .description-box::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .description-box::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+      }
+
+      .description-box::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+
+      .description-box::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Mind Map - Interface Vérification de Prescriptions</h1>
+        <p>Cliquez sur un nœud pour voir sa description détaillée</p>
+      </div>
+
+      <div class="mindmap-wrapper">
+        <div class="mindmap-container">
+          <div class="mindmap" id="mindmap">
+            <svg id="svg"></svg>
+            <div id="nodes"></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="control-row">
+            <button
+              class="control-btn"
+              onclick="moveMap('up')"
+              title="Déplacer vers le haut"
+            >
+              ↑
+            </button>
+          </div>
+          <div class="control-row">
+            <button
+              class="control-btn"
+              onclick="moveMap('left')"
+              title="Déplacer vers la gauche"
+            >
+              ←
+            </button>
+            <button class="control-btn" onclick="zoomMap('in')" title="Zoomer">
+              +
+            </button>
+            <button
+              class="control-btn"
+              onclick="zoomMap('out')"
+              title="Dézoomer"
+            >
+              −
+            </button>
+            <button
+              class="control-btn"
+              onclick="moveMap('right')"
+              title="Déplacer vers la droite"
+            >
+              →
+            </button>
+          </div>
+          <div class="control-row">
+            <button
+              class="control-btn"
+              onclick="moveMap('down')"
+              title="Déplacer vers le bas"
+            >
+              ↓
+            </button>
+          </div>
+          <div class="control-row">
+            <button
+              class="control-btn"
+              onclick="resetView()"
+              title="Réinitialiser la vue"
+              style="font-size: 1.1em"
+            >
+              ⟲
+            </button>
+          </div>
+        </div>
+
+        <div class="description-box" id="descriptionBox">
+          <button class="close-btn" onclick="closeDescription()">×</button>
+          <h3 id="descTitle"></h3>
+          <div class="subtitle" id="descSubtitle"></div>
+          <div class="content" id="descText"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const nodes = [
+        // Centre
+        {
+          id: "app",
+          x: 700,
+          y: 450,
+          label: "Interface Vérif Prescriptions",
+          color: "bg-blue",
+          size: "large",
+        },
+
+        // Branches principales (plus espacées)
+        {
+          id: "frontend",
+          x: 250,
+          y: 180,
+          label: "Frontend",
+          color: "bg-purple",
+          size: "medium",
+        },
+        {
+          id: "backend",
+          x: 1150,
+          y: 180,
+          label: "Backend Flask",
+          color: "bg-green",
+          size: "medium",
+        },
+        {
+          id: "data",
+          x: 180,
+          y: 720,
+          label: "Gestion Données",
+          color: "bg-orange",
+          size: "medium",
+        },
+        {
+          id: "features",
+          x: 1220,
+          y: 720,
+          label: "Fonctionnalités",
+          color: "bg-red",
+          size: "medium",
+        },
+        {
+          id: "security",
+          x: 700,
+          y: 80,
+          label: "Sécurité",
+          color: "bg-cyan",
+          size: "medium",
+        },
+        {
+          id: "deploy",
+          x: 700,
+          y: 820,
+          label: "Production",
+          color: "bg-pink",
+          size: "medium",
+        },
+
+        // Sous-branches Frontend (plus espacées)
+        {
+          id: "html",
+          x: 60,
+          y: 50,
+          label: "HTML/CSS",
+          color: "bg-purple-light",
+          size: "small",
+        },
+        {
+          id: "js",
+          x: 220,
+          y: 20,
+          label: "JavaScript",
+          color: "bg-purple-light",
+          size: "small",
+        },
+        {
+          id: "tailwind",
+          x: 420,
+          y: 60,
+          label: "Tailwind",
+          color: "bg-purple-light",
+          size: "small",
+        },
+        {
+          id: "darkmode",
+          x: 150,
+          y: 310,
+          label: "Dark Mode",
+          color: "bg-purple-light",
+          size: "small",
+        },
+
+        // Sous-branches Backend (plus espacées)
+        {
+          id: "flask",
+          x: 1020,
+          y: 20,
+          label: "Flask App",
+          color: "bg-green-light",
+          size: "small",
+        },
+        {
+          id: "api",
+          x: 1250,
+          y: 50,
+          label: "API REST",
+          color: "bg-green-light",
+          size: "small",
+        },
+        {
+          id: "hprim",
+          x: 1380,
+          y: 140,
+          label: "Parser HPRIM",
+          color: "bg-green-light",
+          size: "small",
+        },
+        {
+          id: "routing",
+          x: 1160,
+          y: 350,
+          label: "Multi-Sites",
+          color: "bg-green-light",
+          size: "small",
+        },
+
+        // Sous-branches Données (plus espacées)
+        {
+          id: "sqlite",
+          x: 20,
+          y: 640,
+          label: "SQLite",
+          color: "bg-orange-light",
+          size: "small",
+        },
+        {
+          id: "csv",
+          x: 60,
+          y: 820,
+          label: "CSV Analyses",
+          color: "bg-orange-light",
+          size: "small",
+        },
+        {
+          id: "files",
+          x: 240,
+          y: 880,
+          label: "Fichiers HPR",
+          color: "bg-orange-light",
+          size: "small",
+        },
+        {
+          id: "images",
+          x: 380,
+          y: 840,
+          label: "Images",
+          color: "bg-orange-light",
+          size: "small",
+        },
+
+        // Sous-branches Fonctionnalités (plus espacées)
+        {
+          id: "validation",
+          x: 1380,
+          y: 640,
+          label: "Validation",
+          color: "bg-red-light",
+          size: "small",
+        },
+        {
+          id: "modif",
+          x: 1240,
+          y: 880,
+          label: "Modifications",
+          color: "bg-red-light",
+          size: "small",
+        },
+        {
+          id: "history",
+          x: 1020,
+          y: 840,
+          label: "Historique",
+          color: "bg-red-light",
+          size: "small",
+        },
+        {
+          id: "zoom",
+          x: 1400,
+          y: 810,
+          label: "Zoom Image",
+          color: "bg-red-light",
+          size: "small",
+        },
+
+        // Sous-branches Sécurité (plus espacées)
+        {
+          id: "login",
+          x: 520,
+          y: 5,
+          label: "Auth Login",
+          color: "bg-cyan-light",
+          size: "small",
+        },
+        {
+          id: "session",
+          x: 700,
+          y: -65,
+          label: "Sessions",
+          color: "bg-cyan-light",
+          size: "small",
+        },
+        {
+          id: "timeout",
+          x: 880,
+          y: 5,
+          label: "Timeout",
+          color: "bg-cyan-light",
+          size: "small",
+        },
+
+        // Sous-branches Production (plus espacées)
+        {
+          id: "gunicorn",
+          x: 500,
+          y: 950,
+          label: "Gunicorn",
+          color: "bg-pink-light",
+          size: "small",
+        },
+        {
+          id: "proxy",
+          x: 700,
+          y: 960,
+          label: "Reverse Proxy",
+          color: "bg-pink-light",
+          size: "small",
+        },
+        {
+          id: "sftp",
+          x: 900,
+          y: 950,
+          label: "Export SFTP",
+          color: "bg-pink-light",
+          size: "small",
+        },
+      ];
+
+      const connections = [
+        { from: "app", to: "frontend" },
+        { from: "app", to: "backend" },
+        { from: "app", to: "data" },
+        { from: "app", to: "features" },
+        { from: "app", to: "security" },
+        { from: "app", to: "deploy" },
+        { from: "frontend", to: "html" },
+        { from: "frontend", to: "js" },
+        { from: "frontend", to: "tailwind" },
+        { from: "frontend", to: "darkmode" },
+        { from: "backend", to: "flask" },
+        { from: "backend", to: "api" },
+        { from: "backend", to: "hprim" },
+        { from: "backend", to: "routing" },
+        { from: "data", to: "sqlite" },
+        { from: "data", to: "csv" },
+        { from: "data", to: "files" },
+        { from: "data", to: "images" },
+        { from: "features", to: "validation" },
+        { from: "features", to: "modif" },
+        { from: "features", to: "history" },
+        { from: "features", to: "zoom" },
+        { from: "security", to: "login" },
+        { from: "security", to: "session" },
+        { from: "security", to: "timeout" },
+        { from: "deploy", to: "gunicorn" },
+        { from: "deploy", to: "proxy" },
+        { from: "deploy", to: "sftp" },
+      ];
+
+      const descriptions = {
+        app: {
+          subtitle:
+            "Application web de vérification de prescriptions médicales",
+          content: `Interface complète pour valider et modifier des prescriptions HPRIM avant envoi au laboratoire.
+                <ul>
+                    <li><strong>Multi-sites</strong> : Gestion de plusieurs établissements (PAD, RDV)</li>
+                    <li><strong>Workflow</strong> : Navigation trame par trame avec validation/modification</li>
+                    <li><strong>Responsive</strong> : Interface adaptée aux différentes résolutions d'écran</li>
+                    <li><strong>Production-ready</strong> : Déployé avec Gunicorn derrière reverse proxy HTTPS</li>
+                </ul>`,
+        },
+        frontend: {
+          subtitle: "Interface utilisateur moderne et réactive",
+          content: `Frontend développé avec HTML/CSS/JavaScript vanilla et Tailwind CSS.
+                <ul>
+                    <li><strong>Design moderne</strong> : UI épurée avec mode sombre intégré</li>
+                    <li><strong>Composants réutilisables</strong> : Modales, notifications, formulaires</li>
+                    <li><strong>Interactions fluides</strong> : Transitions CSS, animations, feedback visuel</li>
+                    <li><strong>Accessibilité</strong> : Navigation clavier, focus visible, ARIA labels</li>
+                </ul>`,
+        },
+        html: {
+          subtitle: "Structure sémantique avec Jinja2",
+          content: `Templates HTML rendus côté serveur avec Flask/Jinja2.
+                <ul>
+                    <li><strong>Templating Jinja2</strong> : Variables dynamiques, boucles, conditions</li>
+                    <li><strong>Structure claire</strong> : 3 colonnes (infos, image, modifications)</li>
+                    <li><strong>Formulaires</strong> : Select2 pour recherche médecins et analyses</li>
+                    <li><strong>Assets locaux</strong> : CSS, JS, fonts hébergés localement (offline-ready)</li>
+                </ul>`,
+        },
+        js: {
+          subtitle: "Logique interactive et appels API",
+          content: `JavaScript vanilla gérant l'interaction utilisateur et la communication avec l'API.
+                <ul>
+                    <li><strong>Gestion d'état</strong> : Variables globales pour trame courante, modifications</li>
+                    <li><strong>Fetch API</strong> : Appels REST asynchrones (GET/POST) vers Flask</li>
+                    <li><strong>Event listeners</strong> : Boutons, navigation, validation, saisie</li>
+                    <li><strong>Modules</strong> : Zoom image, gestion trames, historique, notifications</li>
+                </ul>`,
+        },
+        tailwind: {
+          subtitle: "Framework CSS utility-first",
+          content: `Tailwind CSS pour styling rapide et cohérent.
+                <ul>
+                    <li><strong>Utility classes</strong> : Composition rapide sans CSS custom</li>
+                    <li><strong>Responsive</strong> : Breakpoints pour mobile, tablette, desktop</li>
+                    <li><strong>Personnalisation</strong> : Palette de couleurs adaptée au domaine médical</li>
+                    <li><strong>Build optimisé</strong> : PurgeCSS pour réduire la taille finale</li>
+                </ul>`,
+        },
+        darkmode: {
+          subtitle: "Mode sombre pour confort visuel",
+          content: `Thème sombre activable pour réduire la fatigue oculaire.
+                <ul>
+                    <li><strong>Toggle manuel</strong> : Bouton pour basculer light/dark</li>
+                    <li><strong>Persistance</strong> : Sauvegarde préférence dans localStorage</li>
+                    <li><strong>Cohérence</strong> : Tous les composants adaptés (cartes, inputs, boutons)</li>
+                    <li><strong>Contraste</strong> : Respect WCAG pour lisibilité (AA minimum)</li>
+                </ul>`,
+        },
+        backend: {
+          subtitle: "Serveur Flask Python pour logique métier",
+          content: `Backend Flask gérant authentification, parsing HPRIM, et export.
+                <ul>
+                    <li><strong>Architecture MVC</strong> : Routes, modèles (User), templates séparés</li>
+                    <li><strong>Multi-sites</strong> : Routing dynamique /<site>/... pour chaque établissement</li>
+                    <li><strong>API REST</strong> : Endpoints JSON pour communication frontend</li>
+                    <li><strong>Logging</strong> : Traçabilité complète des opérations (info, warning, error)</li>
+                </ul>`,
+        },
+        flask: {
+          subtitle: "Framework web Python léger",
+          content: `Flask comme socle de l'application web.
+                <ul>
+                    <li><strong>Routing</strong> : Décorateurs @app.route pour définir endpoints</li>
+                    <li><strong>Blueprints</strong> : Organisation modulaire par fonctionnalité (auth, api, etc.)</li>
+                    <li><strong>Extensions</strong> : Flask-Login, Flask-SQLAlchemy pour features avancées</li>
+                    <li><strong>WSGI</strong> : Compatible Gunicorn/uWSGI pour production</li>
+                </ul>`,
+        },
+        api: {
+          subtitle: "Endpoints REST pour frontend",
+          content: `API JSON pour opérations CRUD et métier.
+                <ul>
+                    <li><strong>/api/config</strong> : Nombre total de trames disponibles</li>
+                    <li><strong>/api/hprim/get/<id></strong> : Données d'une trame (patient, médecin, analyses)</li>
+                    <li><strong>/api/hprim/update</strong> : Validation avec modifications (add/replace/delete)</li>
+                    <li><strong>/api/validation_history</strong> : Historique des validations (recherche incluse)</li>
+                </ul>`,
+        },
+        hprim: {
+          subtitle: "Parser de fichiers HPRIM",
+          content: `Extraction d'informations des trames HPRIM (norme échange laboratoires).
+                <ul>
+                    <li><strong>Segments</strong> : Parsing H|, P|, OBR|, OBX| pour extraction données</li>
+                    <li><strong>Analyses</strong> : Récupération codes SIL depuis OBR-5 (split ^ et ~)</li>
+                    <li><strong>Images</strong> : Détection images associées dans OBX, fallback sur dossier</li>
+                    <li><strong>Encodage</strong> : Auto-détection (chardet) UTF-8/Latin1 pour robustesse</li>
+                </ul>`,
+        },
+        routing: {
+          subtitle: "Gestion multi-sites dynamique",
+          content: `Routes paramétrées par site pour isolation des données.
+                <ul>
+                    <li><strong>URL scheme</strong> : /<site>/... (ex: /Muire-PAD/, /Sezanne-PAD/)</li>
+                    <li><strong>Validation</strong> : Whitelist des sites autorisés (sécurité)</li>
+                    <li><strong>Dossiers dédiés</strong> : import_<site>, data_<site> pour chaque établissement</li>
+                    <li><strong>Contexte Flask</strong> : g.site disponible dans toutes les vues</li>
+                </ul>`,
+        },
+        data: {
+          subtitle: "Stockage et gestion des données",
+          content: `Persistance via SQLite, CSV et système de fichiers.
+                <ul>
+                    <li><strong>Base de données</strong> : SQLite pour utilisateurs et sessions</li>
+                    <li><strong>Fichiers CSV</strong> : Référentiels (analyses, médecins) chargés en mémoire</li>
+                    <li><strong>Fichiers HPR</strong> : Trames HPRIM en attente dans import_<site>/</li>
+                    <li><strong>Export</strong> : Copie des fichiers validés vers SFTP/OUT/ pour transmission</li>
+                </ul>`,
+        },
+        sqlite: {
+          subtitle: "Base de données relationnelle légère",
+          content: `SQLite via Flask-SQLAlchemy pour gestion utilisateurs.
+                <ul>
+                    <li><strong>Modèle User</strong> : username, password_hash, sites autorisés</li>
+                    <li><strong>ORM</strong> : SQLAlchemy pour requêtes Python (User.query.filter_by...)</li>
+                    <li><strong>Fichier unique</strong> : instance/users.db, portable et sans serveur</li>
+                    <li><strong>Migrations</strong> : Alembic si évolution du schéma nécessaire</li>
+                </ul>`,
+        },
+        csv: {
+          subtitle: "Référentiels des analyses et médecins",
+          content: `Fichiers CSV pour données de référence métier.
+                <ul>
+                    <li><strong>liste_analyses.csv</strong> : Code SIL, nom, discipline (Hématologie, Biochimie...)</li>
+                    <li><strong>dico_med.csv</strong> : Code, nom complet, numéro ADELI des médecins</li>
+                    <li><strong>Chargement mémoire</strong> : CSV parsé au démarrage pour performance</li>
+                    <li><strong>Recherche Select2</strong> : Autocomplete côté client sur ces données</li>
+                </ul>`,
+        },
+        files: {
+          subtitle: "Gestion des fichiers HPRIM",
+          content: `Workflow de traitement des trames (import → validation → export).
+                <ul>
+                    <li><strong>Tri par mtime</strong> : Fichiers .hpr triés par date de modification (FIFO)</li>
+                    <li><strong>Backup</strong> : Copie horodatée dans data_<site>/backup/ avant modif</li>
+                    <li><strong>Export async</strong> : Thread Python pour déplacement vers SFTP sans bloquer UI</li>
+                    <li><strong>Nettoyage</strong> : Suppression fichiers import après validation réussie</li>
+                </ul>`,
+        },
+        images: {
+          subtitle: "Ordonnances numérisées associées",
+          content: `Images JPEG/PNG des prescriptions pour vérification visuelle.
+                <ul>
+                    <li><strong>Association</strong> : Nom image dans OBX-5 du HPRIM ou fallback dossier</li>
+                    <li><strong>Versions</strong> : Image originale + version surlignée *_s.* (OCR)</li>
+                    <li><strong>Zoom interactif</strong> : Module JS pour zoom/pan sur l'image (molette, drag)</li>
+                    <li><strong>Export</strong> : Copie image vers SFTP/OUT/ avec le .hpr modifié</li>
+                </ul>`,
+        },
+        features: {
+          subtitle: "Fonctionnalités métier de l'application",
+          content: `Capacités clés pour le workflow de validation.
+                <ul>
+                    <li><strong>Validation</strong> : Confirmation des prescriptions avec traçabilité</li>
+                    <li><strong>Modifications</strong> : Ajout/suppression/remplacement d'analyses</li>
+                    <li><strong>Historique</strong> : Consultation des validations passées avec recherche</li>
+                    <li><strong>Zoom image</strong> : Navigation détaillée sur l'ordonnance scannée</li>
+                </ul>`,
+        },
+        validation: {
+          subtitle: "Confirmation et export des prescriptions",
+          content: `Processus de validation final avant envoi au laboratoire.
+                <ul>
+                    <li><strong>Verrouillage</strong> : Vérification concurrence via mtime (évite double validation)</li>
+                    <li><strong>Marqueurs IA</strong> : Injection #####IA_DOSSIER_COMPLET_OK##### ou NOK selon médecin</li>
+                    <li><strong>Export SFTP</strong> : Copie .hpr modifié + images vers /SFTP/PAD/OUT/</li>
+                    <li><strong>Journalisation</strong> : Enregistrement timestamp, patient, analyses dans validation_log.json</li>
+                </ul>`,
+        },
+        modif: {
+          subtitle: "Modification des analyses détectées",
+          content: `Outils pour corriger les analyses avant validation.
+                <ul>
+                    <li><strong>Ajout</strong> : Sélection analyse depuis liste complète (Select2 autocomplete)</li>
+                    <li><strong>Suppression</strong> : Croix hover sur chaque analyse pour retrait rapide</li>
+                    <li><strong>Remplacement</strong> : Substitution d'un code SIL par un autre</li>
+                    <li><strong>Traçabilité</strong> : Historique complet des actions (add/replace/delete) sauvegardé</li>
+                </ul>`,
+        },
+        history: {
+          subtitle: "Historique des validations passées",
+          content: `Consultation des prescriptions traitées avec recherche avancée.
+                <ul>
+                    <li><strong>Fenêtre temporelle</strong> : Dernières 48h par défaut, paramétrable</li>
+                    <li><strong>Recherche live</strong> : Filtrage par patient, fichier, analyse, médecin</li>
+                    <li><strong>Normalisation</strong> : Recherche insensible aux accents et casse</li>
+                    <li><strong>Détails complets</strong> : Timestamp, patient, analyses modifiées, changement médecin</li>
+                </ul>`,
+        },
+        zoom: {
+          subtitle: "Zoom interactif sur ordonnance",
+          content: `Module JavaScript pour visualisation détaillée de l'image scannée.
+                <ul>
+                    <li><strong>Activation clic</strong> : Toggle zoom en cliquant sur l'image</li>
+                    <li><strong>Contrôles</strong> : Boutons +/−, flèches directionnelles, reset, centrage</li>
+                    <li><strong>Molette souris</strong> : Zoom progressif min 50% → max 500%</li>
+                    <li><strong>Drag & drop</strong> : Déplacement image zoomée avec la souris (pan)</li>
+                </ul>`,
+        },
+        security: {
+          subtitle: "Authentification et sécurité",
+          content: `Protection de l'application et des données sensibles.
+                <ul>
+                    <li><strong>Flask-Login</strong> : Gestion sessions utilisateurs avec cookies sécurisés</li>
+                    <li><strong>Hachage mots de passe</strong> : Bcrypt pour stockage sécurisé (pas de plaintext)</li>
+                    <li><strong>Timeout inactivité</strong> : Déconnexion auto après 30 min (configurable)</li>
+                    <li><strong>HTTPS only</strong> : Cookies Secure, SameSite=Lax, HttpOnly</li>
+                </ul>`,
+        },
+        login: {
+          subtitle: "Authentification multi-sites",
+          content: `Page de connexion avec sélection du site d'accès.
+                <ul>
+                    <li><strong>Choix du site</strong> : Dropdown avec sites autorisés par utilisateur</li>
+                    <li><strong>Validation</strong> : Vérification username/password + droits d'accès au site</li>
+                    <li><strong>Redirection next</strong> : Retour à l'URL d'origine après login (whitelist sécurisée)</li>
+                    <li><strong>Messages d'erreur</strong> : Feedback clair (identifiants incorrects, accès refusé)</li>
+                </ul>`,
+        },
+        session: {
+          subtitle: "Gestion des sessions utilisateur",
+          content: `Suivi de l'activité utilisateur avec Flask sessions.
+                <ul>
+                    <li><strong>Cookie session</strong> : Chiffré avec SECRET_KEY Flask (token_hex 32 bytes)</li>
+                    <li><strong>Permanent session</strong> : Durée de vie 1h, renouvelée à chaque requête</li>
+                    <li><strong>last_activity</strong> : Timestamp mis à jour pour détection inactivité</li>
+                    <li><strong>Invalidation</strong> : session.clear() au logout ou timeout</li>
+                </ul>`,
+        },
+        timeout: {
+          subtitle: "Détection et déconnexion sur inactivité",
+          content: `Sécurité additionnelle contre sessions abandonnées.
+                <ul>
+                    <li><strong>Before_request</strong> : Hook Flask vérifiant temps écoulé depuis last_activity</li>
+                    <li><strong>Seuil 30 min</strong> : Configurable via INACTIVITY_TIMEOUT</li>
+                    <li><strong>Logout auto</strong> : Appel logout_user() + redirect vers login avec ?timeout=1</li>
+                    <li><strong>API 401</strong> : Réponse JSON unauthorized pour requêtes AJAX</li>
+                </ul>`,
+        },
+        deploy: {
+          subtitle: "Déploiement en production",
+          content: `Infrastructure pour exploitation en environnement réel.
+                <ul>
+                    <li><strong>WSGI server</strong> : Gunicorn avec workers multiples (non-bloquant)</li>
+                    <li><strong>Reverse proxy</strong> : Nginx/Apache devant Gunicorn (HTTPS, load balancing)</li>
+                    <li><strong>Logs</strong> : Rotation avec logging Python + journalctl systemd</li>
+                    <li><strong>Supervision</strong> : Systemd service + restart auto en cas de crash</li>
+                </ul>`,
+        },
+        gunicorn: {
+          subtitle: "Serveur WSGI Python",
+          content: `Gunicorn pour servir l'application Flask en production.
+                <ul>
+                    <li><strong>Workers</strong> : Processus multiples (CPU cores × 2 + 1 recommandé)</li>
+                    <li><strong>Bind socket</strong> : Unix socket ou TCP (127.0.0.1:8000) selon reverse proxy</li>
+                    <li><strong>Timeout</strong> : Limite temps réponse (30s défaut, ajustable pour traitements longs)</li>
+                    <li><strong>Graceful reload</strong> : HUP signal pour redémarrage sans coupure</li>
+                </ul>`,
+        },
+        proxy: {
+          subtitle: "Reverse proxy HTTPS",
+          content: `Nginx ou Apache devant Gunicorn pour gestion HTTPS et caching.
+                <ul>
+                    <li><strong>Terminaison SSL</strong> : Certificat Let's Encrypt (renouvellement auto)</li>
+                    <li><strong>Headers X-Forwarded</strong> : Proto/Host/Port transmis à Flask via ProxyFix</li>
+                    <li><strong>Cache statique</strong> : Assets CSS/JS/images servis directement par Nginx</li>
+                    <li><strong>Compression</strong> : Gzip sur réponses texte pour économie bande passante</li>
+                </ul>`,
+        },
+        sftp: {
+          subtitle: "Export vers serveur SFTP distant",
+          content: `Transmission automatique des prescriptions validées au laboratoire.
+                <ul>
+                    <li><strong>Dossier OUT</strong> : /SFTP/PAD/OUT/ monté via fstab ou sshfs</li>
+                    <li><strong>Thread asynchrone</strong> : Copie fichiers sans bloquer réponse HTTP</li>
+                    <li><strong>Vérification présence</strong> : Timeout 10s pour s'assurer fichiers bien écrits</li>
+                    <li><strong>Cleanup</strong> : Suppression fichiers import_<site>/ après export réussi</li>
+                </ul>`,
+        },
+      };
+
+      let currentZoom = 1;
+      let currentX = 0;
+      let currentY = 0;
+      let selectedNode = null;
+
+      function updateTransform() {
+        const mindmap = document.getElementById("mindmap");
+        mindmap.style.transform = `translate(${currentX}px, ${currentY}px) scale(${currentZoom})`;
+      }
+
+      function zoomMap(direction) {
+        if (direction === "in") {
+          currentZoom = Math.min(currentZoom + 0.1, 2);
+        } else {
+          currentZoom = Math.max(currentZoom - 0.1, 0.3);
+        }
+        updateTransform();
+      }
+
+      function moveMap(direction) {
+        const step = 50;
+        switch (direction) {
+          case "up":
+            currentY += step;
+            break;
+          case "down":
+            currentY -= step;
+            break;
+          case "left":
+            currentX += step;
+            break;
+          case "right":
+            currentX -= step;
+            break;
+        }
+        updateTransform();
+      }
+
+      function resetView() {
+        currentZoom = 1;
+        currentX = 0;
+        currentY = 0;
+        updateTransform();
+      }
+
+      function drawConnections() {
+        const svg = document.getElementById("svg");
+
+        let maxX = 0,
+          maxY = 0;
+        nodes.forEach((node) => {
+          maxX = Math.max(maxX, node.x + 200);
+          maxY = Math.max(maxY, node.y + 200);
+        });
+
+        svg.setAttribute("width", maxX);
+        svg.setAttribute("height", maxY);
+
+        connections.forEach((conn) => {
+          const fromNode = nodes.find((n) => n.id === conn.from);
+          const toNode = nodes.find((n) => n.id === conn.to);
+          const line = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "line"
+          );
+          line.setAttribute("x1", fromNode.x);
+          line.setAttribute("y1", fromNode.y);
+          line.setAttribute("x2", toNode.x);
+          line.setAttribute("y2", toNode.y);
+          line.setAttribute("stroke", "#cbd5e1");
+          line.setAttribute("stroke-width", "2");
+          line.setAttribute("opacity", "0.6");
+          svg.appendChild(line);
+        });
+      }
+
+      function createNodes() {
+        const container = document.getElementById("nodes");
+        nodes.forEach((node) => {
+          const div = document.createElement("div");
+          div.className = `node ${node.size} ${node.color}`;
+          div.textContent = node.label;
+          div.setAttribute("data-id", node.id);
+
+          const sizes = { large: 85, medium: 70, small: 57.5 };
+          const size = sizes[node.size];
+
+          div.style.left = node.x - size + "px";
+          div.style.top = node.y - size + "px";
+
+          div.onclick = () => showDescription(node.id);
+          container.appendChild(div);
+        });
+      }
+
+      function showDescription(nodeId) {
+        document
+          .querySelectorAll(".node")
+          .forEach((n) => n.classList.remove("selected"));
+
+        selectedNode = nodeId;
+        const nodeElement = document.querySelector(`[data-id="${nodeId}"]`);
+        if (nodeElement) {
+          nodeElement.classList.add("selected");
+        }
+
+        const desc = descriptions[nodeId];
+        document.getElementById("descTitle").textContent = nodes.find(
+          (n) => n.id === nodeId
+        ).label;
+        document.getElementById("descSubtitle").textContent = desc.subtitle;
+        document.getElementById("descText").innerHTML = desc.content;
+        document.getElementById("descriptionBox").classList.add("active");
+      }
+
+      function closeDescription() {
+        document.getElementById("descriptionBox").classList.remove("active");
+        if (selectedNode) {
+          document
+            .querySelector(`[data-id="${selectedNode}"]`)
+            ?.classList.remove("selected");
+          selectedNode = null;
+        }
+      }
+
+      drawConnections();
+      createNodes();
+    </script>
+  </body>
+</html>

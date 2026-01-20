@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Dashboard en Vanilla JavaScript</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 1.2em;
+            margin-bottom: 50px;
+        }
+        
+        .hero-box {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            text-align: center;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .hero-box strong {
+            font-size: 1.4em;
+            display: block;
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2em;
+            color: #1e293b;
+            margin: 50px 0 30px 0;
+            font-weight: bold;
+        }
+        
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .component-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #3b82f6;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .component-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .component-card.modules {
+            border-left-color: #06b6d4;
+        }
+        
+        .component-card.components {
+            border-left-color: #10b981;
+        }
+        
+        .component-card.styles {
+            border-left-color: #f59e0b;
+        }
+        
+        .component-card.state {
+            border-left-color: #8b5cf6;
+        }
+        
+        .component-card.routing {
+            border-left-color: #ec4899;
+        }
+        
+        .component-card.data {
+            border-left-color: #6366f1;
+        }
+        
+        .component-card.a11y {
+            border-left-color: #14b8a6;
+        }
+        
+        .component-card.tests {
+            border-left-color: #84cc16;
+        }
+        
+        .component-card.build {
+            border-left-color: #f97316;
+        }
+        
+        .component-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .component-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .component-description {
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .component-tech {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        .component-tech strong {
+            color: #1e293b;
+        }
+        
+        .flow-diagram {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .flow-box {
+            flex: 1;
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .flow-box.highlight {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+        }
+        
+        .flow-arrow {
+            font-size: 2em;
+            color: #64748b;
+        }
+        
+        .decision-table {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .decision-table h3 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .decision-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .decision-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .decision-box.good {
+            border-left: 5px solid #10b981;
+        }
+        
+        .decision-box.warning {
+            border-left: 5px solid #f59e0b;
+        }
+        
+        .decision-box h4 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .decision-box.good h4 {
+            color: #059669;
+        }
+        
+        .decision-box.warning h4 {
+            color: #d97706;
+        }
+        
+        .decision-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .decision-box li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+        
+        .decision-box li:last-child {
+            border-bottom: none;
+        }
+        
+        .decision-box li:before {
+            content: "• ";
+            color: #3b82f6;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .folder-structure {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        
+        .folder-structure .folder {
+            color: #fbbf24;
+        }
+        
+        .folder-structure .file {
+            color: #60a5fa;
+        }
+        
+        .folder-structure .comment {
+            color: #9ca3af;
+        }
+        
+        .checklist {
+            background: linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #10b981;
+        }
+        
+        .checklist h2 {
+            color: #065f46;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+        }
+        
+        .checklist li:before {
+            content: "✅";
+            margin-right: 12px;
+            font-size: 1.2em;
+        }
+        
+        .summary-box {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid #8b5cf6;
+        }
+        
+        .summary-box h2 {
+            color: #5b21b6;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .summary-box p {
+            color: #1e293b;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .legend-item h3 {
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .legend-item p {
+            color: #475569;
+            line-height: 1.6;
+        }
+        
+        .code-example {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        
+        .warning-banner {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 5px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .warning-banner strong {
+            color: #92400e;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .warning-banner p {
+            color: #78350f;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .section-title {
+                font-size: 1.5em;
+            }
+            
+            .architecture-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .decision-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Architecture Dashboard en Vanilla JavaScript</h1>
+        <p class="subtitle">Structure complète et bonnes pratiques pour un dashboard sans framework</p>
+        
+        <div class="hero-box">
+            <strong>🎯 Vanilla JS = Simple, Rapide, Contrôlable</strong>
+            <p>Un dashboard en HTML/CSS/JS pur est parfaitement viable pour des projets petits à moyens (1-5 vues, <30 composants).<br>
+            L'important : adopter une architecture claire dès le départ.</p>
+        </div>
+
+        <!-- Décision : Quand choisir Vanilla ? -->
+        <div class="decision-table">
+            <h3>🤔 Quand choisir Vanilla JavaScript ?</h3>
+            <div class="decision-grid">
+                <div class="decision-box good">
+                    <h4>✅ Vanilla est un bon choix si :</h4>
+                    <ul>
+                        <li>1-5 vues principales, moins de 30 composants UI</li>
+                        <li>Données modestes (quelques milliers de lignes max)</li>
+                        <li>Petite équipe (1-3 devs) ou projet solo</li>
+                        <li>Besoin de chargement ultra-léger</li>
+                        <li>Logique d'état simple, peu de workflows complexes</li>
+                        <li>Mise en production rapide</li>
+                    </ul>
+                </div>
+                
+                <div class="decision-box warning">
+                    <h4>⚠️ Considérer un framework si :</h4>
+                    <ul>
+                        <li>Nombreux écrans et état imbriqué complexe</li>
+                        <li>Très grands tableaux (>10k lignes, virtualisation)</li>
+                        <li>Temps réel intensif avec multiples sources</li>
+                        <li>Équipe >3 devs (conventions et tooling)</li>
+                        <li>Internationalisation et theming avancé</li>
+                        <li>Accessibilité à grande échelle</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture Vanilla -->
+        <h2 class="section-title">🧱 Les 9 Piliers de l'Architecture Vanilla</h2>
+        
+        <div class="architecture-grid">
+            <!-- 1. Modules ES -->
+            <div class="component-card modules">
+                <div class="component-icon">📦</div>
+                <div class="component-title">1. Modules ES</div>
+                <div class="component-description">
+                    Séparez votre code en fichiers distincts selon les fonctionnalités. Plus de fichier monolithique !
+                </div>
+                <div class="component-tech">
+                    <strong>Méthode :</strong> import/export<br>
+                    <strong>Organisation :</strong> Un fichier par page/feature<br>
+                    <strong>Exemple :</strong> auth.js, dashboard.js, api.js
+                </div>
+            </div>
+
+            <!-- 2. Composants réutilisables -->
+            <div class="component-card components">
+                <div class="component-icon">🧩</div>
+                <div class="component-title">2. Composants Réutilisables</div>
+                <div class="component-description">
+                    Créez des blocs UI réutilisables pour éviter la duplication de code.
+                </div>
+                <div class="component-tech">
+                    <strong>Options :</strong><br>
+                    • Web Components (Custom Elements)<br>
+                    • Fonctions render() simples<br>
+                    • Templates &lt;template&gt; natifs<br>
+                    <strong>Exemples :</strong> UserCard, Button, Alert
+                </div>
+            </div>
+
+            <!-- 3. Variables CSS -->
+            <div class="component-card styles">
+                <div class="component-icon">🎨</div>
+                <div class="component-title">3. Variables CSS & Thèmes</div>
+                <div class="component-description">
+                    Centralisez vos couleurs et styles dans des variables CSS pour faciliter la maintenance.
+                </div>
+                <div class="component-tech">
+                    <strong>Méthode :</strong> CSS Custom Properties<br>
+                    <strong>Avantage :</strong> Dark mode facile<br>
+                    <strong>Exemple :</strong> --primary-color, --bg-color
+                </div>
+            </div>
+
+            <!-- 4. State Management -->
+            <div class="component-card state">
+                <div class="component-icon">💾</div>
+                <div class="component-title">4. Gestion d'État Légère</div>
+                <div class="component-description">
+                    Un petit système pour mémoriser les données importantes (utilisateur, filtres, etc.).
+                </div>
+                <div class="component-tech">
+                    <strong>Approches :</strong><br>
+                    • Objet JS simple avec EventTarget<br>
+                    • CustomEvent pour broadcast<br>
+                    • Pas besoin de Redux !
+                </div>
+            </div>
+
+            <!-- 5. Routing -->
+            <div class="component-card routing">
+                <div class="component-icon">🧭</div>
+                <div class="component-title">5. Navigation (Routing)</div>
+                <div class="component-description">
+                    Changez de page sans recharger tout le site pour une expérience fluide.
+                </div>
+                <div class="component-tech">
+                    <strong>Options :</strong><br>
+                    • Hash routing : #/dashboard<br>
+                    • History API : pushState()<br>
+                    <strong>Résultat :</strong> SPA (Single Page App)
+                </div>
+            </div>
+
+            <!-- 6. API & Data -->
+            <div class="component-card data">
+                <div class="component-icon">🌐</div>
+                <div class="component-title">6. Récupération de Données</div>
+                <div class="component-description">
+                    Utilisez fetch() natif pour communiquer avec votre backend.
+                </div>
+                <div class="component-tech">
+                    <strong>Méthode :</strong> fetch() + async/await<br>
+                    <strong>Cache :</strong> localStorage / indexedDB<br>
+                    <strong>Contrôle :</strong> AbortController
+                </div>
+            </div>
+
+            <!-- 7. Accessibilité -->
+            <div class="component-card a11y">
+                <div class="component-icon">♿</div>
+                <div class="component-title">7. Accessibilité (A11y)</div>
+                <div class="component-description">
+                    Rendez votre dashboard utilisable par tous, y compris les personnes en situation de handicap.
+                </div>
+                <div class="component-tech">
+                    <strong>Bonnes pratiques :</strong><br>
+                    • Balises sémantiques HTML<br>
+                    • Rôles ARIA appropriés<br>
+                    • Navigation au clavier<br>
+                    • Contrastes suffisants
+                </div>
+            </div>
+
+            <!-- 8. Tests -->
+            <div class="component-card tests">
+                <div class="component-icon">🧪</div>
+                <div class="component-title">8. Tests & Qualité</div>
+                <div class="component-description">
+                    Testez votre code pour éviter les bugs et maintenir la qualité.
+                </div>
+                <div class="component-tech">
+                    <strong>Outils simples :</strong><br>
+                    • Tests unitaires (Vitest)<br>
+                    • Lighthouse (Chrome DevTools)<br>
+                    • axe pour l'accessibilité
+                </div>
+            </div>
+
+            <!-- 9. Build (optionnel) -->
+            <div class="component-card build">
+                <div class="component-icon">⚡</div>
+                <div class="component-title">9. Optimisation (facultatif)</div>
+                <div class="component-description">
+                    Optimisez votre code pour un chargement plus rapide.
+                </div>
+                <div class="component-tech">
+                    <strong>Outils :</strong> Vite, Parcel<br>
+                    <strong>Actions :</strong><br>
+                    • Minification<br>
+                    • Transpilation<br>
+                    • Code splitting
+                </div>
+            </div>
+        </div>
+
+        <!-- Flow du Dashboard -->
+        <h2 class="section-title">🔄 Flow d'un Dashboard Vanilla</h2>
+        
+        <div class="flow-diagram">
+            <div class="flow-row">
+                <div class="flow-box">
+                    <strong>1. Chargement Initial</strong><br>
+                    index.html + main.js
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box highlight">
+                    <strong>2. Router</strong><br>
+                    Détecte la route (#/dashboard)
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">
+                    <strong>3. Authentification</strong><br>
+                    Vérifie le token/session
+                </div>
+            </div>
+            
+            <div class="flow-row">
+                <div class="flow-box">
+                    <strong>4. Fetch API</strong><br>
+                    Récupère les données backend
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box highlight">
+                    <strong>5. State Update</strong><br>
+                    Met à jour le store
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">
+                    <strong>6. Render</strong><br>
+                    Affiche les composants
+                </div>
+            </div>
+            
+            <div class="flow-row">
+                <div class="flow-box">
+                    <strong>7. Interactions</strong><br>
+                    Événements utilisateur
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box highlight">
+                    <strong>8. Update</strong><br>
+                    Modification du state
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">
+                    <strong>9. Re-render</strong><br>
+                    Actualisation UI
+                </div>
+            </div>
+        </div>
+
+        <!-- Structure de fichiers -->
+        <h2 class="section-title">📂 Structure de Fichiers Recommandée</h2>
+        
+        <div class="folder-structure">
+/dashboard-project
+├── <span class="folder">/src</span>
+│   ├── <span class="folder">/components</span>     <span class="comment">← Composants réutilisables</span>
+│   │   ├── <span class="file">UserCard.js</span>
+│   │   ├── <span class="file">DataTable.js</span>
+│   │   ├── <span class="file">Chart.js</span>
+│   │   └── <span class="file">Button.js</span>
+│   │
+│   ├── <span class="folder">/pages</span>          <span class="comment">← Vues principales</span>
+│   │   ├── <span class="file">Dashboard.js</span>
+│   │   ├── <span class="file">Analytics.js</span>
+│   │   ├── <span class="file">Reports.js</span>
+│   │   └── <span class="file">Settings.js</span>
+│   │
+│   ├── <span class="folder">/services</span>       <span class="comment">← Logique métier</span>
+│   │   ├── <span class="file">api.js</span>        <span class="comment">← Appels fetch</span>
+│   │   ├── <span class="file">auth.js</span>       <span class="comment">← Authentification</span>
+│   │   └── <span class="file">storage.js</span>    <span class="comment">← Cache local</span>
+│   │
+│   ├── <span class="folder">/styles</span>         <span class="comment">← CSS & thèmes</span>
+│   │   ├── <span class="file">tokens.css</span>    <span class="comment">← Variables CSS</span>
+│   │   ├── <span class="file">theme.css</span>     <span class="comment">← Dark/Light mode</span>
+│   │   └── <span class="file">components.css</span>
+│   │
+│   ├── <span class="folder">/utils</span>          <span class="comment">← Helpers</span>
+│   │   ├── <span class="file">router.js</span>     <span class="comment">← Navigation</span>
+│   │   ├── <span class="file">store.js</span>      <span class="comment">← State management</span>
+│   │   └── <span class="file">helpers.js</span>    <span class="comment">← Fonctions utiles</span>
+│   │
+│   └── <span class="file">main.js</span>           <span class="comment">← Point d'entrée</span>
+│
+├── <span class="file">index.html</span>            <span class="comment">← Page principale</span>
+├── <span class="file">package.json</span>          <span class="comment">← Dépendances (optionnel)</span>
+└── <span class="file">vite.config.js</span>        <span class="comment">← Build (optionnel)</span>
+        </div>
+
+        <!-- Exemples de code -->
+        <h2 class="section-title">💻 Exemples de Code Clés</h2>
+        
+        <div class="legend-grid">
+            <div class="legend-item">
+                <h3>📦 Module ES (auth.js)</h3>
+                <div class="code-example">
+// Exporter une fonction
+export function login(user, pass) {
+  return fetch('/api/auth', {
+    method: 'POST',
+    body: JSON.stringify({user, pass})
+  })
+}
+
+// Dans main.js
+import { login } from './auth.js'
+                </div>
+            </div>
+            
+            <div class="legend-item">
+                <h3>🎨 Variables CSS</h3>
+                <div class="code-example">
+:root {
+  --primary: #3b82f6;
+  --bg: #ffffff;
+  --text: #1e293b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e293b;
+    --text: #f1f5f9;
+  }
+}
+
+button {
+  background: var(--primary);
+  color: var(--text);
+}
+                </div>
+            </div>
+            
+            <div class="legend-item">
+                <h3>💾 State Management Simple</h3>
+                <div class="code-example">
+class Store extends EventTarget {
+  constructor() {
+    super()
+    this.state = {}
+  }
+  
+  setState(key, value) {
+    this.state[key] = value
+    this.dispatchEvent(
+      new CustomEvent('change', {
+        detail: { key, value }
+      })
+    )
+  }
+  
+  getState(key) {
+    return this.state[key]
+  }
+}
+
+const store = new Store()
+export default store
+                </div>
+            </div>
+            
+            <div class="legend-item">
+                <h3>🧭 Router Hash Simple</h3>
+                <div class="code-example">
+const routes = {
+  '/': HomePage,
+  '/dashboard': DashboardPage,
+  '/analytics': AnalyticsPage
+}
+
+function router() {
+  const path = window.location.hash
+    .slice(1) || '/'
+  const page = routes[path]
+  if (page) page.render()
+}
+
+window.addEventListener(
+  'hashchange', router
+)
+router() // Init
+                </div>
+            </div>
+            
+            <div class="legend-item">
+                <h3>🌐 Fetch API avec Cache</h3>
+                <div class="code-example">
+async function fetchData(url) {
+  // Check cache
+  const cached = localStorage
+    .getItem(url)
+  if (cached) {
+    return JSON.parse(cached)
+  }
+  
+  // Fetch
+  const res = await fetch(url)
+  const data = await res.json()
+  
+  // Cache
+  localStorage.setItem(
+    url, JSON.stringify(data)
+  )
+  
+  return data
+}
+                </div>
+            </div>
+            
+            <div class="legend-item">
+                <h3>🧩 Composant Simple</h3>
+                <div class="code-example">
+// Fonction render
+export function UserCard(user) {
+  return `
+    &lt;div class="user-card"&gt;
+      &lt;img src="${user.avatar}"&gt;
+      &lt;h3&gt;${user.name}&lt;/h3&gt;
+      &lt;p&gt;${user.role}&lt;/p&gt;
+    &lt;/div&gt;
+  `
+}
+
+// Utilisation
+document.querySelector('#app')
+  .innerHTML = UserCard(user)
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableaux & Graphiques -->
+        <div class="warning-banner">
+            <strong>📊 Tableaux & Graphiques : Choisissez des Micro-Libs</strong>
+            <p>
+                Pour les tableaux complexes et graphiques, utilisez des bibliothèques spécialisées légères comme 
+                <strong>Chart.js</strong>, <strong>D3.js</strong>, ou <strong>Plotly</strong> pour les visualisations, 
+                et des libs de tableaux avec tri/filtre pour les données tabulaires. 
+                Ces outils ne compromettent pas votre approche vanilla !
+            </p>
+        </div>
+
+        <!-- Checklist -->
+        <div class="checklist">
+            <h2>✅ Checklist de Réussite</h2>
+            <ul>
+                <li><strong>Responsive Design</strong> : Grid/Flexbox pour tous les écrans</li>
+                <li><strong>Thème Clair/Sombre</strong> : Variables CSS + media query</li>
+                <li><strong>Accessibilité</strong> : Sémantique HTML + ARIA + navigation clavier</li>
+                <li><strong>Performance</strong> : Lazy-load des vues, éviter DOM thrashing</li>
+                <li><strong>State Management</strong> : Store simple avec EventTarget</li>
+                <li><strong>Routing</strong> : Hash ou History API pour navigation fluide</li>
+                <li><strong>API Layer</strong> : fetch() centralisé avec gestion d'erreurs</li>
+                <li><strong>Cache Local</strong> : localStorage ou indexedDB pour données fréquentes</li>
+                <li><strong>Feedbacks UI</strong> : Skeletons, toasts, validations en ligne</li>
+                <li><strong>Tests</strong> : Unitaires + Lighthouse pour la qualité</li>
+                <li><strong>Sécurité</strong> : Validation client ET serveur, protection XSS</li>
+                <li><strong>Build Optionnel</strong> : Vite/Parcel pour optimisation</li>
+            </ul>
+        </div>
+
+        <!-- Micro-libs utiles -->
+        <h2 class="section-title">🧰 Micro-Libs Vanilla-Friendly (optionnelles)</h2>
+        
+        <div class="legend-grid">
+            <div class="legend-item">
+                <h3>📅 Day.js</h3>
+                <p>Manipulation de dates légère (alternative à Moment.js). Parfait pour formater des timestamps.</p>
+            </div>
+            
+            <div class="legend-item">
+                <h3>📊 Chart.js</h3>
+                <p>Graphiques simples et élégants. Idéal pour les dashboards avec visualisations basiques.</p>
+            </div>
+            
+            <div class="legend-item">
+                <h3>🎨 D3.js</h3>
+                <p>Visualisations de données avancées et personnalisables. Pour des besoins plus complexes.</p>
+            </div>
+            
+            <div class="legend-item">
+                <h3>🔄 SortableJS</h3>
+                <p>Drag & drop natif pour listes et tableaux réorganisables.</p>
+            </div>
+            
+            <div class="legend-item">
+                <h3>💾 FileSaver.js</h3>
+                <p>Exports de fichiers côté client (CSV, PDF, etc.).</p>
+            </div>
+            
+            <div class="legend-item">
+                <h3>⚡ Alpine.js</h3>
+                <p>Réactivité légère dans le HTML. Alternative minimaliste à Vue pour petites interactions.</p>
+            </div>
+        </div>
+
+        <!-- Résumé -->
+        <div class="summary-box">
+            <h2>🎯 En Résumé : Architecture Vanilla Réussie</h2>
+            <p>
+                <strong>1.</strong> Modules ES pour l'organisation →
+                <strong>2.</strong> Composants réutilisables →
+                <strong>3.</strong> Variables CSS pour le thème →
+                <strong>4.</strong> State management léger →
+                <strong>5.</strong> Routing pour la navigation →
+                <strong>6.</strong> fetch() pour les données →
+                <strong>7.</strong> Accessibilité dès le départ →
+                <strong>8.</strong> Tests avec outils simples →
+                <strong>9.</strong> Build optionnel pour optimiser
+            </p>
+            <p style="margin-top: 20px; font-size: 1.2em;">
+                <strong>🔑 Le principe clé :</strong> Structure simple + conventions claires = Code maintenable sans framework !
+            </p>
+        </div>
+    </div>
+</body>
+</html>

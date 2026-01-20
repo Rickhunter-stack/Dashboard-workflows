@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Info-Maps - Mind Maps & Infographies</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="info-maps-styles.css" />
+  </head>
+
+  <body>
+    <div id="home-view">
+      <h1>🗺️ Info-Maps</h1>
+      <p class="subtitle">Mind Maps & Infographies Éducatives</p>
+
+      <div class="info-section">
+        <button class="info-toggle" onclick="toggleInfo()">
+          Informations sur l'outil ▼
+        </button>
+        <div id="infoContent" class="info-content">
+          <p>
+            <strong>📍 Deux outils en un :</strong><br />
+            <strong>Mind Maps :</strong> Créez des cartes mentales pour organiser vos idées de manière visuelle et structurée.<br />
+            <strong>Infographies :</strong> Créez des infographies éducatives pour expliquer des concepts complexes avec des analogies simples.
+          </p>
+          <p>
+            <strong>Conseils d'utilisation :</strong><br />
+            • Choisissez le type de création que vous souhaitez<br />
+            • Personnalisez le design et le contenu<br />
+            • Exportez en PNG, SVG ou HTML<br />
+            • Importez vos créations existantes
+          </p>
+        </div>
+      </div>
+
+      <!-- Sélecteur de type -->
+      <div class="type-selector">
+        <button class="type-btn active" data-type="mindmap" onclick="switchCreationType('mindmap')">
+          🧠 Mind Maps
+        </button>
+        <button class="type-btn" data-type="infographie" onclick="switchCreationType('infographie')">
+          📊 Infographies
+        </button>
+      </div>
+
+      <!-- Actions pour Mind Maps -->
+      <div id="mindmap-actions" class="home-actions">
+        <button class="create-btn" onclick="createMindmap()">
+          ➕ Créer une Mind Map
+        </button>
+        <button class="import-btn" onclick="document.getElementById('mindmap-file-import').click()">
+          📂 Importer Mind Map
+        </button>
+        <input
+          type="file"
+          id="mindmap-file-import"
+          accept=".html"
+          style="display: none"
+          onchange="importMindmapFile(event)"
+        />
+      </div>
+
+      <!-- Actions pour Infographies -->
+      <div id="infographie-actions" class="home-actions" style="display: none">
+        <button class="create-btn" onclick="createInfographie()">
+          ➕ Créer une Infographie
+        </button>
+        <button class="import-btn" onclick="document.getElementById('infographie-file-import').click()">
+          📂 Importer Infographie
+        </button>
+        <input
+          type="file"
+          id="infographie-file-import"
+          accept=".html"
+          style="display: none"
+          onchange="importInfographieFile(event)"
+        />
+      </div>
+
+      <!-- Bibliothèque -->
+      <div class="library-tabs">
+        <button class="library-tab" data-tab="mindmap-created" onclick="switchLibraryTab('mindmap-created')">
+          🧠 Mes Mind Maps (0)
+        </button>
+        <button class="library-tab" data-tab="mindmap-imported" onclick="switchLibraryTab('mindmap-imported')">
+          📚 Mind Maps Importées (0)
+        </button>
+        <button class="library-tab" data-tab="infographie-created" onclick="switchLibraryTab('infographie-created')">
+          📊 Mes Infographies (0)
+        </button>
+        <button class="library-tab active" data-tab="infographie-imported" onclick="switchLibraryTab('infographie-imported')">
+          📚 Infographies Importées (0)
+        </button>
+      </div>
+
+      <div id="mindmap-created-list" class="content-grid library-content" style="display: none"></div>
+      <div id="mindmap-imported-list" class="content-grid library-content" style="display: none"></div>
+      <div id="infographie-created-list" class="content-grid library-content" style="display: none"></div>
+      <div id="infographie-imported-list" class="content-grid library-content active"></div>
+    </div>
+
+    <!-- Vue Générateur Mind Map -->
+    <div id="mindmap-generator-view" style="display: none">
+      <div class="generator-header">
+        <button class="back-btn" onclick="backToHome()">← Retour</button>
+        <input type="text" id="mindmap-title" class="title-input" placeholder="Titre de la mind map" />
+        <div class="generator-actions">
+          <button class="save-btn" onclick="saveMindmap()">💾 Sauvegarder</button>
+          <button class="export-btn" onclick="showExportMenu('mindmap')">📥 Exporter</button>
+          <button class="delete-btn" onclick="deleteCurrentMindmap()">🗑️ Supprimer</button>
+        </div>
+      </div>
+
+      <div class="controls-panel">
+        <div class="control-group">
+          <label>Thème :</label>
+          <div class="theme-selector" id="mindmap-theme-selector"></div>
+        </div>
+        <div class="control-group">
+          <label>Connexions :</label>
+          <div class="connection-selector">
+            <button class="connection-btn active" onclick="setConnectionStyle('curved')">Courbes</button>
+            <button class="connection-btn" onclick="setConnectionStyle('straight')">Droites</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Zoom :</label>
+          <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomOut()">−</button>
+            <span id="zoom-level">100%</span>
+            <button class="zoom-btn" onclick="zoomIn()">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-container">
+        <svg id="mindmap-canvas" class="canvas"></svg>
+      </div>
+
+      <div class="action-panel">
+        <button class="action-btn" onclick="addBranch()">➕ Ajouter Branche</button>
+        <button class="action-btn" onclick="centerView()">🎯 Centrer</button>
+      </div>
+    </div>
+
+    <!-- Vue Générateur Infographie -->
+    <div id="infographie-generator-view" style="display: none">
+      <div class="generator-header">
+        <button class="back-btn" onclick="backToHome()">← Retour</button>
+        <input type="text" id="infographie-title" class="title-input" placeholder="Titre de l'infographie" />
+        <div class="generator-actions">
+          <button class="save-btn" onclick="saveInfographie()">💾 Sauvegarder</button>
+          <button class="export-btn" onclick="showExportMenu('infographie')">📥 Exporter</button>
+          <button class="delete-btn" onclick="deleteCurrentInfographie()">🗑️ Supprimer</button>
+        </div>
+      </div>
+
+      <div class="controls-panel">
+        <div class="control-group">
+          <label>Palette :</label>
+          <div class="palette-selector" id="palette-selector"></div>
+        </div>
+        <div class="control-group">
+          <label>Typographie :</label>
+          <div class="font-selector">
+            <button class="font-btn active" onclick="setFont('Inter')">Inter</button>
+            <button class="font-btn" onclick="setFont('Poppins')">Poppins</button>
+            <button class="font-btn" onclick="setFont('Roboto')">Roboto</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Layout :</label>
+          <div class="layout-selector">
+            <button class="layout-btn active" onclick="setLayout('vertical')">Vertical</button>
+            <button class="layout-btn" onclick="setLayout('horizontal')">Horizontal</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <div id="infographie-canvas" class="canvas">
+          <div class="infographie-header-section">
+            <input type="text" id="main-title" class="main-title-input" placeholder="Titre principal" />
+            <input type="text" id="subtitle" class="subtitle-input" placeholder="Sous-titre (optionnel)" />
+          </div>
+          <div id="steps-container" class="steps-container"></div>
+        </div>
+      </div>
+
+      <div class="action-panel">
+        <button class="action-btn" onclick="addStep()">➕ Ajouter Étape</button>
+        <button class="action-btn" onclick="previewInfographie()">👁️ Prévisualiser</button>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="subject-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <h2 id="modal-title">Créer une nouvelle création</h2>
+        <input type="text" id="subject-input" class="modal-input" placeholder="Sujet..." />
+        <button class="generate-btn" onclick="generateContent()">🚀 Générer</button>
+        <button class="modal-close-btn" onclick="closeSubjectModal()">Annuler</button>
+      </div>
+    </div>
+
+    <div id="export-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <h2>Exporter</h2>
+        <button class="export-option-btn" onclick="exportAsPNG()">🖼️ PNG</button>
+        <button class="export-option-btn" onclick="exportAsSVG()">📊 SVG</button>
+        <button class="export-option-btn" onclick="exportAsHTML()">📄 HTML</button>
+        <button class="modal-close-btn" onclick="closeExportMenu()">Fermer</button>
+      </div>
+    </div>
+
+    <div id="preview-modal" class="modal preview-modal" style="display: none">
+      <div class="preview-content">
+        <button class="preview-close-btn" onclick="closePreview()">✕</button>
+        <iframe id="preview-frame"></iframe>
+      </div>
+    </div>
+
+    <script src="info-maps-script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rappels</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="rappels-styles.css" />
+  </head>
+
+  <body>
+    <!--
+      README - RAPPELS
+      
+      🔔 Comment ajouter un lien dans index.html:
+      Dans la section <nav class="nav-buttons">, ajoutez:
+      <a href="#" class="nav-btn" id="btn-rappels" data-app="rappels">
+        🔔 Rappels
+      </a>
+      
+      Et dans l'objet appPaths du script:
+      'rappels': 'apps/rappels/rappels.html'
+      
+      ⚙️ Fonctionnalités:
+      - Ajouter/Supprimer des rappels facilement
+      - 3 boutons de couleur pour marquer la priorité (rouge, orange, vert)
+      - Paramétrer une date/heure pour chaque rappel
+      - Alertes configurables (1 jour avant, 1 heure avant, etc.)
+      
+      💾 Persistance des données:
+      Toutes les données sont sauvegardées automatiquement
+      dans le localStorage du navigateur sous la clé "rappelsData".
+    -->
+
+    <div class="rappels-container">
+      <header class="rappels-header">
+        <h1>🔔 Rappels</h1>
+        
+        <div class="header-actions">
+          <div class="filter-container">
+            <input
+              type="text"
+              id="filter-input"
+              class="filter-input"
+              placeholder="🔍 Filtrer les rappels..."
+              aria-label="Filtrer les rappels"
+            />
+          </div>
+          
+          <button class="btn-new-reminder" id="btn-new-reminder" aria-label="Ajouter un nouveau rappel">
+            ➕ Nouveau rappel
+          </button>
+        </div>
+      </header>
+
+      <div class="info-section">
+        <button class="info-toggle" id="info-toggle" aria-expanded="false">
+          Comment utiliser ▼
+        </button>
+        <div id="info-content" class="info-content">
+          <p>
+            <strong>🎯 Fonctionnalités:</strong><br />
+            • <strong>Ajouter des rappels:</strong> Cliquez sur "Nouveau rappel"<br />
+            • <strong>Éditer:</strong> Cliquez sur le texte d'un rappel pour le modifier<br />
+            • <strong>Date et heure:</strong> Cliquez sur l'icône 📅 pour paramétrer la date du rappel<br />
+            • <strong>Alertes:</strong> Configurez quand vous voulez être alerté (1h, 1j, 1 semaine avant)<br />
+            • <strong>Priorités:</strong> Utilisez les boutons colorés (● rouge = urgent, ● orange = important, ● vert = normal)<br />
+            • <strong>Supprimer:</strong> Cliquez sur l'icône 🗑️ pour supprimer un rappel<br />
+            • <strong>Filtrer:</strong> Utilisez la barre de recherche pour filtrer les rappels
+          </p>
+          <p>
+            <strong>⚠️ Notifications:</strong><br />
+            Les alertes s'affichent dans l'interface lorsque vous ouvrez l'application.<br />
+            Les rappels passés apparaissent en rouge pour attirer votre attention.
+          </p>
+        </div>
+      </div>
+
+      <main class="reminders-list" id="reminders-list" role="list" aria-label="Liste des rappels">
+        <!-- Les rappels seront générés ici par JavaScript -->
+      </main>
+    </div>
+
+    <script src="rappels-script.js"></script>
+  </body>
+</html>
