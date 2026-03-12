@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard IA - Outils de Productivité & Création</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="apps/shared/theme.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: var(--bg-gradient);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+      }
+
+      .layout {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        width: 240px;
+        min-height: 100vh;
+        background: rgba(5, 6, 18, 0.92);
+        border-right: 1px solid var(--border);
+        backdrop-filter: blur(var(--blur-strong));
+        padding: 0 0 16px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 20px 18px 18px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 6px;
+      }
+
+      .brand-orb {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: radial-gradient(
+            circle at 30% 30%,
+            rgba(255, 255, 255, 0.9),
+            transparent 55%
+          ),
+          radial-gradient(
+            circle at 70% 70%,
+            rgba(56, 189, 248, 0.9),
+            transparent 60%
+          );
+        box-shadow:
+          0 0 18px rgba(56, 189, 248, 0.9),
+          0 0 40px rgba(59, 130, 246, 0.5);
+      }
+
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .brand-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+
+      .brand-sub {
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-top: 2px;
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        padding: 4px 10px;
+        overflow-y: auto;
+      }
+
+      .nav-section {
+        font-size: 0.6rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(232, 234, 240, 0.28);
+        padding: 12px 6px 4px;
+        display: block;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.82);
+        cursor: pointer;
+        border: 1px solid transparent;
+        text-decoration: none;
+        margin-bottom: 4px;
+        transition:
+          background 0.15s,
+          color 0.15s,
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+
+      .nav-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        color: var(--muted);
+      }
+
+      .nav-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+
+      .nav-item.active {
+        background: rgba(108, 143, 255, 0.18);
+        color: #ffffff;
+        border-color: rgba(140, 170, 255, 0.45);
+        box-shadow:
+          inset 0 0 16px rgba(108, 143, 255, 0.1),
+          0 0 0 1px rgba(255, 255, 255, 0.05);
+      }
+
+      .main-shell {
+        flex: 1;
+        padding: 24px 28px;
+        max-width: calc(100vw - 240px);
+      }
+
+      .app-frame {
+        width: 100%;
+        border: none;
+        min-height: 100vh;
+        border-radius: 18px;
+        box-shadow: var(--shadow-md);
+        background: transparent;
+      }
+
+      @media (max-width: 900px) {
+        .sidebar {
+          width: 72px;
+        }
+
+        .brand-text {
+          display: none;
+        }
+
+        .main-shell {
+          max-width: calc(100vw - 72px);
+          padding: 18px 18px 24px;
+        }
+
+        .nav-item span.label {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-orb"></div>
+          <div class="brand-text">
+            <div class="brand-title">Dashboard</div>
+            <div class="brand-sub">Tasks Studio</div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <span class="nav-section">Navigation</span>
+          <a href="#" class="nav-item" id="btn-project" data-app="project">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="3" y="4" width="7" height="6" rx="1" />
+              <rect x="14" y="4" width="7" height="6" rx="1" />
+              <rect x="3" y="14" width="7" height="6" rx="1" />
+              <rect x="14" y="14" width="7" height="6" rx="1" />
+            </svg>
+            <span class="label">Gestion Projet</span>
+          </a>
+          <a href="#" class="nav-item" id="btn-workflow" data-app="workflow">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="5 3 19 12 5 21 5 3" />
+            </svg>
+            <span class="label">Workflows</span>
+          </a>
+          <a href="#" class="nav-item" id="btn-rappels" data-app="rappels">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M18 8a6 6 0 1 0-12 0c0 4-1.5 6-2 6h16c-.5 0-2-2-2-6Z" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span class="label">Rappels</span>
+          </a>
+          <a href="#" class="nav-item" id="btn-kanban" data-app="kanban">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="3" y="4" width="5" height="16" rx="1" />
+              <rect x="10" y="8" width="5" height="12" rx="1" />
+              <rect x="17" y="11" width="5" height="9" rx="1" />
+            </svg>
+            <span class="label">Kanban</span>
+          </a>
+          <a href="#" class="nav-item" id="btn-prompt" data-app="prompt">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5 20.5 7.5 9 19l-4 1 1-4 10.5-12.5Z" />
+            </svg>
+            <span class="label">Prompts</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="main-shell">
+        <iframe
+          id="app-frame"
+          class="app-frame"
+          src="apps/project/project.html"
+        ></iframe>
+      </main>
+    </div>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const app = urlParams.get("app") || "project";
+
+      const buttons = document.querySelectorAll(".nav-item");
+      const frame = document.getElementById("app-frame");
+
+      const appPaths = {
+        project: "apps/project/project.html",
+        workflow: "apps/workflow/workflow-generator.html",
+        rappels: "apps/rappels/rappels.html",
+        kanban: "apps/kanban-lite/kanban.html",
+        prompt: "apps/prompt/prompt.html",
+      };
+
+      function setActive(appName) {
+        buttons.forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.app === appName);
+        });
+
+        if (appPaths[appName]) {
+          frame.src = appPaths[appName];
+        }
+      }
+
+      setActive(app);
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const appName = btn.dataset.app;
+          window.history.pushState({}, "", "?app=" + appName);
+          setActive(appName);
+        });
+      });
+
+      window.addEventListener("popstate", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const app = urlParams.get("app") || "project";
+        setActive(app);
+      });
+
+      // La barre de navigation est maintenant toujours visible en haut de l'écran,
+      // plus besoin de zone de trigger ou de comportements de hover complexes.
+    </script>
+  </body>
+</html>

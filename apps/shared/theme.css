@@ -1,0 +1,120 @@
+/* Shared glassmorphic theme tokens (app-wide) */
+:root {
+  /* Palette inspirée du dashboard finances (Bioxa) */
+  --bg: #05060f;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(255, 255, 255, 0.18);
+  --text: #e8eaf0;
+  --muted: rgba(232, 234, 240, 0.45);
+  --muted-2: rgba(232, 234, 240, 0.70);
+
+  --accent: #6c8fff;
+  --accent-2: #a78bfa;
+  --accent-gradient: linear-gradient(135deg, var(--accent), var(--accent-2));
+  --accent-soft: rgba(108, 143, 255, 0.18);
+  --accent-soft-2: rgba(167, 139, 250, 0.16);
+
+  --green: #34d399;
+  --red: #f87171;
+  --amber: #fbbf24;
+
+  /* Compat layer pour les anciens tokens du dashboard workflows */
+  --bg-0: #05060f;
+  --bg-1: #05060f;
+  --bg-2: #05060f;
+  --bg-gradient: radial-gradient(
+      ellipse 60% 50% at 20% 10%,
+      rgba(108, 143, 255, 0.1) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 80% 80%,
+      rgba(95, 126, 36, 0.08) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 40% 30% at 60% 30%,
+      rgba(5, 53, 125, 0.06) 0%,
+      transparent 50%
+    ),
+    var(--bg);
+
+  --surface-0: rgba(255, 255, 255, 0.032);
+  --surface-1: var(--surface);
+  --surface-2: var(--surface-hover);
+  --surface-3: rgba(255, 255, 255, 0.10);
+
+  --border-0: var(--border);
+  --border-1: var(--border-active);
+  --border-2: rgba(255, 255, 255, 0.22);
+
+  /* Elevation + blur */
+  --blur: 20px;
+  --blur-strong: 24px;
+  --shadow-sm: 0 4px 18px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 12px 34px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 22px 70px rgba(0, 0, 0, 0.65);
+
+  /* Radius */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 16px;
+}
+
+html,
+body {
+  background: var(--bg-gradient);
+  color: var(--text);
+}
+
+/* Optional helpers (useful for future refactors) */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(var(--blur));
+  box-shadow: var(--shadow-sm);
+}
+
+.glass-strong {
+  background: var(--surface-hover);
+  border: 1px solid var(--border-active);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(var(--blur-strong));
+  box-shadow: var(--shadow-md);
+}
+
+.accent-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(79, 140, 255, 0.55);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(79, 140, 255, 0.75);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}

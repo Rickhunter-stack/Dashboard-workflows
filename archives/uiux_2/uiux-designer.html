@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UI/UX Designer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="uiux-styles.css" />
+  </head>
+
+  <body>
+    <!-- Vue d'accueil -->
+    <div id="home-view">
+      <h1>🎨 UI/UX Designer</h1>
+
+      <div class="info-section">
+        <button class="info-toggle" onclick="toggleInfo()">
+          Informations sur le designer ▼
+        </button>
+        <div id="infoContent" class="info-content">
+          <p>
+            <strong>Comment ça marche ?</strong><br />
+            Créez des spécifications UI/UX complètes pour vos projets. Définissez
+            votre design system, vos composants, votre layout et vos interactions.
+            Combinez ensuite avec vos workflows et prompts pour générer un brief
+            complet optimisé pour les LLM.
+          </p>
+          <p>
+            <strong>Sections disponibles :</strong><br />
+            • Design System : couleurs, typographie, espacements<br />
+            • Composants UI : définissez tous vos éléments d'interface<br />
+            • Layout & Navigation : structure et organisation<br />
+            • Interactions : animations et feedbacks<br />
+            • Identité visuelle : mood et références
+          </p>
+        </div>
+      </div>
+
+      <button class="create-project-btn" onclick="createNewProject()">
+        ➕ Nouveau Projet UI/UX
+      </button>
+
+      <div id="projects-list" class="projects-grid"></div>
+    </div>
+
+    <!-- Éditeur de projet -->
+    <div id="project-editor" style="display: none">
+      <div class="editor-header">
+        <button class="back-btn" onclick="backToHome()">← Retour</button>
+        <input
+          type="text"
+          id="project-title"
+          class="project-title-input"
+          placeholder="Titre du projet"
+        />
+        <div class="editor-actions">
+          <button class="export-btn" onclick="exportProject()">
+            📤 Exporter le Brief
+          </button>
+          <button class="save-btn" onclick="saveProject()">
+            💾 Sauvegarder
+          </button>
+          <button class="delete-btn" onclick="deleteCurrentProject()">
+            🗑️ Supprimer
+          </button>
+        </div>
+      </div>
+
+      <div class="sections-container">
+        <!-- Section Design System -->
+        <div class="design-section">
+          <h2 class="section-title">🎨 Design System</h2>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Palette de couleurs</h3>
+            <div class="color-inputs">
+              <div class="color-input-group">
+                <label>Couleur primaire</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="primaryColor" value="#667eea" />
+                  <input
+                    type="text"
+                    id="primaryColorText"
+                    value="#667eea"
+                    class="color-text-input"
+                  />
+                </div>
+              </div>
+              <div class="color-input-group">
+                <label>Couleur secondaire</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="secondaryColor" value="#764ba2" />
+                  <input
+                    type="text"
+                    id="secondaryColorText"
+                    value="#764ba2"
+                    class="color-text-input"
+                  />
+                </div>
+              </div>
+              <div class="color-input-group">
+                <label>Couleur accent</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="accentColor" value="#4ade80" />
+                  <input
+                    type="text"
+                    id="accentColorText"
+                    value="#4ade80"
+                    class="color-text-input"
+                  />
+                </div>
+              </div>
+              <div class="color-input-group">
+                <label>Couleur fond</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="bgColor" value="#0a0e27" />
+                  <input
+                    type="text"
+                    id="bgColorText"
+                    value="#0a0e27"
+                    class="color-text-input"
+                  />
+                </div>
+              </div>
+              <div class="color-input-group">
+                <label>Couleur texte</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="textColor" value="#e8eaf6" />
+                  <input
+                    type="text"
+                    id="textColorText"
+                    value="#e8eaf6"
+                    class="color-text-input"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Typographie</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Police principale</label>
+                <select id="primaryFont">
+                  <option value="Inter">Inter</option>
+                  <option value="Roboto">Roboto</option>
+                  <option value="Open Sans">Open Sans</option>
+                  <option value="Poppins">Poppins</option>
+                  <option value="Montserrat">Montserrat</option>
+                  <option value="Lato">Lato</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Police secondaire</label>
+                <select id="secondaryFont">
+                  <option value="Inter">Inter</option>
+                  <option value="Roboto">Roboto</option>
+                  <option value="Open Sans">Open Sans</option>
+                  <option value="Poppins">Poppins</option>
+                  <option value="Montserrat">Montserrat</option>
+                  <option value="Lato">Lato</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Taille de base (px)</label>
+                <input type="number" id="baseFontSize" value="16" min="12" max="24" />
+              </div>
+              <div class="form-group">
+                <label>Échelle typographique</label>
+                <select id="typeScale">
+                  <option value="1.125">1.125 (Minor Second)</option>
+                  <option value="1.200" selected>1.200 (Minor Third)</option>
+                  <option value="1.250">1.250 (Major Third)</option>
+                  <option value="1.333">1.333 (Perfect Fourth)</option>
+                  <option value="1.414">1.414 (Augmented Fourth)</option>
+                  <option value="1.500">1.500 (Perfect Fifth)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Espacements & Grille</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Unité de base (px)</label>
+                <input type="number" id="spacingUnit" value="8" min="4" max="16" />
+              </div>
+              <div class="form-group">
+                <label>Border radius</label>
+                <select id="borderRadius">
+                  <option value="0">Aucun</option>
+                  <option value="4">Petit (4px)</option>
+                  <option value="8">Moyen (8px)</option>
+                  <option value="12" selected>Large (12px)</option>
+                  <option value="16">Extra Large (16px)</option>
+                  <option value="9999">Rond complet</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Largeur max container (px)</label>
+                <input
+                  type="number"
+                  id="maxWidth"
+                  value="1600"
+                  min="1200"
+                  max="2000"
+                  step="100"
+                />
+              </div>
+              <div class="form-group">
+                <label>Colonnes grille</label>
+                <input type="number" id="gridColumns" value="12" min="8" max="16" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Composants UI -->
+        <div class="design-section">
+          <h2 class="section-title">🧩 Composants UI</h2>
+
+          <div class="components-list" id="componentsList">
+            <!-- Les composants seront ajoutés dynamiquement -->
+          </div>
+
+          <button class="add-component-btn" onclick="addComponent()">
+            ➕ Ajouter un composant
+          </button>
+        </div>
+
+        <!-- Section Layout & Navigation -->
+        <div class="design-section">
+          <h2 class="section-title">📐 Layout & Navigation</h2>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Structure générale</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Type de layout</label>
+                <select id="layoutType">
+                  <option value="single-page">Single Page</option>
+                  <option value="multi-page">Multi Page</option>
+                  <option value="dashboard">Dashboard</option>
+                  <option value="app">Application (SPA)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Navigation principale</label>
+                <select id="navType">
+                  <option value="top">Top Bar</option>
+                  <option value="side">Sidebar</option>
+                  <option value="both">Top Bar + Sidebar</option>
+                  <option value="mobile-bottom">Mobile Bottom Nav</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group full-width">
+              <label>Pages principales</label>
+              <textarea
+                id="mainPages"
+                placeholder="Liste des pages (une par ligne)&#10;Ex: Accueil, Tableau de bord, Profil, Paramètres..."
+                rows="4"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Responsive Design</h3>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="mobileFriendly" checked />
+                <span>Mobile First</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="tabletOptimized" checked />
+                <span>Optimisé Tablette</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="desktopOptimized" checked />
+                <span>Optimisé Desktop</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Interactions -->
+        <div class="design-section">
+          <h2 class="section-title">✨ Interactions & Animations</h2>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Style d'animations</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Vitesse des transitions</label>
+                <select id="transitionSpeed">
+                  <option value="150">Rapide (150ms)</option>
+                  <option value="300" selected>Moyenne (300ms)</option>
+                  <option value="500">Lente (500ms)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Easing function</label>
+                <select id="easingFunction">
+                  <option value="ease">Ease</option>
+                  <option value="ease-in">Ease In</option>
+                  <option value="ease-out">Ease Out</option>
+                  <option value="ease-in-out" selected>Ease In Out</option>
+                  <option value="cubic-bezier(0.4, 0, 0.2, 1)">Custom Cubic</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Feedbacks utilisateur</h3>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="loadingStates" checked />
+                <span>États de chargement</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="successFeedback" checked />
+                <span>Feedback de succès</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="errorHandling" checked />
+                <span>Gestion des erreurs</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="toastNotifications" checked />
+                <span>Notifications toast</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="hoverEffects" checked />
+                <span>Effets au survol</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="microInteractions" />
+                <span>Micro-interactions avancées</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Animations spécifiques</label>
+            <textarea
+              id="specificAnimations"
+              placeholder="Décrivez les animations particulières souhaitées...&#10;Ex: Fade in au chargement de page, slide pour les modals, etc."
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Section Identité Visuelle -->
+        <div class="design-section">
+          <h2 class="section-title">🎭 Identité Visuelle</h2>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Style UI/UX</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Style visuel</label>
+                <select id="visualStyle">
+                  <optgroup label="Minimaliste">
+                    <option value="minimal-evolved">Minimalisme évolué (Linear, Notion)</option>
+                    <option value="flat-dark">Flat Dark (Material-like)</option>
+                    <option value="swiss-minimal">Swiss Minimal</option>
+                    <option value="minimal-slate">Minimal Slate</option>
+                  </optgroup>
+                  <optgroup label="Profondeur & Matière">
+                    <option value="neumorphic">Neumorphisme (soft UI)</option>
+                    <option value="glassmorphism">Glassmorphisme (verre dépoli)</option>
+                    <option value="oled">OLED (noir pur, accents vifs)</option>
+                    <option value="warm-gradient">Warm Gradient</option>
+                  </optgroup>
+                  <optgroup label="Audacieux">
+                    <option value="brutal">Brutalisme numérique</option>
+                    <option value="bold-ui">Bold UI (contrastes forts)</option>
+                    <option value="neon">Néon / Cyberpunk</option>
+                  </optgroup>
+                  <optgroup label="Immersif">
+                    <option value="3d-ui">UI 3D / Immersive</option>
+                    <option value="narrative">UX Narrative / Émotionnelle</option>
+                  </optgroup>
+                  <optgroup label="Classique">
+                    <option value="corporate">Corporate / Business</option>
+                    <option value="elegant">Élégant / Premium</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Mood général</label>
+                <select id="mood">
+                  <option value="calm">Calme & Zen</option>
+                  <option value="professional">Professionnel</option>
+                  <option value="friendly">Amical & Accessible</option>
+                  <option value="luxurious">Luxueux & Premium</option>
+                  <option value="energetic">Énergique & Dynamique</option>
+                  <option value="bold">Audacieux & Avant-garde</option>
+                  <option value="playful">Ludique & Créatif</option>
+                  <option value="tech">Tech & Futuriste</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Caractéristiques UI</h3>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="darkMode" />
+                <span>Dark Mode par défaut</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="adaptiveTheme" />
+                <span>Thème adaptatif (clair/sombre automatique)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="microInteractionsRich" checked />
+                <span>Micro-interactions riches</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="motionDesign" />
+                <span>Motion design expressif</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="3dElements" />
+                <span>Éléments 3D (WebGL, Three.js)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="parallaxEffects" />
+                <span>Effets parallaxe</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="aiDriven" />
+                <span>Interface adaptative AI-driven</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="conversationalUI" />
+                <span>UI conversationnelle (chatbot, assistant)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Design System & Approche</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Approche design</label>
+                <select id="designApproach">
+                  <option value="atomic">Atomic Design (composants modulaires)</option>
+                  <option value="systemic">Design System complet</option>
+                  <option value="token-based">Token-based (variables globales)</option>
+                  <option value="utility-first">Utility-first (Tailwind-like)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Densité de l'interface</label>
+                <select id="densityLevel">
+                  <option value="compact">Compacte (data-heavy)</option>
+                  <option value="medium" selected>Moyenne (équilibrée)</option>
+                  <option value="spacious">Aérée (content-first)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Références visuelles & Inspirations</label>
+            <textarea
+              id="visualReferences"
+              placeholder="Sites web ou applications qui vous inspirent...&#10;Ex: Linear.app (minimaliste évolué), Stripe (élégant), Apple (épuré), Vercel (moderne), Notion (clean), etc."
+              rows="4"
+            ></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Storytelling & Ton (UX Writing)</label>
+            <textarea
+              id="uxWritingTone"
+              placeholder="Définissez le ton et le style d'écriture...&#10;Ex: Concis et actionnable, Empathique et personnalisé, Technique et précis, etc."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Points d'attention particuliers</label>
+            <textarea
+              id="specialNotes"
+              placeholder="Éléments importants à ne pas oublier, contraintes spécifiques, do's and don'ts...&#10;Ex: Éviter les animations trop longues, Prioriser l'accessibilité, etc."
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Section Liens avec Workflows et Prompts -->
+        <div class="design-section">
+          <h2 class="section-title">🔗 Projet Complet</h2>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Workflow associé</h3>
+            <div class="form-group">
+              <label>Sélectionner un workflow</label>
+              <select id="linkedWorkflow">
+                <option value="">-- Aucun workflow sélectionné --</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Stack technique</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Framework Frontend</label>
+                <select id="frontendFramework">
+                  <option value="react">React</option>
+                  <option value="vue">Vue.js</option>
+                  <option value="angular">Angular</option>
+                  <option value="svelte">Svelte</option>
+                  <option value="nextjs">Next.js</option>
+                  <option value="vanilla">Vanilla JS</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Framework CSS</label>
+                <select id="cssFramework">
+                  <option value="tailwind">Tailwind CSS</option>
+                  <option value="bootstrap">Bootstrap</option>
+                  <option value="mui">Material-UI</option>
+                  <option value="chakra">Chakra UI</option>
+                  <option value="custom">CSS Custom</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Backend</label>
+                <select id="backend">
+                  <option value="nodejs">Node.js</option>
+                  <option value="python">Python</option>
+                  <option value="php">PHP</option>
+                  <option value="ruby">Ruby</option>
+                  <option value="go">Go</option>
+                  <option value="none">Aucun (Frontend only)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Base de données</label>
+                <select id="database">
+                  <option value="mongodb">MongoDB</option>
+                  <option value="postgresql">PostgreSQL</option>
+                  <option value="mysql">MySQL</option>
+                  <option value="firebase">Firebase</option>
+                  <option value="supabase">Supabase</option>
+                  <option value="none">Aucune</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Instructions supplémentaires pour le LLM</label>
+            <textarea
+              id="additionalInstructions"
+              placeholder="Ajoutez des instructions spécifiques pour la génération de code...&#10;Ex: Utiliser TypeScript, ajouter des tests unitaires, suivre les best practices, etc."
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pour l'export -->
+    <div id="exportModal" class="modal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>📤 Brief Complet pour LLM</h2>
+          <button class="modal-close" onclick="closeExportModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <textarea
+            id="exportContent"
+            readonly
+            rows="20"
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="copy-btn" onclick="copyToClipboard()">
+            📋 Copier dans le presse-papier
+          </button>
+          <button class="close-modal-btn" onclick="closeExportModal()">
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="uiux-script.js"></script>
+  </body>
+</html>

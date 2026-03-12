@@ -1,0 +1,1001 @@
+/* ===========================
+   STYLES GÉNÉRAUX
+   =========================== */
+body {
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  background: var(--bg-gradient);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ===========================
+   CONTENEUR PRINCIPAL
+   =========================== */
+.project-container {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+/* ===========================
+   HEADER
+   =========================== */
+.project-header {
+  margin-bottom: 24px;
+  padding: 0 4px;
+}
+
+.project-header h1 {
+  text-align: center;
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.header-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filter-container {
+  flex: 1;
+  max-width: 400px;
+  min-width: 200px;
+}
+
+.filter-input {
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: 14px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-0);
+  border-radius: 10px;
+  background: var(--surface-1);
+  color: var(--text);
+  transition: all 0.15s ease;
+}
+
+.filter-input:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border-1));
+  background: var(--surface-2);
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  background: var(--surface-2);
+}
+
+.btn-new-task {
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  background: var(--accent-gradient);
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 26px rgba(79, 140, 255, 0.22);
+  white-space: nowrap;
+}
+
+.btn-new-task:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
+}
+
+.btn-reset {
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--border-0);
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-reset:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ===========================
+   SECTION INFO
+   =========================== */
+.info-section {
+  background: var(--surface-0);
+  padding: 16px;
+  margin-bottom: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--border-0);
+  backdrop-filter: blur(var(--blur));
+}
+
+.info-toggle {
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--border-0);
+  padding: 14px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.info-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.info-content {
+  display: none;
+  margin-top: 20px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.info-content p {
+  margin-bottom: 16px;
+}
+
+.info-content strong {
+  color: #e8eaf6;
+}
+
+.scroll-hint {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
+  margin-top: 12px;
+}
+
+@media (max-width: 1200px) {
+  .scroll-hint {
+    display: block !important;
+  }
+}
+
+/* ===========================
+   ROADMAP BOARD - LAYOUT HORIZONTAL
+   =========================== */
+.roadmap-board {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  overflow-x: auto;
+  padding: 16px;
+  position: relative;
+}
+
+/* ===========================
+   EN-TÊTE DU TABLEAU
+   =========================== */
+.roadmap-header {
+  display: grid;
+  grid-template-columns: 200px repeat(4, 1fr) 60px;
+  gap: 12px;
+  padding: 16px 12px;
+  background: color-mix(in srgb, var(--bg-1) 78%, transparent);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-0);
+  position: sticky;
+  top: -16px;
+  left: 0;
+  z-index: 100;
+  backdrop-filter: blur(var(--blur));
+  box-shadow: var(--shadow-sm);
+}
+
+.project-name-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e8eaf6;
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+}
+
+.phase-header-cell {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e8eaf6;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-0));
+}
+
+.actions-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: #b8c5d6;
+}
+
+/* ===========================
+   LIGNES DE PROJETS
+   =========================== */
+.project-row {
+  display: grid;
+  grid-template-columns: 200px repeat(4, 1fr) 60px;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface-0);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-0);
+  transition: all 0.15s ease;
+  align-items: center;
+  min-height: 140px;
+}
+
+.project-row:hover {
+  background: var(--surface-1);
+  border-color: color-mix(in srgb, var(--accent) 25%, var(--border-1));
+  transform: translateX(0);
+}
+
+/* ===========================
+   CELLULE NOM DU PROJET
+   =========================== */
+.project-name-cell {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+}
+
+.project-name-input {
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--border-0);
+  padding: 10px 14px;
+  border-radius: 8px;
+  width: 100%;
+  transition: all 0.15s ease;
+}
+
+.project-name-input:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.project-name-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+  background: var(--surface-2);
+}
+
+/* ===========================
+   CELLULES DE TÂCHES
+   =========================== */
+.task-cell {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px;
+  transition: all 0.15s ease;
+  overflow: hidden;
+}
+
+.task-cell.empty-cell {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.task-cell.drag-over {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.task-cell.has-task {
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ===========================
+   TÂCHES
+   =========================== */
+.task {
+  width: 100%;
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease;
+  cursor: move;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.task:hover {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border-1));
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.task.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+/* Bordures colorées pour les priorités */
+.task.priority-red {
+  border-color: #ef4444;
+  box-shadow: 0 2px 12px rgba(239, 68, 68, 0.3);
+}
+
+.task.priority-red:hover {
+  border-color: #ef4444;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+}
+
+.task.priority-orange {
+  border-color: #f97316;
+  box-shadow: 0 2px 12px rgba(249, 115, 22, 0.3);
+}
+
+.task.priority-orange:hover {
+  border-color: #f97316;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4);
+}
+
+.task.priority-green {
+  border-color: #22c55e;
+  box-shadow: 0 2px 12px rgba(34, 197, 94, 0.3);
+}
+
+.task.priority-green:hover {
+  border-color: #22c55e;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.4);
+}
+
+.task-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.task-title {
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text);
+  border: none;
+  padding: 4px 6px;
+  border-radius: 6px;
+  flex: 1;
+  transition: all 0.15s ease;
+  cursor: text;
+  min-width: 0;
+}
+
+.task-title:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.task-title:focus {
+  outline: none;
+  background: var(--surface-2);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+/* ===========================
+   PRIORITÉS
+   =========================== */
+.priority-buttons {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.priority-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.15s ease;
+  opacity: 0.3;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.priority-btn:hover {
+  opacity: 0.8;
+  transform: scale(1.15);
+}
+
+.priority-btn.active {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.priority-btn.priority-red {
+  color: #ef4444;
+}
+
+.priority-btn.priority-orange {
+  color: #f97316;
+}
+
+.priority-btn.priority-green {
+  color: #22c55e;
+}
+
+/* ===========================
+   DATES
+   =========================== */
+.task-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted);
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.task-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  max-width: 100%;
+}
+
+.task-date span {
+  flex-shrink: 0;
+  min-width: 35px;
+}
+
+.date-input {
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  border: 1px solid var(--border-0);
+  padding: 3px 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ===========================
+   BOUTONS D'ACTION
+   =========================== */
+.btn-delete-task {
+  font-size: 16px;
+  background: transparent;
+  border: none;
+  color: rgba(239, 68, 68, 0.6);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 2px;
+}
+
+.btn-delete-task:hover {
+  color: #ef4444;
+  transform: scale(1.2);
+}
+
+.btn-add-task-cell {
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: 24px;
+  font-weight: 300;
+  background: var(--surface-1);
+  color: var(--accent);
+  border: 2px dashed color-mix(in srgb, var(--accent) 40%, transparent);
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  height: 100%;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-add-task-cell:hover {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 65%, transparent);
+  color: var(--accent);
+  transform: scale(1.02);
+}
+
+/* ===========================
+   ACTIONS DE PROJET
+   =========================== */
+.project-actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-delete-project {
+  font-size: 18px;
+  background: transparent;
+  border: none;
+  color: rgba(239, 68, 68, 0.5);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 8px;
+}
+
+.btn-delete-project:hover {
+  color: #ef4444;
+  transform: scale(1.2);
+}
+
+/* ===========================
+   MESSAGE VIDE
+   =========================== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #b8c5d6;
+  font-size: 16px;
+  grid-column: 1 / -1;
+}
+
+/* ===========================
+   ANIMATIONS
+   =========================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.task {
+  animation: fadeIn 0.3s ease;
+}
+
+.project-row {
+  animation: fadeIn 0.4s ease;
+}
+
+/* ===========================
+   ACCESSIBILITÉ
+   =========================== */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Respect des préférences de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+@media (max-width: 1400px) {
+  .roadmap-header,
+  .project-row {
+    grid-template-columns: 160px repeat(4, 1fr) 50px;
+  }
+  
+  .task-cell {
+    min-height: 110px;
+  }
+  
+  .project-name-header {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 1200px) {
+  body {
+    padding: 20px 16px;
+  }
+  
+  .project-header h1 {
+    font-size: 28px;
+  }
+  
+  .roadmap-board {
+    overflow-x: auto;
+    padding: 12px;
+  }
+  
+  .roadmap-header {
+    top: -12px;
+  }
+  
+  .roadmap-header,
+  .project-row {
+    grid-template-columns: 130px repeat(4, 165px) 45px;
+    min-width: 850px;
+  }
+  
+  .project-name-header {
+    font-size: 12px;
+  }
+  
+  .task-cell {
+    min-height: 100px;
+  }
+  
+  .task {
+    font-size: 12px;
+  }
+  
+  .phase-header-cell {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .header-actions {
+    flex-wrap: wrap;
+  }
+  
+  .filter-container {
+    min-width: 250px;
+  }
+  
+  .roadmap-header {
+    top: -12px;
+  }
+  
+  .roadmap-header,
+  .project-row {
+    grid-template-columns: 120px repeat(4, 155px) 45px;
+    min-width: 800px;
+    gap: 10px;
+  }
+  
+  .project-name-header {
+    font-size: 11px;
+  }
+  
+  .phase-header-cell {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+  
+  .project-name-input {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  
+  .task-cell {
+    min-height: 95px;
+    padding: 6px;
+  }
+  
+  .task {
+    padding: 10px;
+    font-size: 11px;
+  }
+  
+  .task-title {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 16px 12px;
+  }
+
+  .project-header h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .filter-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+  }
+  
+  .btn-new-task,
+  .btn-reset {
+    width: 100%;
+  }
+
+  .roadmap-board {
+    overflow-x: scroll;
+    padding: 10px;
+  }
+  
+  .roadmap-header {
+    top: -10px;
+  }
+  
+  .roadmap-header,
+  .project-row {
+    grid-template-columns: 110px repeat(4, 145px) 40px;
+    min-width: 750px;
+    gap: 8px;
+    padding: 10px;
+  }
+  
+  .project-name-header {
+    font-size: 11px;
+  }
+  
+  .phase-header-cell {
+    font-size: 10px;
+    padding: 6px;
+  }
+  
+  .project-name-input {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+  
+  .task-cell {
+    min-height: 90px;
+    padding: 6px;
+  }
+  
+  .task {
+    padding: 8px;
+    gap: 6px;
+  }
+  
+  .task-title {
+    font-size: 11px;
+    padding: 3px 5px;
+  }
+  
+  .task-dates {
+    font-size: 10px;
+    padding: 4px;
+    gap: 3px;
+  }
+  
+  .date-input {
+    font-size: 9px;
+    padding: 2px 4px;
+    max-width: 85px;
+  }
+  
+  .task-date {
+    font-size: 9px;
+    gap: 4px;
+  }
+  
+  .task-date span {
+    min-width: 30px;
+    font-size: 9px;
+  }
+  
+  .priority-btn {
+    font-size: 12px;
+    width: 14px;
+    height: 14px;
+  }
+  
+  .btn-delete-task {
+    font-size: 14px;
+  }
+  
+  /* Réduire les gaps pour gagner de l'espace */
+  .task {
+    gap: 4px;
+  }
+  
+  .task-header {
+    gap: 6px;
+  }
+  
+  .task-actions {
+    gap: 4px;
+  }
+  
+  .priority-buttons {
+    gap: 2px;
+  }
+}
+
+@media (max-width: 640px) {
+  .project-header h1 {
+    font-size: 22px;
+  }
+  
+  .roadmap-header,
+  .project-row {
+    grid-template-columns: 100px repeat(4, 135px) 40px;
+    min-width: 720px;
+    gap: 6px;
+    padding: 8px;
+  }
+  
+  .phase-header-cell {
+    font-size: 10px;
+    padding: 5px;
+  }
+  
+  .project-name-input {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+  
+  .task-cell {
+    min-height: 85px;
+  }
+  
+  .task {
+    padding: 6px;
+    gap: 3px;
+  }
+  
+  .task-title {
+    font-size: 10px;
+  }
+  
+  .date-input {
+    max-width: 75px;
+    font-size: 8px;
+  }
+  
+  .task-date span {
+    min-width: 28px;
+    font-size: 8px;
+  }
+  
+  /* Améliorer les zones tactiles */
+  .priority-btn,
+  .btn-delete-task,
+  .btn-delete-project {
+    min-width: 32px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-add-task-cell {
+    font-size: 28px;
+    padding: 20px;
+    min-height: 85px;
+  }
+}
+
+/* ===========================
+   SCROLLBAR
+   =========================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.7);
+}
+
+/* Scrollbar plus visible sur mobile */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.7);
+  }
+  
+  /* Améliorer le scroll tactile */
+  .roadmap-board {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}

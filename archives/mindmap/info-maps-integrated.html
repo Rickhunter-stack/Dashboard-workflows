@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗺️ Info-Maps - Interface Unifiée</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #16213e 100%);
+            color: #e8eaf6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-icon {
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #b8c5d6;
+            opacity: 0.8;
+        }
+
+        /* Info Section */
+        .info-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-toggle {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #b8c5d6;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 10px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.3s;
+        }
+
+        .info-toggle:hover {
+            color: #667eea;
+        }
+
+        .info-content {
+            display: none;
+            padding-top: 15px;
+            color: #b8c5d6;
+            line-height: 1.6;
+        }
+
+        .info-content.active {
+            display: block;
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #b8c5d6;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Iframe pour les applications */
+        .app-frame {
+            width: 100%;
+            height: calc(100vh - 250px);
+            min-height: 600px;
+            border: none;
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .tabs-nav {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .app-frame {
+                height: calc(100vh - 300px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">🗺️</div>
+            <h1>Info-Maps</h1>
+            <p>Mind Maps & Visualisations Éducatives</p>
+        </div>
+
+        <div class="info-section">
+            <button class="info-toggle" onclick="toggleInfo()">
+                <span>📖 À propos des outils disponibles</span>
+                <span id="info-arrow">▼</span>
+            </button>
+            <div id="info-content" class="info-content">
+                <p><strong>Trois types de visualisations :</strong></p>
+                <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                    <li><strong>🌳 Mind Maps Classiques</strong> : Structure hiérarchique avec branches principales et sous-branches</li>
+                    <li><strong>📊 Infographies</strong> : Visualisations d'informations éducatives (à venir)</li>
+                    <li><strong>🎯 Mindly</strong> : Mind maps circulaires avec design moderne et intuitif</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Navigation par onglets -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('classic')">
+                🌳 Mind Maps Classiques
+            </button>
+            <button class="tab-btn" onclick="switchTab('infographies')">
+                📊 Infographies
+            </button>
+            <button class="tab-btn" onclick="switchTab('mindly')">
+                🎯 Mindly (Circulaire)
+            </button>
+        </div>
+
+        <!-- Contenu Mind Maps Classiques -->
+        <div id="tab-classic" class="tab-content active">
+            <iframe class="app-frame" src="mindmap-generator.html"></iframe>
+        </div>
+
+        <!-- Contenu Infographies -->
+        <div id="tab-infographies" class="tab-content">
+            <div style="text-align: center; padding: 80px 20px; color: #b8c5d6;">
+                <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;">📊</div>
+                <h3 style="font-size: 24px; margin-bottom: 10px;">Module Infographies</h3>
+                <p style="font-size: 16px; opacity: 0.7;">Fonctionnalité à venir prochainement</p>
+            </div>
+        </div>
+
+        <!-- Contenu Mindly -->
+        <div id="tab-mindly" class="tab-content">
+            <iframe class="app-frame" src="mindly-standalone.html"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Toggle info section
+        function toggleInfo() {
+            const content = document.getElementById('info-content');
+            const arrow = document.getElementById('info-arrow');
+            content.classList.toggle('active');
+            arrow.textContent = content.classList.contains('active') ? '▲' : '▼';
+        }
+
+        // Switch main tabs
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById('tab-' + tabName).classList.add('active');
+
+            // Activate corresponding button
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

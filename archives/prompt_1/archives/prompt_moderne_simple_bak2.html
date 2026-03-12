@@ -1,0 +1,3332 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Générateur de Prompts IA</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="alternate icon" type="image/png" href="favicon.png" sizes="any" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Styles généraux */
+      body {
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px 20px;
+        background: linear-gradient(135deg, #0a0e27 0%, #16213e 100%);
+        color: #e8eaf6;
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      .tabs-container {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto 20px;
+      }
+
+      .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .tab-btn {
+        font-family: "Inter", sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.05);
+        color: #b8c5d6;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 10px 24px;
+        margin: 0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+      }
+
+      .tab-btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .tab-btn:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.12);
+        transform: translateY(-1px);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.4s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      .section {
+        background: rgba(255, 255, 255, 0.04);
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+        position: relative;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+      }
+
+      .section:hover {
+        border-color: rgba(102, 126, 234, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .section h2 {
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0 0 12px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .section select {
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        width: 100%;
+        padding: 10px 14px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        box-sizing: border-box;
+        background: rgba(255, 255, 255, 0.06);
+        color: #e8eaf6;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .section select option {
+        background: #1a2332;
+        color: #e8eaf6;
+        padding: 10px;
+      }
+
+      .section select option:hover {
+        background: #2a3447;
+      }
+
+      .section select:hover {
+        border-color: rgba(102, 126, 234, 0.4);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .section select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .highlight {
+        color: #667eea;
+        font-weight: 600;
+      }
+
+      .custom-option {
+        color: #4ade80;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #b8c5d6;
+        font-size: 14px;
+      }
+
+      input,
+      textarea,
+      select {
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        width: 100%;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        box-sizing: border-box;
+        background: rgba(255, 255, 255, 0.06);
+        color: #e8eaf6;
+        transition: all 0.3s ease;
+      }
+
+      select option {
+        background: #1a2332;
+        color: #e8eaf6;
+        padding: 10px;
+      }
+
+      select option:checked {
+        background: #667eea;
+        color: #ffffff;
+      }
+
+      input:hover,
+      textarea:hover,
+      select:hover {
+        border-color: rgba(102, 126, 234, 0.4);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      option[hidden] {
+        display: none;
+      }
+
+      textarea {
+        min-height: 80px;
+        resize: vertical;
+        display: none;
+      }
+
+      .centered-title {
+        justify-content: center;
+      }
+
+      button {
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 12px;
+        cursor: pointer;
+        display: block;
+        margin: 24px auto;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 56px;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .toggle-text-button {
+        background: rgba(255, 255, 255, 0.08);
+        color: #b8c5d6;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-bottom: 16px;
+        transition: all 0.3s ease;
+        font-family: "Inter", sans-serif;
+        font-weight: 500;
+        box-shadow: none;
+        min-height: auto;
+      }
+
+      .toggle-text-button:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+      }
+
+      .result {
+        background: rgba(255, 255, 255, 0.04);
+        border-left: 4px solid #667eea;
+        padding: 20px 24px;
+        margin-top: 24px;
+        white-space: pre-wrap;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        font-size: 14px;
+        line-height: 1.8;
+      }
+
+      .help-icon {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 20px;
+        font-size: 13px;
+        margin-left: 8px;
+        cursor: help;
+        font-weight: 600;
+      }
+
+      .tooltip {
+        position: relative;
+        display: inline-block;
+      }
+
+      .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 280px;
+        background: rgba(30, 41, 59, 0.98);
+        color: #e8eaf6;
+        text-align: left;
+        border-radius: 12px;
+        padding: 16px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -140px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        font-size: 13px;
+        line-height: 1.6;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+      }
+
+      .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .letter-box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 12px;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        margin-right: 8px;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .info-section {
+        background: rgba(255, 255, 255, 0.04);
+        padding: 16px;
+        margin-bottom: 20px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+      }
+
+      .info-toggle {
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #e8eaf6;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 14px 24px;
+        border-radius: 12px;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .info-toggle:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+      }
+
+      .info-content {
+        display: none;
+        margin-top: 20px;
+        color: #b8c5d6;
+        line-height: 1.8;
+      }
+
+      h1 {
+        text-align: center;
+        color: #ffffff;
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .grid-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 20px 16px;
+        }
+
+        .grid-container {
+          grid-template-columns: 1fr;
+        }
+
+        .tabs {
+          flex-direction: column;
+        }
+
+        .tab-btn {
+          width: 100%;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+      }
+
+      /* Scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(102, 126, 234, 0.5);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(102, 126, 234, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🚀 Générateur de Prompts IA</h1>
+
+    <!-- Section d'informations -->
+    <div class="info-section">
+      <button class="info-toggle" onclick="toggleInfo()">
+        Informations sur le générateur ▼
+      </button>
+      <div id="infoContent" class="info-content">
+        <p>
+          <strong>Comment ça marche ? </strong><br />
+          Ce générateur facilite la création de prompts optimisés pour l'IA en
+          utilisant la méthode OPRO (Optimization by PROmpting). Sélectionnez
+          vos critères dans chaque section, puis cliquez sur "Générer le
+          Prompt".
+        </p>
+        <p>
+          <strong>Qu'est-ce que OPRO ? </strong><br />
+          OPRO est une technique qui permet d'améliorer automatiquement vos
+          prompts en générant plusieurs variantes et en les évaluant pour
+          trouver la meilleure formulation.
+        </p>
+        <p>
+          <strong>Conseils d'utilisation :</strong><br />
+          • Remplissez au minimum l'objectif et ajoutez une description
+          détaillée<br />
+          • Plus vous donnez de contexte, meilleur sera le résultat<br />
+          • Utilisez l'option "Personnalisé" pour des besoins spécifiques<br />
+          • Copiez le prompt généré et collez-le dans votre IA préférée
+        </p>
+      </div>
+    </div>
+
+    <!-- Onglets -->
+    <div class="tabs-container">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'redaction')">
+          ✍️ Rédaction
+        </button>
+        <button class="tab-btn" onclick="openTab(event, 'image')">
+          🎨 Génération d'images
+        </button>
+        <button class="tab-btn" onclick="openTab(event, 'voyage')">
+          ✈️ Planification voyage
+        </button>
+        <button class="tab-btn" onclick="openTab(event, 'code')">
+          💻 Génération de Code
+        </button>
+        <button class="tab-btn" onclick="openTab(event, 'app')">
+          📱 Génération application
+        </button>
+      </div>
+    </div>
+
+    <!-- Onglet Rédaction -->
+    <div id="redaction" class="tab-content active">
+      <div class="grid-container">
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span> Objectif
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Définissez le but principal de votre demande. Que souhaitez-vous
+                accomplir avec l'IA ?
+              </span>
+            </span>
+          </h2>
+          <select id="objectif-select">
+            <option value="" hidden>Choisissez un objectif</option>
+            <option value="Rédiger un texte">Rédiger un texte</option>
+            <option value="Résumer un document">Résumer un document</option>
+            <option value="Traduire un texte">Traduire un texte</option>
+            <option value="Améliorer un texte">Améliorer un texte</option>
+            <option value="Créer un plan">Créer un plan</option>
+            <option value="Générer des idées">Générer des idées</option>
+            <option value="Expliquer un concept">Expliquer un concept</option>
+            <option value="Analyser des données">Analyser des données</option>
+            <option value="Créer un tutoriel">Créer un tutoriel</option>
+            <option value="Écrire un script">Écrire un script</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="objectif-text"
+            placeholder="Décrivez votre objectif personnalisé..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span> Genre / Format
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Choisissez le format de sortie souhaité pour votre contenu.
+              </span>
+            </span>
+          </h2>
+          <select id="genre-select">
+            <option value="" hidden>Choisissez un genre</option>
+            <option value="Article de blog">Article de blog</option>
+            <option value="Email professionnel">Email professionnel</option>
+            <option value="Post LinkedIn">Post LinkedIn</option>
+            <option value="Thread Twitter">Thread Twitter</option>
+            <option value="Script vidéo">Script vidéo</option>
+            <option value="Présentation">Présentation</option>
+            <option value="Rapport">Rapport</option>
+            <option value="Liste à puces">Liste à puces</option>
+            <option value="FAQ">FAQ</option>
+            <option value="Guide pratique">Guide pratique</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="genre-text"
+            placeholder="Décrivez votre format personnalisé..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span> Langue
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Sélectionnez la langue de sortie pour votre contenu.
+              </span>
+            </span>
+          </h2>
+          <select id="language-select">
+            <option value="" hidden>Choisissez une langue</option>
+            <option value="Français">🇫🇷 Français</option>
+            <option value="Anglais">🇬🇧 Anglais</option>
+            <option value="Espagnol">🇪🇸 Espagnol</option>
+            <option value="Allemand">🇩🇪 Allemand</option>
+            <option value="Italien">🇮🇹 Italien</option>
+            <option value="Portugais">🇵🇹 Portugais</option>
+            <option value="Néerlandais">🇳🇱 Néerlandais</option>
+            <option value="custom" class="custom-option">✏️ Autre langue</option>
+          </select>
+          <textarea
+            id="language-text"
+            placeholder="Indiquez la langue souhaitée..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">D</span> Thématique
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Précisez le domaine ou le sujet principal de votre contenu.
+              </span>
+            </span>
+          </h2>
+          <select id="thematique-select">
+            <option value="" hidden>Choisissez une thématique</option>
+            <option value="Technologie">💻 Technologie</option>
+            <option value="Marketing">📊 Marketing</option>
+            <option value="Santé">🏥 Santé</option>
+            <option value="Finance">💰 Finance</option>
+            <option value="Éducation">📚 Éducation</option>
+            <option value="Voyage">✈️ Voyage</option>
+            <option value="Cuisine">🍳 Cuisine</option>
+            <option value="Sport">⚽ Sport</option>
+            <option value="Culture">🎭 Culture</option>
+            <option value="Environnement">🌱 Environnement</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="thematique-text"
+            placeholder="Décrivez votre thématique..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">E</span> Cadre / Contexte
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Donnez des informations contextuelles pour personnaliser la
+                réponse.
+              </span>
+            </span>
+          </h2>
+          <select id="cadre-select">
+            <option value="" hidden>Définissez le contexte</option>
+            <option value="Entreprise B2B">🏢 Entreprise B2B</option>
+            <option value="Entreprise B2C">🛒 Entreprise B2C</option>
+            <option value="Startup">🚀 Startup</option>
+            <option value="Freelance">💼 Freelance</option>
+            <option value="Association">🤝 Association</option>
+            <option value="Étudiant">🎓 Étudiant</option>
+            <option value="Personnel">👤 Personnel</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="cadre-text"
+            placeholder="Décrivez votre contexte..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">F</span> Public cible
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Identifiez qui lira ou utilisera le contenu produit.
+              </span>
+            </span>
+          </h2>
+          <select id="pj-select">
+            <option value="" hidden>Choisissez un public</option>
+            <option value="Grand public">👥 Grand public</option>
+            <option value="Professionnels">💼 Professionnels</option>
+            <option value="Débutants">🌱 Débutants</option>
+            <option value="Experts">🎯 Experts</option>
+            <option value="Étudiants">🎓 Étudiants</option>
+            <option value="Seniors">👴 Seniors</option>
+            <option value="Enfants">👶 Enfants</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="pj-text"
+            placeholder="Décrivez votre public cible..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">G</span> Ton / Style
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Définissez l'ambiance et le style d'écriture souhaités.
+              </span>
+            </span>
+          </h2>
+          <select id="ton-select">
+            <option value="" hidden>Choisissez un ton</option>
+            <option value="Professionnel">👔 Professionnel</option>
+            <option value="Décontracté">😊 Décontracté</option>
+            <option value="Humoristique">😄 Humoristique</option>
+            <option value="Inspirant">✨ Inspirant</option>
+            <option value="Éducatif">📖 Éducatif</option>
+            <option value="Persuasif">🎯 Persuasif</option>
+            <option value="Bienveillant">💚 Bienveillant</option>
+            <option value="Technique">🔧 Technique</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="ton-text"
+            placeholder="Décrivez le ton souhaité..."
+            style="display: none"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Champ de description détaillée -->
+      <div class="section" style="margin-top: 24px">
+        <button class="toggle-text-button" onclick="toggleDetailText()">
+          📝 Ajouter une description détaillée
+        </button>
+        <textarea
+          id="detail-demande"
+          placeholder="Ajoutez ici tous les détails importants : contexte spécifique, contraintes, exemples, informations complémentaires..."
+        ></textarea>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 24px 0;">
+        <button onclick="generatePrompt()" style="flex: 1; min-width: 250px;">✨ Générer le Prompt OPRO</button>
+        <button onclick="generateSimplePrompt()" style="flex: 1; min-width: 250px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);">⚡ Générer un Prompt SIMPLE</button>
+      </div>
+      <button
+        id="copyButton"
+        onclick="copyToClipboard()"
+        style="
+          background: rgba(255, 255, 255, 0.08);
+          color: #b8c5d6;
+          box-shadow: none;
+        "
+      >
+        📋 Copier dans le presse-papier
+      </button>
+      <button
+        onclick="resetForm()"
+        style="
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          box-shadow: none;
+        "
+      >
+        🔄 Réinitialiser
+      </button>
+
+      <!-- Zone de résultat -->
+      <div class="result" id="result"></div>
+    </div>
+
+    <!-- Onglet Image -->
+    <div id="image" class="tab-content">
+      <div class="grid-container">
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span> Objectif
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Quel est le but de votre image ? Illustration, photo produit,
+                art conceptuel, etc.
+              </span>
+            </span>
+          </h2>
+          <select id="objectif-select-image">
+            <option value="" hidden>Choisissez un objectif</option>
+            <option value="Illustration pour article">
+              📰 Illustration pour article
+            </option>
+            <option value="Image de couverture">🖼️ Image de couverture</option>
+            <option value="Logo / Identité visuelle">
+              🎨 Logo / Identité visuelle
+            </option>
+            <option value="Photo produit">📸 Photo produit</option>
+            <option value="Bannière réseaux sociaux">
+              📱 Bannière réseaux sociaux
+            </option>
+            <option value="Art conceptuel">🎭 Art conceptuel</option>
+            <option value="Infographie">📊 Infographie</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="objectif-text-image"
+            placeholder="Décrivez votre objectif..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span> Genre / Style
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Le style artistique général de votre image.
+              </span>
+            </span>
+          </h2>
+          <select id="genre-select-image">
+            <option value="" hidden>Choisissez un style</option>
+            <option value="Photorealistic">📷 Photoréaliste</option>
+            <option value="Digital art">💻 Art digital</option>
+            <option value="Illustration">✏️ Illustration</option>
+            <option value="3D render">🎮 Rendu 3D</option>
+            <option value="Anime / Manga">🎌 Anime / Manga</option>
+            <option value="Peinture à l'huile">🎨 Peinture à l'huile</option>
+            <option value="Aquarelle">🖌️ Aquarelle</option>
+            <option value="Minimaliste">⬜ Minimaliste</option>
+            <option value="Art abstrait">🌀 Art abstrait</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="genre-text-image"
+            placeholder="Décrivez le style souhaité..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span> Format
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Les dimensions ou le ratio de votre image.
+              </span>
+            </span>
+          </h2>
+          <select id="format-select-image">
+            <option value="" hidden>Choisissez un format</option>
+            <option value="Carré (1:1)">⬜ Carré (1:1)</option>
+            <option value="Paysage (16:9)">🖼️ Paysage (16:9)</option>
+            <option value="Portrait (9:16)">📱 Portrait (9:16)</option>
+            <option value="Large (21:9)">🎬 Large (21:9)</option>
+            <option value="Bannière (3:1)">📰 Bannière (3:1)</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="format-text-image"
+            placeholder="Spécifiez le format..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">D</span> Ambiance
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                L'atmosphère et l'émotion que doit dégager l'image.
+              </span>
+            </span>
+          </h2>
+          <select id="ambiance-select-image">
+            <option value="" hidden>Choisissez une ambiance</option>
+            <option value="Lumineuse et joyeuse">☀️ Lumineuse et joyeuse</option>
+            <option value="Sombre et mystérieuse">🌙 Sombre et mystérieuse</option>
+            <option value="Calme et sereine">🧘 Calme et sereine</option>
+            <option value="Dynamique et énergique">⚡ Dynamique et énergique</option>
+            <option value="Mélancolique">🍂 Mélancolique</option>
+            <option value="Futuriste">🚀 Futuriste</option>
+            <option value="Nostalgique">📼 Nostalgique</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="ambiance-text-image"
+            placeholder="Décrivez l'ambiance..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">E</span> Technique de rendu
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Spécifications techniques pour l'image (éclairage, textures,
+                etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="rendu-select-image">
+            <option value="" hidden>Choisissez une technique</option>
+            <option value="Haute résolution">🔬 Haute résolution</option>
+            <option value="Ray tracing">💎 Ray tracing</option>
+            <option value="Soft lighting">🕯️ Éclairage doux</option>
+            <option value="Dramatic lighting">⚡ Éclairage dramatique</option>
+            <option value="HDR">🌈 HDR</option>
+            <option value="Bokeh">📷 Bokeh</option>
+            <option value="Motion blur">🌊 Flou de mouvement</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="rendu-text-image"
+            placeholder="Décrivez la technique..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">F</span> Éléments à éviter
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Ce que vous ne voulez PAS voir dans l'image.
+              </span>
+            </span>
+          </h2>
+          <select id="eviter-select-image">
+            <option value="" hidden>Éléments à exclure</option>
+            <option value="Texte visible">🚫 Texte visible</option>
+            <option value="Visages humains">🚫 Visages humains</option>
+            <option value="Couleurs vives">🚫 Couleurs vives</option>
+            <option value="Arrière-plan chargé">🚫 Arrière-plan chargé</option>
+            <option value="Distorsions">🚫 Distorsions</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="eviter-text-image"
+            placeholder="Listez les éléments à éviter..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">G</span> Ton colorimétrique
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">La palette de couleurs dominante.</span>
+            </span>
+          </h2>
+          <select id="ton-select-image">
+            <option value="" hidden>Choisissez une palette</option>
+            <option value="Couleurs chaudes">🔥 Couleurs chaudes</option>
+            <option value="Couleurs froides">❄️ Couleurs froides</option>
+            <option value="Monochrome">⬛ Monochrome</option>
+            <option value="Pastel">🌸 Pastel</option>
+            <option value="Vibrant">🌈 Vibrant</option>
+            <option value="Naturel">🌿 Naturel</option>
+            <option value="Néon">💡 Néon</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="ton-text-image"
+            placeholder="Décrivez la palette..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">H</span> Inspiration / Référence
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Des artistes, œuvres ou styles qui inspirent votre demande.
+              </span>
+            </span>
+          </h2>
+          <select id="inspiration-select-image">
+            <option value="" hidden>Référence artistique</option>
+            <option value="Style Studio Ghibli">🎬 Style Studio Ghibli</option>
+            <option value="Style Pixar">🎥 Style Pixar</option>
+            <option value="Art nouveau">🎨 Art nouveau</option>
+            <option value="Cyberpunk">🌃 Cyberpunk</option>
+            <option value="Renaissance">🖼️ Renaissance</option>
+            <option value="Impressionnisme">🌅 Impressionnisme</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="inspiration-text-image"
+            placeholder="Décrivez vos inspirations..."
+            style="display: none"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Description détaillée -->
+      <div class="section" style="margin-top: 24px">
+        <button class="toggle-text-button" onclick="toggleDetailTextImage()">
+          📝 Ajouter une description détaillée
+        </button>
+        <textarea
+          id="detail-demande-image"
+          placeholder="Décrivez en détail la scène, les éléments importants, la composition, l'histoire que raconte l'image..."
+        ></textarea>
+      </div>
+
+      <!-- Boutons -->
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 24px 0;">
+        <button onclick="generateImagePrompt()" style="flex: 1; min-width: 250px;">✨ Générer le Prompt OPRO</button>
+        <button onclick="generateSimpleImagePrompt()" style="flex: 1; min-width: 250px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);">⚡ Générer un Prompt SIMPLE</button>
+      </div>
+      <button
+        id="copyButtonImage"
+        onclick="copyImageToClipboard()"
+        style="
+          background: rgba(255, 255, 255, 0.08);
+          color: #b8c5d6;
+          box-shadow: none;
+        "
+      >
+        📋 Copier dans le presse-papier
+      </button>
+      <button
+        onclick="resetImageForm()"
+        style="
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          box-shadow: none;
+        "
+      >
+        🔄 Réinitialiser
+      </button>
+
+      <div class="result" id="result-image"></div>
+    </div>
+
+    <!-- Onglet Voyage -->
+    <div id="voyage" class="tab-content">
+      <div class="grid-container">
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span> Objectif du voyage
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Quelle est la raison principale de votre voyage ?
+              </span>
+            </span>
+          </h2>
+          <select id="objectif-select-voyage">
+            <option value="" hidden>Choisissez un objectif</option>
+            <option value="Détente et repos">🏖️ Détente et repos</option>
+            <option value="Aventure et exploration">
+              🏔️ Aventure et exploration
+            </option>
+            <option value="Culture et patrimoine">
+              🏛️ Culture et patrimoine
+            </option>
+            <option value="Gastronomie">🍽️ Gastronomie</option>
+            <option value="Sport et activités">⛷️ Sport et activités</option>
+            <option value="Voyage d'affaires">💼 Voyage d'affaires</option>
+            <option value="Romantique">💑 Romantique</option>
+            <option value="Famille">👨‍👩‍👧‍👦 Famille</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="objectif-text-voyage"
+            placeholder="Décrivez l'objectif de votre voyage..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span> Type de voyage
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Quel type d'expérience recherchez-vous ?
+              </span>
+            </span>
+          </h2>
+          <select id="type-select-voyage">
+            <option value="" hidden>Choisissez un type</option>
+            <option value="Voyage organisé">🗺️ Voyage organisé</option>
+            <option value="Road trip">🚗 Road trip</option>
+            <option value="City break">🏙️ City break</option>
+            <option value="Séjour balnéaire">🏝️ Séjour balnéaire</option>
+            <option value="Trek / Randonnée">🥾 Trek / Randonnée</option>
+            <option value="Croisière">🚢 Croisière</option>
+            <option value="Tour du monde">🌍 Tour du monde</option>
+            <option value="Backpacking">🎒 Backpacking</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="type-text-voyage"
+            placeholder="Décrivez le type de voyage..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span> Nombre de voyageurs
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">Combien de personnes participent au voyage ?</span>
+            </span>
+          </h2>
+          <select id="voyageurs-select-voyage">
+            <option value="" hidden>Nombre de voyageurs</option>
+            <option value="Solo">🧍 Solo (1 personne)</option>
+            <option value="Couple">👫 Couple (2 personnes)</option>
+            <option value="Petit groupe (3-4 personnes)">👥 Petit groupe (3-4 personnes)</option>
+            <option value="Groupe familial (5-6 personnes)">👨‍👩‍👧‍👦 Groupe familial (5-6 personnes)</option>
+            <option value="Grand groupe (7+ personnes)">👪 Grand groupe (7+ personnes)</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="voyageurs-text-voyage"
+            placeholder="Précisez le nombre et la composition du groupe..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">D</span> Durée
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">Combien de temps dure votre voyage ?</span>
+            </span>
+          </h2>
+          <select id="duree-select-voyage">
+            <option value="" hidden>Durée du voyage</option>
+            <option value="Weekend (2-3 jours)">⏱️ Weekend (2-3 jours)</option>
+            <option value="Une semaine">📅 Une semaine</option>
+            <option value="Deux semaines">📆 Deux semaines</option>
+            <option value="Un mois">🗓️ Un mois</option>
+            <option value="Plus d'un mois">⏳ Plus d'un mois</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="duree-text-voyage"
+            placeholder="Précisez la durée..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">E</span> Budget
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Quelle est votre enveloppe budgétaire ?
+              </span>
+            </span>
+          </h2>
+          <select id="budget-select-voyage">
+            <option value="" hidden>Choisissez un budget</option>
+            <option value="Petit budget">💰 Petit budget</option>
+            <option value="Budget moyen">💵 Budget moyen</option>
+            <option value="Budget confortable">💸 Budget confortable</option>
+            <option value="Budget luxe">💎 Budget luxe</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="budget-text-voyage"
+            placeholder="Précisez votre budget..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">F</span> Saison / Période
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">Quand prévoyez-vous de partir ?</span>
+            </span>
+          </h2>
+          <select id="saison-select-voyage">
+            <option value="" hidden>Période du voyage</option>
+            <option value="Printemps">🌸 Printemps</option>
+            <option value="Été">☀️ Été</option>
+            <option value="Automne">🍂 Automne</option>
+            <option value="Hiver">❄️ Hiver</option>
+            <option value="Flexible">🔄 Flexible</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="saison-text-voyage"
+            placeholder="Précisez la période..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">G</span> Contraintes
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Y a-t-il des contraintes particulières à prendre en compte ?
+              </span>
+            </span>
+          </h2>
+          <select id="contraintes-select-voyage">
+            <option value="" hidden>Contraintes éventuelles</option>
+            <option value="Allergies alimentaires">🚫 Allergies alimentaires</option>
+            <option value="Mobilité réduite">♿ Mobilité réduite</option>
+            <option value="Voyager avec enfants">👶 Voyager avec enfants</option>
+            <option value="Voyager avec animaux">🐕 Voyager avec animaux</option>
+            <option value="Peur de l'avion">✈️ Peur de l'avion</option>
+            <option value="Régime alimentaire spécifique">
+              🥗 Régime alimentaire spécifique
+            </option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="contraintes-text-voyage"
+            placeholder="Décrivez vos contraintes..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">H</span> Style de réponse
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Comment souhaitez-vous recevoir votre plan de voyage ?
+              </span>
+            </span>
+          </h2>
+          <select id="style-select-voyage">
+            <option value="" hidden>Format souhaité</option>
+            <option value="Itinéraire détaillé jour par jour">
+              📋 Itinéraire détaillé jour par jour
+            </option>
+            <option value="Liste de suggestions">💡 Liste de suggestions</option>
+            <option value="Guide complet avec tips">
+              📖 Guide complet avec tips
+            </option>
+            <option value="Plan minimaliste">⚡ Plan minimaliste</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="style-text-voyage"
+            placeholder="Précisez le style..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">I</span> Références / Inspirations
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Des destinations ou styles de voyage qui vous inspirent ?
+              </span>
+            </span>
+          </h2>
+          <select id="references-select-voyage">
+            <option value="" hidden>Sources d'inspiration</option>
+            <option value="Destinations Instagram">
+              📸 Destinations Instagram
+            </option>
+            <option value="Hors des sentiers battus">
+              🗺️ Hors des sentiers battus
+            </option>
+            <option value="Destinations populaires">
+              🌟 Destinations populaires
+            </option>
+            <option value="Éco-tourisme">🌱 Éco-tourisme</option>
+            <option value="Luxe et confort">💎 Luxe et confort</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="references-text-voyage"
+            placeholder="Partagez vos inspirations..."
+            style="display: none"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Description détaillée -->
+      <div class="section" style="margin-top: 24px">
+        <button class="toggle-text-button" onclick="toggleDetailTextVoyage()">
+          📝 Ajouter une description détaillée
+        </button>
+        <textarea
+          id="detail-demande-voyage"
+          placeholder="Partagez tous les détails importants : destinations souhaitées, centres d'intérêt, expériences recherchées, informations particulières..."
+        ></textarea>
+      </div>
+
+      <!-- Boutons -->
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 24px 0;">
+        <button onclick="generateVoyagePrompt()" style="flex: 1; min-width: 250px;">✨ Générer le Prompt OPRO</button>
+        <button onclick="generateSimpleVoyagePrompt()" style="flex: 1; min-width: 250px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);">⚡ Générer un Prompt SIMPLE</button>
+      </div>
+      <button
+        id="copyButtonVoyage"
+        onclick="copyVoyageToClipboard()"
+        style="
+          background: rgba(255, 255, 255, 0.08);
+          color: #b8c5d6;
+          box-shadow: none;
+        "
+      >
+        📋 Copier dans le presse-papier
+      </button>
+      <button
+        onclick="resetVoyageForm()"
+        style="
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          box-shadow: none;
+        "
+      >
+        🔄 Réinitialiser
+      </button>
+
+      <div class="result" id="result-voyage"></div>
+    </div>
+
+    <!-- Onglet Code -->
+    <div id="code" class="tab-content">
+      <div class="grid-container">
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span> Objectif
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Que doit faire précisément l'IA ? (analyse, création, optimisation, etc.)
+              </span>
+            </span>
+          </h2>
+          <select id="objectif-select-code">
+            <option value="" hidden>Choisissez un objectif</option>
+            <option value="Créer un workflow divisé en tâches indivisibles constituant des scripts autonomes réutilisables avec NDJson">
+              🔄 Créer un workflow avec scripts autonomes
+            </option>
+            <option value="Diviser un workflow existant en scripts modulaires et réutilisables">
+              🧩 Diviser un workflow en modules
+            </option>
+            <option value="Coder un script qui correspond exactement à mes besoins">
+              💻 Coder un nouveau script
+            </option>
+            <option value="Réécrire et optimiser un script pour gagner en efficacité et en performance">
+              ⚡ Optimiser un script existant
+            </option>
+            <option value="Nettoyer du code résiduel, supprimer les parties inutiles et améliorer la lisibilité">
+              🧹 Nettoyer du code
+            </option>
+            <option value="Assembler plusieurs scripts en un workflow cohérent">
+              🔗 Assembler des scripts
+            </option>
+            <option value="Créer une nouvelle fonction dans un script existant pour améliorer mon programme">
+              ➕ Ajouter une fonction
+            </option>
+            <option value="Créer une interface moderne et soignée avec un design professionnel">
+              🎨 Créer une interface
+            </option>
+            <option value="Résoudre un bug technique étape par étape avec des explications concrètes">
+              🐛 Corriger un bug
+            </option>
+            <option value="Automatiser une tâche répétitive avec un script clair et maintenable">
+              🤖 Automatiser un processus
+            </option>
+            <option value="Créer un dataset de données pour un projet IA">
+              📊 Créer un Dataset
+            </option>
+            <option value="Structurer un plan de projet en étapes claires avec priorités">
+              📋 Planifier un projet
+            </option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="objectif-text-code"
+            placeholder="Décrivez votre objectif..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span> Rôle de l'IA
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Dans quel rôle l'IA doit-elle agir pour cette tâche ?
+              </span>
+            </span>
+          </h2>
+          <select id="role-select-code">
+            <option value="" hidden>Choisissez un rôle</option>
+            <option value="Développeur logiciel expert en codage et architecture">
+              👨‍💻 Développeur expert
+            </option>
+            <option value="Data Engineer expert en optimisation de scripts et d'algorithmes">
+              🔧 Expert en optimisation
+            </option>
+            <option value="Data Engineer expert en workflows et automatisation avec NDJson">
+              🔄 Expert en workflows
+            </option>
+            <option value="Data Scientist expert en IA appliquée qui rend les choses simples">
+              🤖 Expert IA
+            </option>
+            <option value="Architecte logiciel expert en design patterns et scalabilité">
+              🏗️ Architecte logiciel
+            </option>
+            <option value="DevOps engineer expert en automatisation et pipeline CI/CD">
+              ⚙️ DevOps engineer
+            </option>
+            <option value="Expert en résolution de problèmes et algorithmes">
+              🧠 Expert résolution de problèmes
+            </option>
+            <option value="Professeur pédagogue expert qui guide sans jargon inutile">
+              👨‍🏫 Professeur pédagogue
+            </option>
+            <option value="Code reviewer expert qui identifie les problèmes et propose des améliorations">
+              🔍 Code reviewer
+            </option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="role-text-code"
+            placeholder="Définissez le rôle..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span> Langage
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Quel langage de programmation utiliser ?
+              </span>
+            </span>
+          </h2>
+          <select id="langage-select-code">
+            <option value="" hidden>Choisissez un langage</option>
+            <option value="Le meilleur langage pour cette tâche">
+              🎯 Peu importe (optimal)
+            </option>
+            <option value="Python">🐍 Python</option>
+            <option value="JavaScript">📜 JavaScript</option>
+            <option value="TypeScript">📘 TypeScript</option>
+            <option value="HTML/CSS/JavaScript">🌐 HTML/CSS/JS</option>
+            <option value="Node.js">🟢 Node.js</option>
+            <option value="Bash/Shell">💻 Bash/Shell</option>
+            <option value="Kotlin">🔷 Kotlin</option>
+            <option value="Dart/Flutter">🎯 Dart/Flutter</option>
+            <option value="Go">🔵 Go</option>
+            <option value="Rust">🦀 Rust</option>
+            <option value="SQL">💾 SQL</option>
+            <option value="custom" class="custom-option">✏️ Autre langage</option>
+          </select>
+          <textarea
+            id="langage-text-code"
+            placeholder="Précisez le langage..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">D</span> Type de projet
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Dans quel contexte s'inscrit ce développement ?
+              </span>
+            </span>
+          </h2>
+          <select id="projet-select-code">
+            <option value="" hidden>Type de projet</option>
+            <option value="Workflows IA avec scripts modulaires et NDJson">
+              🔄 Workflows IA modulaires
+            </option>
+            <option value="Automatisation de tâches répétitives">
+              🤖 Automatisation
+            </option>
+            <option value="Application web moderne">🌐 Application web</option>
+            <option value="API REST/GraphQL">🔌 API</option>
+            <option value="Script d'analyse de données">📊 Analyse de données</option>
+            <option value="Chatbot ou assistant IA">💬 Chatbot IA</option>
+            <option value="Dashboard de visualisation">📈 Dashboard</option>
+            <option value="Pipeline DevOps/CI-CD">⚙️ Pipeline DevOps</option>
+            <option value="Scraping et extraction de données">🕷️ Web scraping</option>
+            <option value="Microservices architecture">🏗️ Microservices</option>
+            <option value="CLI (Command Line Interface)">⌨️ CLI tool</option>
+            <option value="Extension ou plugin">🔌 Extension/Plugin</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="projet-text-code"
+            placeholder="Décrivez le type de projet..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">E</span> Contraintes
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Quelles sont les contraintes ou exigences particulières ?
+              </span>
+            </span>
+          </h2>
+          <select id="contraintes-select-code">
+            <option value="" hidden>Contraintes spécifiques</option>
+            <option value="Progression étape par étape avec validation à chaque action">
+              👣 Étape par étape
+            </option>
+            <option value="Explique uniquement ce qui change, comment et où l'insérer">
+              📝 Modifications uniquement
+            </option>
+            <option value="Réécris tout le script proprement avec commentaires et structure lisible">
+              📄 Script complet
+            </option>
+            <option value="Code optimisé, maintenable et bien documenté">
+              ⚡ Code optimisé
+            </option>
+            <option value="Utilise uniquement des outils open-source fiables">
+              🔓 Open-source uniquement
+            </option>
+            <option value="Solutions scalables et maintenables pour la production">
+              📈 Scalable et production-ready
+            </option>
+            <option value="Scripts autonomes et réutilisables">
+              🧩 Scripts modulaires
+            </option>
+            <option value="Format NDJson pour les workflows">
+              📋 Format NDJson
+            </option>
+            <option value="Gestion d'erreurs robuste et logging">
+              🛡️ Gestion d'erreurs
+            </option>
+            <option value="Tests unitaires inclus">✅ Avec tests</option>
+            <option value="Documentation complète">📚 Bien documenté</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="contraintes-text-code"
+            placeholder="Précisez les contraintes..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">F</span> Fichiers joints
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Y a-t-il des fichiers de référence à analyser ?
+              </span>
+            </span>
+          </h2>
+          <select id="fichiers-select-code">
+            <option value="" hidden>Fichiers de référence</option>
+            <option value="Aucun fichier joint">❌ Aucun</option>
+            <option value="Voir le script joint à améliorer sans altérer sa logique">
+              📜 Script existant
+            </option>
+            <option value="Voir la capture d'écran illustrant le comportement ou l'erreur">
+              📸 Capture d'écran
+            </option>
+            <option value="Voir le fichier de configuration joint">
+              ⚙️ Fichier config
+            </option>
+            <option value="Voir le CSV contenant les données à traiter">
+              📊 Fichier CSV
+            </option>
+            <option value="Voir le JSON/NDJson avec la structure à respecter">
+              📋 Fichier JSON
+            </option>
+            <option value="Voir le fichier de log pour analyser l'erreur">
+              📝 Fichier log
+            </option>
+            <option value="Voir la documentation API jointe">
+              📚 Documentation API
+            </option>
+            <option value="custom" class="custom-option">✏️ Autre fichier</option>
+          </select>
+          <textarea
+            id="fichiers-text-code"
+            placeholder="Décrivez les fichiers joints..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">G</span> Format de sortie
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Comment souhaitez-vous recevoir la réponse ?
+              </span>
+            </span>
+          </h2>
+          <select id="format-select-code">
+            <option value="" hidden>Format souhaité</option>
+            <option value="Synthétique et direct en markdown avec résumé des actions">
+              ⚡ Synthétique
+            </option>
+            <option value="Technique et précis avec focus sur les détails pratiques">
+              🔬 Technique détaillé
+            </option>
+            <option value="Pédagogique, clair et accessible pour apprendre">
+              📖 Pédagogique
+            </option>
+            <option value="Checklist numérotée des étapes à suivre">
+              ✅ Checklist
+            </option>
+            <option value="Code commenté ligne par ligne">
+              💬 Code commenté
+            </option>
+            <option value="Schéma d'architecture avec explications">
+              🏗️ Schéma architecture
+            </option>
+            <option value="Scripts séparés pour chaque module du workflow">
+              📦 Scripts modulaires
+            </option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="format-text-code"
+            placeholder="Précisez le format..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">H</span> Niveau d'expertise
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Quel est votre niveau dans ce langage/domaine ?
+              </span>
+            </span>
+          </h2>
+          <select id="niveau-select-code">
+            <option value="" hidden>Niveau d'expertise</option>
+            <option value="Débutant - explique les concepts de base">
+              🌱 Débutant
+            </option>
+            <option value="Intermédiaire - je connais les bases">
+              📚 Intermédiaire
+            </option>
+            <option value="Avancé - va droit au but">🎯 Avancé</option>
+            <option value="Expert - optimisations avancées uniquement">
+              🚀 Expert
+            </option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="niveau-text-code"
+            placeholder="Précisez votre niveau..."
+            style="display: none"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Description détaillée -->
+      <div class="section" style="margin-top: 24px">
+        <button class="toggle-text-button" onclick="toggleDetailTextCode()">
+          📝 Ajouter une description détaillée
+        </button>
+        <textarea
+          id="detail-demande-code"
+          placeholder="Décrivez précisément votre besoin : fonctionnalités souhaitées, structure du workflow, modules à créer, problèmes à résoudre, exemples de données, comportement attendu..."
+        ></textarea>
+      </div>
+
+      <!-- Boutons -->
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 24px 0;">
+        <button onclick="generateCodePrompt()" style="flex: 1; min-width: 250px;">✨ Générer le Prompt OPRO</button>
+        <button onclick="generateSimpleCodePrompt()" style="flex: 1; min-width: 250px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);">⚡ Générer un Prompt SIMPLE</button>
+      </div>
+      <button
+        id="copyButtonCode"
+        onclick="copyCodeToClipboard()"
+        style="
+          background: rgba(255, 255, 255, 0.08);
+          color: #b8c5d6;
+          box-shadow: none;
+        "
+      >
+        📋 Copier dans le presse-papier
+      </button>
+      <button
+        onclick="resetCodeForm()"
+        style="
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          box-shadow: none;
+        "
+      >
+        🔄 Réinitialiser
+      </button>
+
+      <div class="result" id="result-code"></div>
+    </div>
+
+    <!-- Onglet Génération application -->
+    <div id="app" class="tab-content">
+      <div class="grid-container">
+        <!-- Section A: Type d'application -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span> Type d'application
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Définissez le type principal de votre application
+              </span>
+            </span>
+          </h2>
+          <select id="type-select-app">
+            <option value="" hidden>Type d'application</option>
+            <option value="Application web">🌐 Application web</option>
+            <option value="Application mobile">📱 Application mobile</option>
+            <option value="Application desktop">💻 Application desktop</option>
+            <option value="Progressive Web App (PWA)">⚡ Progressive Web App (PWA)</option>
+            <option value="Application hybride">🔄 Application hybride</option>
+            <option value="Extension navigateur">🧩 Extension navigateur</option>
+            <option value="CLI / Tool">⌨️ CLI / Tool</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="type-text-app"
+            placeholder="Décrivez le type d'application..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section B: Stack technique -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span> Stack technique
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Choisissez les technologies à utiliser (vanilla, framework, etc.)
+              </span>
+            </span>
+          </h2>
+          <select id="stack-select-app">
+            <option value="" hidden>Stack technique</option>
+            <optgroup label="🎯 Sans Framework (Vanilla)">
+              <option value="HTML/CSS/JavaScript vanilla (pur)">HTML/CSS/JS vanilla</option>
+              <option value="TypeScript vanilla">TypeScript vanilla</option>
+            </optgroup>
+            <optgroup label="⚛️ Frameworks Web">
+              <option value="React">React</option>
+              <option value="Vue.js">Vue.js</option>
+              <option value="Angular">Angular</option>
+              <option value="Svelte">Svelte</option>
+              <option value="Next.js (React)">Next.js (React)</option>
+              <option value="Nuxt.js (Vue)">Nuxt.js (Vue)</option>
+              <option value="SvelteKit">SvelteKit</option>
+              <option value="Solid.js">Solid.js</option>
+            </optgroup>
+            <optgroup label="📱 Mobile Natif">
+              <option value="React Native">React Native</option>
+              <option value="Flutter">Flutter</option>
+              <option value="Swift (iOS natif)">Swift (iOS natif)</option>
+              <option value="Kotlin (Android natif)">Kotlin (Android natif)</option>
+              <option value="SwiftUI">SwiftUI</option>
+              <option value="Jetpack Compose">Jetpack Compose</option>
+            </optgroup>
+            <optgroup label="🖥️ Desktop">
+              <option value="Electron">Electron</option>
+              <option value="Tauri">Tauri</option>
+              <option value="Qt">Qt</option>
+            </optgroup>
+            <option value="custom" class="custom-option">✏️ Autre stack</option>
+          </select>
+          <textarea
+            id="stack-text-app"
+            placeholder="Précisez votre stack technique..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section C: Plateforme cible -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span> Plateforme(s) cible
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Sur quelles plateformes l'app doit-elle fonctionner ?
+              </span>
+            </span>
+          </h2>
+          <select id="platform-select-app">
+            <option value="" hidden>Plateforme(s)</option>
+            <option value="Web (navigateurs modernes)">🌐 Web (navigateurs)</option>
+            <option value="iOS uniquement">🍎 iOS uniquement</option>
+            <option value="Android uniquement">🤖 Android uniquement</option>
+            <option value="iOS et Android">📱 iOS et Android</option>
+            <option value="Windows">🪟 Windows</option>
+            <option value="macOS">🍎 macOS</option>
+            <option value="Linux">🐧 Linux</option>
+            <option value="Multiplateforme (Windows/Mac/Linux)">💻 Multiplateforme desktop</option>
+            <option value="Toutes plateformes (Web + Mobile + Desktop)">🌍 Toutes plateformes</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="platform-text-app"
+            placeholder="Précisez les plateformes..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section D: Fonctionnalité principale -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">D</span> Fonction principale
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Quelle est la fonctionnalité principale de l'application ?
+              </span>
+            </span>
+          </h2>
+          <select id="fonction-select-app">
+            <option value="" hidden>Fonction principale</option>
+            <option value="Gestion de données / CRUD">📊 Gestion de données / CRUD</option>
+            <option value="Réseau social / Communication">💬 Réseau social / Communication</option>
+            <option value="E-commerce / Marketplace">🛒 E-commerce / Marketplace</option>
+            <option value="Productivité / Todo / Notes">✅ Productivité / Todo / Notes</option>
+            <option value="Jeu / Divertissement">🎮 Jeu / Divertissement</option>
+            <option value="Média / Streaming">📺 Média / Streaming</option>
+            <option value="Dashboard / Analytics">📈 Dashboard / Analytics</option>
+            <option value="Éducation / E-learning">📚 Éducation / E-learning</option>
+            <option value="Santé / Fitness">💪 Santé / Fitness</option>
+            <option value="Finance / Budget">💰 Finance / Budget</option>
+            <option value="Utilitaire / Tool">🔧 Utilitaire / Tool</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="fonction-text-app"
+            placeholder="Décrivez la fonction principale..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section E: Architecture -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">E</span> Architecture
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Quelle architecture privilégier pour l'application ?
+              </span>
+            </span>
+          </h2>
+          <select id="archi-select-app">
+            <option value="" hidden>Architecture</option>
+            <option value="Monolithique simple">🏢 Monolithique simple</option>
+            <option value="Composants modulaires">🧩 Composants modulaires</option>
+            <option value="MVC / MVVM">📐 MVC / MVVM</option>
+            <option value="Architecture en couches">🎂 Architecture en couches</option>
+            <option value="Micro-frontends">🔀 Micro-frontends</option>
+            <option value="Serverless">☁️ Serverless</option>
+            <option value="JAMstack">⚡ JAMstack</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="archi-text-app"
+            placeholder="Décrivez l'architecture..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section F: Gestion des données -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">F</span> Gestion des données
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Comment les données seront-elles stockées et gérées ?
+              </span>
+            </span>
+          </h2>
+          <select id="data-select-app">
+            <option value="" hidden>Stockage données</option>
+            <option value="LocalStorage / SessionStorage">💾 LocalStorage / SessionStorage</option>
+            <option value="IndexedDB">🗄️ IndexedDB</option>
+            <option value="REST API">🔌 REST API</option>
+            <option value="GraphQL">📊 GraphQL</option>
+            <option value="Firebase / Supabase">🔥 Firebase / Supabase</option>
+            <option value="WebSocket / Real-time">⚡ WebSocket / Real-time</option>
+            <option value="SQLite local">💿 SQLite local</option>
+            <option value="Offline-first avec sync">📴 Offline-first avec sync</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="data-text-app"
+            placeholder="Précisez la gestion des données..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section G: Authentification -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">G</span> Authentification
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                L'application nécessite-t-elle une authentification ?
+              </span>
+            </span>
+          </h2>
+          <select id="auth-select-app">
+            <option value="" hidden>Type d'authentification</option>
+            <option value="Aucune - app publique">🌐 Aucune - app publique</option>
+            <option value="Mock locale (dev/demo)">🎭 Mock locale (dev/demo)</option>
+            <option value="Email/Password">📧 Email/Password</option>
+            <option value="OAuth (Google, GitHub, etc.)">🔐 OAuth (Google, GitHub, etc.)</option>
+            <option value="JWT tokens">🎫 JWT tokens</option>
+            <option value="Session-based">🍪 Session-based</option>
+            <option value="Biométrie (mobile)">👤 Biométrie (mobile)</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="auth-text-app"
+            placeholder="Précisez l'authentification..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section H: Design System -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">H</span> Design System
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Quel style de design et d'interface utiliser ?
+              </span>
+            </span>
+          </h2>
+          <select id="design-select-app">
+            <option value="" hidden>Design System</option>
+            <option value="Design system minimal custom (tokens CSS)">🎨 Minimal custom (tokens CSS)</option>
+            <option value="Material Design">📦 Material Design</option>
+            <option value="Apple Human Interface Guidelines">🍎 Apple HIG</option>
+            <option value="Tailwind CSS">🌊 Tailwind CSS</option>
+            <option value="Bootstrap">🅱️ Bootstrap</option>
+            <option value="Ant Design">🐜 Ant Design</option>
+            <option value="Chakra UI">⚡ Chakra UI</option>
+            <option value="Shadcn/ui">🎭 Shadcn/ui</option>
+            <option value="Flat / Minimal">⬜ Flat / Minimal</option>
+            <option value="Neumorphism">🌓 Neumorphism</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="design-text-app"
+            placeholder="Décrivez le design souhaité..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section I: Accessibilité -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">I</span> Accessibilité
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Niveau d'accessibilité requis pour l'application
+              </span>
+            </span>
+          </h2>
+          <select id="a11y-select-app">
+            <option value="" hidden>Niveau accessibilité</option>
+            <option value="Basique - contrastes et navigation clavier">🔰 Basique</option>
+            <option value="WCAG AA - conformité standard">✅ WCAG AA (standard)</option>
+            <option value="WCAG AAA - conformité maximale">🏆 WCAG AAA (maximale)</option>
+            <option value="Support lecteurs d'écran complet">👁️ Support lecteurs d'écran</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="a11y-text-app"
+            placeholder="Précisez les besoins d'accessibilité..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section J: Features UI/UX -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">J</span> Features UI/UX
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Fonctionnalités d'interface utilisateur souhaitées
+              </span>
+            </span>
+          </h2>
+          <select id="features-select-app">
+            <option value="" hidden>Features UI/UX</option>
+            <option value="Navigation basique (pages/routes)">🧭 Navigation basique</option>
+            <option value="Drawer/Sidebar + Header">📱 Drawer/Sidebar + Header</option>
+            <option value="Gestures (swipe, drag & drop)">👆 Gestures (swipe, drag & drop)</option>
+            <option value="Animations et transitions">✨ Animations et transitions</option>
+            <option value="Mode sombre / clair">🌓 Mode sombre / clair</option>
+            <option value="Recherche et filtres avancés">🔍 Recherche et filtres</option>
+            <option value="Notifications / Toasts">🔔 Notifications / Toasts</option>
+            <option value="États loading/error/empty">⏳ États loading/error/empty</option>
+            <option value="Internationalisation (i18n)">🌍 Internationalisation</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="features-text-app"
+            placeholder="Décrivez les features UI/UX..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section K: Performance -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">K</span> Performance
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Objectifs et techniques de performance
+              </span>
+            </span>
+          </h2>
+          <select id="perf-select-app">
+            <option value="" hidden>Objectifs performance</option>
+            <option value="Aucune optimisation spécifique">🟢 Standard - aucune optimisation spécifique</option>
+            <option value="TTI < 2s, bundle < 100Ko, lazy-loading">⚡ Optimisé - TTI < 2s, bundle < 100Ko</option>
+            <option value="Code splitting et lazy-loading agressif">📦 Code splitting agressif</option>
+            <option value="Virtualisation listes longues (>200 items)">📜 Virtualisation listes</option>
+            <option value="Service Workers et cache stratégies">💾 Service Workers + cache</option>
+            <option value="SSR / SSG pour SEO et perf">🚀 SSR / SSG</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="perf-text-app"
+            placeholder="Précisez les objectifs de performance..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section L: Tests et Qualité -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">L</span> Tests et Qualité
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Stratégie de tests et critères de qualité
+              </span>
+            </span>
+          </h2>
+          <select id="tests-select-app">
+            <option value="" hidden>Stratégie de tests</option>
+            <option value="Aucun test - MVP rapide">🎯 Aucun test - MVP rapide</option>
+            <option value="Tests manuels uniquement">👁️ Tests manuels</option>
+            <option value="Tests unitaires légers">🧪 Tests unitaires</option>
+            <option value="Tests unitaires + intégration">🔬 Tests unitaires + intégration</option>
+            <option value="Tests E2E (Cypress, Playwright)">🎭 Tests E2E</option>
+            <option value="Scénarios Gherkin (BDD)">📝 Scénarios Gherkin (BDD)</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="tests-text-app"
+            placeholder="Décrivez la stratégie de tests..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section M: Livrables -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">M</span> Livrables attendus
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Que doit produire l'IA : code complet, structure, exemples ?
+              </span>
+            </span>
+          </h2>
+          <select id="livrables-select-app">
+            <option value="" hidden>Livrables</option>
+            <option value="Arborescence + fichiers clés complets">📁 Arborescence + fichiers clés</option>
+            <option value="Code complet prêt à l'emploi">💯 Code complet prêt à l'emploi</option>
+            <option value="Structure + snippets d'exemple">📋 Structure + snippets</option>
+            <option value="Prototype fonctionnel (MVP)">🚀 Prototype fonctionnel (MVP)</option>
+            <option value="Code + README + instructions de déploiement">📘 Code + README + déploiement</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="livrables-text-app"
+            placeholder="Précisez les livrables attendus..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section N: Contraintes -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">N</span> Contraintes
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Limitations, exclusions ou exigences spécifiques
+              </span>
+            </span>
+          </h2>
+          <select id="contraintes-select-app">
+            <option value="" hidden>Contraintes</option>
+            <option value="Aucune dépendance externe">🚫 Aucune dépendance externe</option>
+            <option value="Zéro build tool - fichiers statiques uniquement">📄 Zéro build tool</option>
+            <option value="Compatible IE11 / anciens navigateurs">🦕 Support anciens navigateurs</option>
+            <option value="Poids total < 500Ko">⚖️ Poids total < 500Ko</option>
+            <option value="Offline-first obligatoire">📴 Offline-first obligatoire</option>
+            <option value="Pas de frameworks tiers">⛔ Pas de frameworks tiers</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="contraintes-text-app"
+            placeholder="Décrivez les contraintes..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section O: Public cible -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">O</span> Public cible
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Qui utilisera cette application ?
+              </span>
+            </span>
+          </h2>
+          <select id="public-select-app">
+            <option value="" hidden>Public cible</option>
+            <option value="Usage personnel uniquement">👤 Usage personnel</option>
+            <option value="Petite équipe (< 10 personnes)">👥 Petite équipe</option>
+            <option value="Équipe moyenne (10-100)">🏢 Équipe moyenne</option>
+            <option value="Large public (100+)">🌍 Large public</option>
+            <option value="B2B / Entreprises">💼 B2B / Entreprises</option>
+            <option value="B2C / Grand public">🛒 B2C / Grand public</option>
+            <option value="custom" class="custom-option">✏️ Personnalisé</option>
+          </select>
+          <textarea
+            id="public-text-app"
+            placeholder="Décrivez le public cible..."
+            style="display: none"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Description détaillée -->
+      <div class="section" style="margin-top: 24px">
+        <button class="toggle-text-button" onclick="toggleDetailTextApp()">
+          📝 Ajouter une description détaillée de l'application
+        </button>
+        <textarea
+          id="detail-demande-app"
+          placeholder="Décrivez en détail votre application : fonctionnalités précises, cas d'usage, workflow utilisateur, écrans principaux, données manipulées, interactions clés, exemples concrets, contraintes techniques, inspirations..."
+        ></textarea>
+      </div>
+
+      <!-- Boutons -->
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 24px 0;">
+        <button onclick="generateAppPrompt()" style="flex: 1; min-width: 250px;">✨ Générer le Prompt OPRO</button>
+        <button onclick="generateSimpleAppPrompt()" style="flex: 1; min-width: 250px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);">⚡ Générer un Prompt SIMPLE</button>
+      </div>
+      <button
+        id="copyButtonApp"
+        onclick="copyAppToClipboard()"
+        style="
+          background: rgba(255, 255, 255, 0.08);
+          color: #b8c5d6;
+          box-shadow: none;
+        "
+      >
+        📋 Copier dans le presse-papier
+      </button>
+      <button
+        onclick="resetAppForm()"
+        style="
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          box-shadow: none;
+        "
+      >
+        🔄 Réinitialiser
+      </button>
+
+      <div class="result" id="result-app"></div>
+    </div>
+
+    <script>
+      // Gestion des onglets
+      function setupTabs() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get("tab") || "redaction";
+
+        document.querySelectorAll(".tab-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        const activeContent = document.getElementById(activeTab);
+        if (activeContent) {
+          activeContent.classList.add("active");
+          const activeButton = document.querySelector(
+            `[onclick="openTab(event, '${activeTab}')"]`
+          );
+          if (activeButton) {
+            activeButton.classList.add("active");
+          }
+        }
+      }
+
+      function openTab(evt, tabName) {
+        document.querySelectorAll(".tab-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+
+        const url = new URL(window.location);
+        url.searchParams.set("tab", tabName);
+        window.history.pushState({}, "", url);
+      }
+
+      // Gestion des champs personnalisés
+      function handleSelectChange(fieldId, value) {
+        const textarea = document.getElementById(fieldId + "-text");
+        if (value === "custom") {
+          textarea.style.display = "block";
+          textarea.focus();
+        } else {
+          textarea.style.display = "none";
+          textarea.value = "";
+        }
+      }
+
+      // Configuration des gestionnaires d'événements pour les champs
+      function setupFieldHandlers(fields, suffix = "") {
+        fields.forEach((fieldId) => {
+          const select = document.getElementById(fieldId + "-select" + suffix);
+          if (select) {
+            select.addEventListener("change", (e) =>
+              handleSelectChange(fieldId + suffix, e.target.value)
+            );
+          }
+        });
+      }
+
+      // Fonction pour basculer l'affichage du champ de texte détaillé
+      function toggleDetailText() {
+        const textarea = document.getElementById("detail-demande");
+        if (textarea.style.display === "none" || textarea.style.display === "") {
+          textarea.style.display = "block";
+        } else {
+          textarea.style.display = "none";
+        }
+      }
+
+      function toggleDetailTextImage() {
+        const textarea = document.getElementById("detail-demande-image");
+        if (textarea.style.display === "none" || textarea.style.display === "") {
+          textarea.style.display = "block";
+        } else {
+          textarea.style.display = "none";
+        }
+      }
+
+      function toggleDetailTextVoyage() {
+        const textarea = document.getElementById("detail-demande-voyage");
+        if (textarea.style.display === "none" || textarea.style.display === "") {
+          textarea.style.display = "block";
+        } else {
+          textarea.style.display = "none";
+        }
+      }
+
+      function toggleDetailTextCode() {
+        const textarea = document.getElementById("detail-demande-code");
+        if (textarea.style.display === "none" || textarea.style.display === "") {
+          textarea.style.display = "block";
+        } else {
+          textarea.style.display = "none";
+        }
+      }
+
+      function toggleDetailTextApp() {
+        const textarea = document.getElementById("detail-demande-app");
+        if (textarea.style.display === "none" || textarea.style.display === "") {
+          textarea.style.display = "block";
+        } else {
+          textarea.style.display = "none";
+        }
+      }
+
+      // Fonction pour obtenir la valeur d'un champ (select ou textarea)
+      function getFieldValue(selectId, textareaId) {
+        const select = document.getElementById(selectId);
+        const textarea = document.getElementById(textareaId);
+
+        if (select.value === "custom" && textarea.value.trim() !== "") {
+          return textarea.value.trim();
+        }
+        return select.value.trim();
+      }
+
+      // Génération du prompt pour la rédaction
+      function generatePrompt() {
+        const objectif = getFieldValue("objectif-select", "objectif-text");
+        const genre = getFieldValue("genre-select", "genre-text");
+        const language = getFieldValue("language-select", "language-text");
+        const thematique = getFieldValue("thematique-select", "thematique-text");
+        const cadre = getFieldValue("cadre-select", "cadre-text");
+        const pj = getFieldValue("pj-select", "pj-text");
+        const ton = getFieldValue("ton-select", "ton-text");
+        const detailDemande = document
+          .getElementById("detail-demande")
+          .value.trim();
+
+        let basePrompt =
+          "Voici ma demande structurée pour générer du contenu :\n\n";
+        if (objectif) basePrompt += `• Objectif : ${objectif}\n`;
+        if (genre) basePrompt += `• Format : ${genre}\n`;
+        if (language) basePrompt += `• Langue : ${language}\n`;
+        if (thematique) basePrompt += `• Thématique : ${thematique}\n`;
+        if (cadre) basePrompt += `• Contexte : ${cadre}\n`;
+        if (pj) basePrompt += `• Public cible : ${pj}\n`;
+        if (ton) basePrompt += `• Ton : ${ton}\n`;
+        if (detailDemande)
+          basePrompt += `\n🔎 Description détaillée :\n${detailDemande}\n`;
+
+        basePrompt += `\n👉 Créez un contenu professionnel qui répond précisément à ces critères.\n`;
+
+        const oproInstructions = `
+🔁 Instructions OPRO :
+
+Tu es un expert en prompt engineering. À partir du prompt ci-dessus, effectue les étapes suivantes :
+
+1. Présente la réponse sous forme de liste à puce: une puce par prompt
+2. Commence par la première puce avec le résumé du prompt original ci-dessus
+3. Génère 5 variantes de prompts basés sur celui-ci.
+4. Pour chaque prompt, évalue sa pertinence sur une échelle de 0 à 100.
+   Critères de notation :
+   - Clarté des instructions
+   - Cohérence avec les critères
+   - Précision des demandes
+   - Capacité à guider l'IA vers un résultat optimal
+5. Ajoute à la fin la commande suivante: Tu vas agir comme un expert en Prompt Engineering. En te basant sur tes connaissances, tes compétences et les prompts notés que je t'ai partagé, tu vas rédiger le prompt parfait pour cette demande.
+
+Objectif final : identifier le meilleur prompt pour générer le contenu demandé.
+
+Prompt de départ :
+"""
+${basePrompt}
+"""
+`;
+
+        document.getElementById("result").textContent = oproInstructions;
+      }
+
+      // Génération du prompt SIMPLE pour la rédaction
+      function generateSimplePrompt() {
+        const objectif = getFieldValue("objectif-select", "objectif-text");
+        const genre = getFieldValue("genre-select", "genre-text");
+        const language = getFieldValue("language-select", "language-text");
+        const thematique = getFieldValue("thematique-select", "thematique-text");
+        const cadre = getFieldValue("cadre-select", "cadre-text");
+        const pj = getFieldValue("pj-select", "pj-text");
+        const ton = getFieldValue("ton-select", "ton-text");
+        const detailDemande = document
+          .getElementById("detail-demande")
+          .value.trim();
+
+        let simplePrompt = "Tu es un rédacteur professionnel expert avec 15 ans d'expérience. ";
+        
+        simplePrompt += "Voici ma demande de rédaction :\n\n";
+        
+        if (objectif) simplePrompt += `• Objectif : ${objectif}\n`;
+        if (genre) simplePrompt += `• Format demandé : ${genre}\n`;
+        if (language) simplePrompt += `• Langue : ${language}\n`;
+        if (thematique) simplePrompt += `• Thématique : ${thematique}\n`;
+        if (cadre) simplePrompt += `• Contexte : ${cadre}\n`;
+        if (pj) simplePrompt += `• Public cible : ${pj}\n`;
+        if (ton) simplePrompt += `• Ton et style : ${ton}\n`;
+        
+        if (detailDemande) {
+          simplePrompt += `\nDétails de la demande :\n${detailDemande}\n`;
+        }
+        
+        simplePrompt += `\nAttentes :`;
+        simplePrompt += `\n- Contenu structuré et professionnel adapté au public cible`;
+        simplePrompt += `\n- Respect du ton et du format demandés`;
+        simplePrompt += `\n- Qualité rédactionnelle irréprochable`;
+        simplePrompt += `\n- Contenu pertinent et engageant`;
+
+        document.getElementById("result").textContent = simplePrompt;
+      }
+
+      // Génération du prompt pour l'image
+      function generateImagePrompt() {
+        const objectif = getFieldValue(
+          "objectif-select-image",
+          "objectif-text-image"
+        );
+        const genre = getFieldValue("genre-select-image", "genre-text-image");
+        const format = getFieldValue("format-select-image", "format-text-image");
+        const ambiance = getFieldValue(
+          "ambiance-select-image",
+          "ambiance-text-image"
+        );
+        const rendu = getFieldValue("rendu-select-image", "rendu-text-image");
+        const eviter = getFieldValue("eviter-select-image", "eviter-text-image");
+        const ton = getFieldValue("ton-select-image", "ton-text-image");
+        const inspiration = getFieldValue(
+          "inspiration-select-image",
+          "inspiration-text-image"
+        );
+        const detailDemande = document
+          .getElementById("detail-demande-image")
+          .value.trim();
+
+        let basePrompt =
+          "Voici ma demande structurée pour générer une image :\n\n";
+        if (objectif) basePrompt += `• Objectif : ${objectif}\n`;
+        if (genre) basePrompt += `• Style artistique : ${genre}\n`;
+        if (format) basePrompt += `• Format : ${format}\n`;
+        if (ambiance) basePrompt += `• Ambiance : ${ambiance}\n`;
+        if (rendu) basePrompt += `• Technique de rendu : ${rendu}\n`;
+        if (eviter) basePrompt += `• À éviter : ${eviter}\n`;
+        if (ton) basePrompt += `• Palette de couleurs : ${ton}\n`;
+        if (inspiration) basePrompt += `• Inspiration : ${inspiration}\n`;
+        if (detailDemande)
+          basePrompt += `\n🔎 Description détaillée :\n${detailDemande}\n`;
+
+        basePrompt += `\n👉 Créez une image qui correspond précisément à ces spécifications.\n`;
+
+        const oproInstructions = `
+🔁 Instructions OPRO :
+
+Tu es un expert en prompt engineering pour la génération d'images IA. À partir du prompt ci-dessus, effectue les étapes suivantes :
+
+1. Présente la réponse sous forme de liste à puce: une puce par prompt
+2. Commence par la première puce avec le résumé du prompt original ci-dessus
+3. Génère 5 variantes de prompts basés sur celui-ci.
+4. Pour chaque prompt, évalue sa pertinence sur une échelle de 0 à 100.
+   Critères de notation :
+   - Clarté de la description visuelle
+   - Cohérence avec le style demandé
+   - Précision des détails techniques
+   - Capacité à guider l'IA vers l'image souhaitée
+5. Ajoute à la fin la commande suivante: Tu vas agir comme un expert en Prompt Engineering spécialisé dans la génération d'images. En te basant sur tes connaissances, tes compétences et les prompts notés que je t'ai partagé, tu vas rédiger le prompt parfait pour générer cette image.
+
+Objectif final : identifier le meilleur prompt pour créer l'image demandée.
+
+Prompt de départ :
+"""
+${basePrompt}
+"""
+`;
+
+        document.getElementById("result-image").textContent = oproInstructions;
+      }
+
+      // Génération du prompt SIMPLE pour l'image
+      function generateSimpleImagePrompt() {
+        const objectif = getFieldValue(
+          "objectif-select-image",
+          "objectif-text-image"
+        );
+        const genre = getFieldValue("genre-select-image", "genre-text-image");
+        const format = getFieldValue("format-select-image", "format-text-image");
+        const ambiance = getFieldValue(
+          "ambiance-select-image",
+          "ambiance-text-image"
+        );
+        const rendu = getFieldValue("rendu-select-image", "rendu-text-image");
+        const eviter = getFieldValue("eviter-select-image", "eviter-text-image");
+        const ton = getFieldValue("ton-select-image", "ton-text-image");
+        const inspiration = getFieldValue(
+          "inspiration-select-image",
+          "inspiration-text-image"
+        );
+        const detailDemande = document
+          .getElementById("detail-demande-image")
+          .value.trim();
+
+        let simplePrompt = "Tu es un expert en génération d'images IA et en design visuel. ";
+        
+        simplePrompt += "Créez une image avec ces spécifications :\n\n";
+        
+        if (objectif) simplePrompt += `• Objectif : ${objectif}\n`;
+        if (genre) simplePrompt += `• Style artistique : ${genre}\n`;
+        if (format) simplePrompt += `• Format : ${format}\n`;
+        if (ambiance) simplePrompt += `• Ambiance : ${ambiance}\n`;
+        if (ton) simplePrompt += `• Palette de couleurs : ${ton}\n`;
+        if (rendu) simplePrompt += `• Technique de rendu : ${rendu}\n`;
+        if (inspiration) simplePrompt += `• Inspiration : ${inspiration}\n`;
+        if (eviter) simplePrompt += `• Éléments à éviter : ${eviter}\n`;
+        
+        if (detailDemande) {
+          simplePrompt += `\nDescription de l'image souhaitée :\n${detailDemande}\n`;
+        }
+        
+        simplePrompt += `\nCritères de qualité :`;
+        simplePrompt += `\n- Composition harmonieuse et équilibrée`;
+        simplePrompt += `\n- Cohérence stylistique`;
+        simplePrompt += `\n- Qualité professionnelle`;
+        simplePrompt += `\n- Impact visuel fort`;
+
+        document.getElementById("result-image").textContent = simplePrompt;
+      }
+
+      // Génération du prompt pour le voyage
+      function generateVoyagePrompt() {
+        const objectif = getFieldValue(
+          "objectif-select-voyage",
+          "objectif-text-voyage"
+        );
+        const type = getFieldValue("type-select-voyage", "type-text-voyage");
+        const voyageurs = getFieldValue(
+          "voyageurs-select-voyage",
+          "voyageurs-text-voyage"
+        );
+        const duree = getFieldValue("duree-select-voyage", "duree-text-voyage");
+        const budget = getFieldValue(
+          "budget-select-voyage",
+          "budget-text-voyage"
+        );
+        const saison = getFieldValue(
+          "saison-select-voyage",
+          "saison-text-voyage"
+        );
+        const contraintes = getFieldValue(
+          "contraintes-select-voyage",
+          "contraintes-text-voyage"
+        );
+        const style = getFieldValue("style-select-voyage", "style-text-voyage");
+        const references = getFieldValue(
+          "references-select-voyage",
+          "references-text-voyage"
+        );
+        const detailDemande = document
+          .getElementById("detail-demande-voyage")
+          .value.trim();
+
+        let basePrompt =
+          "Voici ma demande structurée pour planifier mon voyage :\n\n";
+        if (objectif) basePrompt += `• Objectif : ${objectif}\n`;
+        if (type) basePrompt += `• Type de voyage : ${type}\n`;
+        if (voyageurs) basePrompt += `• Nombre de voyageurs : ${voyageurs}\n`;
+        if (duree) basePrompt += `• Durée : ${duree}\n`;
+        if (budget) basePrompt += `• Budget : ${budget}\n`;
+        if (saison) basePrompt += `• Saison : ${saison}\n`;
+        if (contraintes) basePrompt += `• Contraintes : ${contraintes}\n`;
+        if (style) basePrompt += `• Style de réponse : ${style}\n`;
+        if (references) basePrompt += `• Références : ${references}\n`;
+        if (detailDemande)
+          basePrompt += `\n🔎 Description détaillée :\n${detailDemande}\n`;
+
+        basePrompt += `\n👉 Créez un plan de voyage détaillé, pratique et personnalisé selon ces critères.\n`;
+
+        const oproInstructions = `
+🔁 Instructions OPRO :
+
+Tu es un expert en prompt engineering pour la planification de voyages. À partir du prompt ci-dessus, effectue les étapes suivantes :
+
+1. Présente la réponse sous forme de liste à puce: une puce par prompt
+2. Commence par la première puce avec le résumé du prompt original ci-dessus
+3. Génère 5 variantes de prompts basés sur celui-ci.
+4. Pour chaque prompt, évalue sa pertinence sur une échelle de 0 à 100.
+   Critères de notation :
+   - Clarté des instructions voyage
+   - Cohérence avec les contraintes
+   - Précision des demandes
+   - Capacité à guider l'IA vers un plan voyage utile
+5. Ajoute à la fin la commande suivante: Tu vas agir comme un expert en Prompt Engineering spécialisé dans la planification de voyages. En te basant sur tes connaissances, tes compétences et les prompts notés que je t'ai partagé, tu vas rédiger le prompt parfait pour l'IA voyage.
+
+Objectif final : identifier le meilleur prompt pour planifier le voyage demandé.
+
+Prompt de départ :
+"""
+${basePrompt}
+"""
+`;
+
+        document.getElementById("result-voyage").textContent = oproInstructions;
+      }
+
+      // Génération du prompt SIMPLE pour le voyage
+      function generateSimpleVoyagePrompt() {
+        const objectif = getFieldValue(
+          "objectif-select-voyage",
+          "objectif-text-voyage"
+        );
+        const type = getFieldValue("type-select-voyage", "type-text-voyage");
+        const voyageurs = getFieldValue(
+          "voyageurs-select-voyage",
+          "voyageurs-text-voyage"
+        );
+        const duree = getFieldValue("duree-select-voyage", "duree-text-voyage");
+        const budget = getFieldValue(
+          "budget-select-voyage",
+          "budget-text-voyage"
+        );
+        const saison = getFieldValue(
+          "saison-select-voyage",
+          "saison-text-voyage"
+        );
+        const contraintes = getFieldValue(
+          "contraintes-select-voyage",
+          "contraintes-text-voyage"
+        );
+        const style = getFieldValue("style-select-voyage", "style-text-voyage");
+        const references = getFieldValue(
+          "references-select-voyage",
+          "references-text-voyage"
+        );
+        const detailDemande = document
+          .getElementById("detail-demande-voyage")
+          .value.trim();
+
+        let simplePrompt = "Tu es un expert tour operator et conseiller en voyages avec 20 ans d'expérience. ";
+        
+        simplePrompt += "Créez-moi un plan de voyage complet et détaillé avec les critères suivants :\n\n";
+        
+        if (objectif) simplePrompt += `• Objectif du voyage : ${objectif}\n`;
+        if (type) simplePrompt += `• Type de voyage : ${type}\n`;
+        if (voyageurs) simplePrompt += `• Voyageurs : ${voyageurs}\n`;
+        if (duree) simplePrompt += `• Durée : ${duree}\n`;
+        if (budget) simplePrompt += `• Budget : ${budget}\n`;
+        if (saison) simplePrompt += `• Période : ${saison}\n`;
+        if (contraintes) simplePrompt += `• Contraintes particulières : ${contraintes}\n`;
+        if (references) simplePrompt += `• Style recherché : ${references}\n`;
+        
+        if (detailDemande) {
+          simplePrompt += `\nInformations complémentaires :\n${detailDemande}\n`;
+        }
+        
+        simplePrompt += `\nVeuillez inclure dans votre proposition :`;
+        simplePrompt += `\n- Un itinéraire ${style || 'détaillé'} adapté à mes critères`;
+        simplePrompt += `\n- Des recommandations d'hébergement en accord avec mon budget`;
+        simplePrompt += `\n- Des suggestions d'activités et de sites à visiter`;
+        simplePrompt += `\n- Des conseils pratiques (transport, restauration, budget estimatif)`;
+        simplePrompt += `\n- Des alternatives et options en cas d'imprévu`;
+
+        document.getElementById("result-voyage").textContent = simplePrompt;
+      }
+
+      // Fonction pour basculer le champ détaillé du code
+      function toggleDetailTextCode() {
+        const textarea = document.getElementById("detail-demande-code");
+        if (textarea.style.display === "none" || textarea.style.display === "") {
+          textarea.style.display = "block";
+        } else {
+          textarea.style.display = "none";
+        }
+      }
+
+      // Génération du prompt OPRO pour le code
+      function generateCodePrompt() {
+        const objectif = getFieldValue(
+          "objectif-select-code",
+          "objectif-text-code"
+        );
+        const role = getFieldValue("role-select-code", "role-text-code");
+        const langage = getFieldValue("langage-select-code", "langage-text-code");
+        const projet = getFieldValue("projet-select-code", "projet-text-code");
+        const contraintes = getFieldValue(
+          "contraintes-select-code",
+          "contraintes-text-code"
+        );
+        const fichiers = getFieldValue(
+          "fichiers-select-code",
+          "fichiers-text-code"
+        );
+        const format = getFieldValue("format-select-code", "format-text-code");
+        const niveau = getFieldValue("niveau-select-code", "niveau-text-code");
+        const detailDemande = document
+          .getElementById("detail-demande-code")
+          .value.trim();
+
+        let basePrompt =
+          "Voici ma demande structurée pour générer du code :\n\n";
+        if (role) basePrompt += `• Rôle : ${role}\n`;
+        if (objectif) basePrompt += `• Objectif : ${objectif}\n`;
+        if (langage) basePrompt += `• Langage : ${langage}\n`;
+        if (projet) basePrompt += `• Type de projet : ${projet}\n`;
+        if (contraintes) basePrompt += `• Contraintes : ${contraintes}\n`;
+        if (fichiers) basePrompt += `• Fichiers joints : ${fichiers}\n`;
+        if (format) basePrompt += `• Format de sortie : ${format}\n`;
+        if (niveau) basePrompt += `• Niveau d'expertise : ${niveau}\n`;
+        if (detailDemande)
+          basePrompt += `\n🔎 Description détaillée :\n${detailDemande}\n`;
+
+        basePrompt += `\n👉 Génère un code professionnel, optimisé et maintenable selon ces critères.\n`;
+
+        const oproInstructions = `
+🔁 Instructions OPRO :
+
+Tu es un expert en prompt engineering pour le développement logiciel. À partir du prompt ci-dessus, effectue les étapes suivantes :
+
+1. Présente la réponse sous forme de liste à puce: une puce par prompt
+2. Commence par la première puce avec le résumé du prompt original ci-dessus
+3. Génère 5 variantes de prompts basés sur celui-ci.
+4. Pour chaque prompt, évalue sa pertinence sur une échelle de 0 à 100.
+   Critères de notation :
+   - Clarté des instructions techniques
+   - Cohérence avec les contraintes
+   - Précision des spécifications
+   - Capacité à guider l'IA vers un code optimal
+5. Ajoute à la fin la commande suivante: Tu vas agir comme un expert en Prompt Engineering spécialisé dans le développement logiciel. En te basant sur tes connaissances, tes compétences et les prompts notés que je t'ai partagé, tu vas rédiger le prompt parfait pour générer ce code.
+
+Objectif final : identifier le meilleur prompt pour générer le code demandé.
+
+Prompt de départ :
+"""
+${basePrompt}
+"""
+`;
+
+        document.getElementById("result-code").textContent = oproInstructions;
+      }
+
+      // Génération du prompt SIMPLE pour le code
+      function generateSimpleCodePrompt() {
+        const objectif = getFieldValue(
+          "objectif-select-code",
+          "objectif-text-code"
+        );
+        const role = getFieldValue("role-select-code", "role-text-code");
+        const langage = getFieldValue("langage-select-code", "langage-text-code");
+        const projet = getFieldValue("projet-select-code", "projet-text-code");
+        const contraintes = getFieldValue(
+          "contraintes-select-code",
+          "contraintes-text-code"
+        );
+        const fichiers = getFieldValue(
+          "fichiers-select-code",
+          "fichiers-text-code"
+        );
+        const format = getFieldValue("format-select-code", "format-text-code");
+        const niveau = getFieldValue("niveau-select-code", "niveau-text-code");
+        const detailDemande = document
+          .getElementById("detail-demande-code")
+          .value.trim();
+
+        let simplePrompt = "";
+        
+        if (role) {
+          simplePrompt += `${role}. `;
+        } else {
+          simplePrompt += "Tu es un développeur expert avec 10+ ans d'expérience. ";
+        }
+        
+        simplePrompt += "Voici ma demande de développement :\n\n";
+        
+        if (objectif) simplePrompt += `• Objectif : ${objectif}\n`;
+        if (langage) simplePrompt += `• Langage/Techno : ${langage}\n`;
+        if (projet) simplePrompt += `• Type de projet : ${projet}\n`;
+        if (contraintes) simplePrompt += `• Contraintes : ${contraintes}\n`;
+        if (niveau) simplePrompt += `• Mon niveau : ${niveau}\n`;
+        
+        if (detailDemande) {
+          simplePrompt += `\nSpécifications détaillées :\n${detailDemande}\n`;
+        }
+        
+        if (fichiers && fichiers !== "Aucun fichier joint") {
+          simplePrompt += `\n${fichiers}\n`;
+        }
+        
+        simplePrompt += `\nAttentes pour le code :`;
+        simplePrompt += `\n- Code propre, commenté et bien structuré`;
+        simplePrompt += `\n- Respect des meilleures pratiques`;
+        simplePrompt += `\n- Gestion d'erreurs robuste`;
+        simplePrompt += `\n- Explications des parties complexes`;
+        
+        if (format) {
+          simplePrompt += `\n\nFormat de réponse souhaité : ${format}`;
+        }
+
+        document.getElementById("result-code").textContent = simplePrompt;
+      }
+
+      // Fonction de copie pour le code
+      function copyCodeToClipboard() {
+        const resultText = document.getElementById("result-code").textContent;
+        if (resultText.trim() === "") {
+          alert(
+            "Veuillez d'abord générer un prompt en sélectionnant des options et en cliquant sur 'Générer le Prompt'"
+          );
+          return;
+        }
+
+        if (navigator.clipboard) {
+          navigator.clipboard
+            .writeText(resultText)
+            .then(() => {
+              const copyButton = document.getElementById("copyButtonCode");
+              copyButton.textContent = "Copié ✓";
+              setTimeout(() => {
+                copyButton.textContent = "📋 Copier dans le presse-papier";
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Erreur lors de la copie: ", err);
+              fallbackCopyToClipboard(resultText);
+            });
+        } else {
+          fallbackCopyToClipboard(resultText);
+        }
+      }
+
+      // Fonction de réinitialisation pour le code
+      function resetCodeForm() {
+        document.getElementById("objectif-select-code").selectedIndex = 0;
+        document.getElementById("role-select-code").selectedIndex = 0;
+        document.getElementById("langage-select-code").selectedIndex = 0;
+        document.getElementById("projet-select-code").selectedIndex = 0;
+        document.getElementById("contraintes-select-code").selectedIndex = 0;
+        document.getElementById("fichiers-select-code").selectedIndex = 0;
+        document.getElementById("format-select-code").selectedIndex = 0;
+        document.getElementById("niveau-select-code").selectedIndex = 0;
+        document.getElementById("detail-demande-code").value = "";
+        document.getElementById("result-code").textContent = "";
+      }
+
+      // ========================================
+      // FONCTIONS POUR L'ONGLET APPLICATION
+      // ========================================
+
+      // Génération du prompt OPRO pour l'application
+      function generateAppPrompt() {
+        const type = getFieldValue("type-select-app", "type-text-app");
+        const stack = getFieldValue("stack-select-app", "stack-text-app");
+        const platform = getFieldValue("platform-select-app", "platform-text-app");
+        const fonction = getFieldValue("fonction-select-app", "fonction-text-app");
+        const archi = getFieldValue("archi-select-app", "archi-text-app");
+        const data = getFieldValue("data-select-app", "data-text-app");
+        const auth = getFieldValue("auth-select-app", "auth-text-app");
+        const design = getFieldValue("design-select-app", "design-text-app");
+        const a11y = getFieldValue("a11y-select-app", "a11y-text-app");
+        const features = getFieldValue("features-select-app", "features-text-app");
+        const perf = getFieldValue("perf-select-app", "perf-text-app");
+        const tests = getFieldValue("tests-select-app", "tests-text-app");
+        const livrables = getFieldValue("livrables-select-app", "livrables-text-app");
+        const contraintes = getFieldValue("contraintes-select-app", "contraintes-text-app");
+        const publicCible = getFieldValue("public-select-app", "public-text-app");
+        const detailDemande = document.getElementById("detail-demande-app").value.trim();
+
+        let basePrompt = "Voici ma demande structurée pour créer une application :\n\n";
+        
+        if (type) basePrompt += `• Type d'application : ${type}\n`;
+        if (stack) basePrompt += `• Stack technique : ${stack}\n`;
+        if (platform) basePrompt += `• Plateforme(s) cible : ${platform}\n`;
+        if (fonction) basePrompt += `• Fonction principale : ${fonction}\n`;
+        if (archi) basePrompt += `• Architecture : ${archi}\n`;
+        if (data) basePrompt += `• Gestion des données : ${data}\n`;
+        if (auth) basePrompt += `• Authentification : ${auth}\n`;
+        if (design) basePrompt += `• Design System : ${design}\n`;
+        if (a11y) basePrompt += `• Accessibilité : ${a11y}\n`;
+        if (features) basePrompt += `• Features UI/UX : ${features}\n`;
+        if (perf) basePrompt += `• Performance : ${perf}\n`;
+        if (tests) basePrompt += `• Tests et Qualité : ${tests}\n`;
+        if (livrables) basePrompt += `• Livrables attendus : ${livrables}\n`;
+        if (contraintes) basePrompt += `• Contraintes : ${contraintes}\n`;
+        if (publicCible) basePrompt += `• Public cible : ${publicCible}\n`;
+        
+        if (detailDemande) {
+          basePrompt += `\n🔎 Description détaillée de l'application :\n${detailDemande}\n`;
+        }
+
+        basePrompt += `\n👉 Créez une application professionnelle, complète et prête à l'emploi selon ces spécifications.\n`;
+
+        const oproInstructions = `
+🔁 Instructions OPRO :
+
+Tu es un expert en prompt engineering pour la création d'applications. À partir du prompt ci-dessus, effectue les étapes suivantes :
+
+1. Présente la réponse sous forme de liste à puce: une puce par prompt
+2. Commence par la première puce avec le résumé du prompt original ci-dessus
+3. Génère 5 variantes de prompts basés sur celui-ci, en optimisant pour :
+   - La clarté de l'architecture et des exigences techniques
+   - La précision des spécifications UI/UX
+   - La complétude des livrables (structure + code + docs)
+   - L'adéquation avec le stack technique choisi
+   - La qualité et maintenabilité du code produit
+4. Pour chaque prompt, évalue sa pertinence sur une échelle de 0 à 100.
+   Critères de notation :
+   - Clarté des spécifications techniques
+   - Cohérence de l'architecture proposée
+   - Complétude des exigences (fonctionnelles, UI/UX, qualité)
+   - Précision des contraintes et des livrables
+   - Capacité à guider l'IA vers une application production-ready
+5. Ajoute à la fin la commande suivante: Tu vas agir comme un Architecte Logiciel Senior & Expert Full-Stack. En te basant sur tes connaissances approfondies en développement d'applications, architecture logicielle, UI/UX et les prompts notés que je t'ai partagé, tu vas rédiger le prompt PARFAIT pour créer cette application. Le prompt doit être exhaustif, structuré et permettre de générer une application complète et professionnelle.
+
+Objectif final : identifier le meilleur prompt pour créer l'application demandée avec une qualité production-ready.
+
+Prompt de départ :
+"""
+${basePrompt}
+"""
+`;
+
+        document.getElementById("result-app").textContent = oproInstructions;
+      }
+
+      // Génération du prompt SIMPLE pour l'application
+      function generateSimpleAppPrompt() {
+        const type = getFieldValue("type-select-app", "type-text-app");
+        const stack = getFieldValue("stack-select-app", "stack-text-app");
+        const platform = getFieldValue("platform-select-app", "platform-text-app");
+        const fonction = getFieldValue("fonction-select-app", "fonction-text-app");
+        const archi = getFieldValue("archi-select-app", "archi-text-app");
+        const data = getFieldValue("data-select-app", "data-text-app");
+        const auth = getFieldValue("auth-select-app", "auth-text-app");
+        const design = getFieldValue("design-select-app", "design-text-app");
+        const a11y = getFieldValue("a11y-select-app", "a11y-text-app");
+        const features = getFieldValue("features-select-app", "features-text-app");
+        const perf = getFieldValue("perf-select-app", "perf-text-app");
+        const tests = getFieldValue("tests-select-app", "tests-text-app");
+        const livrables = getFieldValue("livrables-select-app", "livrables-text-app");
+        const contraintes = getFieldValue("contraintes-select-app", "contraintes-text-app");
+        const publicCible = getFieldValue("public-select-app", "public-text-app");
+        const detailDemande = document.getElementById("detail-demande-app").value.trim();
+
+        let simplePrompt = "Rôle : Tu es un Architecte Logiciel Senior avec 15+ ans d'expérience en développement front-end, back-end, mobile et UI/UX design. Tu maîtrises parfaitement les frameworks modernes, les principes d'architecture logicielle et les best practices de développement.\n\n";
+        
+        simplePrompt += "Mission : Créer une application complète selon les spécifications suivantes.\n\n";
+        
+        simplePrompt += "📋 SPÉCIFICATIONS DE L'APPLICATION\n\n";
+        
+        if (type) simplePrompt += `Type : ${type}\n`;
+        if (stack) simplePrompt += `Stack technique : ${stack}\n`;
+        if (platform) simplePrompt += `Plateforme(s) : ${platform}\n`;
+        if (fonction) simplePrompt += `Fonction principale : ${fonction}\n`;
+        if (publicCible) simplePrompt += `Public cible : ${publicCible}\n`;
+        
+        if (detailDemande) {
+          simplePrompt += `\nDescription de l'application :\n${detailDemande}\n`;
+        }
+        
+        simplePrompt += "\n🏗️ ARCHITECTURE & TECHNIQUE\n\n";
+        if (archi) simplePrompt += `Architecture : ${archi}\n`;
+        if (data) simplePrompt += `Gestion des données : ${data}\n`;
+        if (auth) simplePrompt += `Authentification : ${auth}\n`;
+        
+        simplePrompt += "\n🎨 DESIGN & UX\n\n";
+        if (design) simplePrompt += `Design System : ${design}\n`;
+        if (a11y) simplePrompt += `Accessibilité : ${a11y}\n`;
+        if (features) simplePrompt += `Features UI/UX : ${features}\n`;
+        
+        simplePrompt += "\n⚡ PERFORMANCE & QUALITÉ\n\n";
+        if (perf) simplePrompt += `Performance : ${perf}\n`;
+        if (tests) simplePrompt += `Tests : ${tests}\n`;
+        
+        if (contraintes) {
+          simplePrompt += `\n⚠️ Contraintes : ${contraintes}\n`;
+        }
+        
+        simplePrompt += "\n📦 LIVRABLES ATTENDUS\n\n";
+        if (livrables) {
+          simplePrompt += `${livrables}\n`;
+        } else {
+          simplePrompt += "- Arborescence complète du projet\n";
+          simplePrompt += "- Code source complet et commenté\n";
+          simplePrompt += "- README avec instructions de lancement\n";
+          simplePrompt += "- Fichiers de configuration nécessaires\n";
+        }
+        
+        simplePrompt += "\n✅ CRITÈRES DE QUALITÉ\n\n";
+        simplePrompt += "- Code propre, modulaire et maintenable\n";
+        simplePrompt += "- Respect des best practices et conventions\n";
+        simplePrompt += "- Documentation claire et complète\n";
+        simplePrompt += "- Interface utilisateur intuitive et responsive\n";
+        simplePrompt += "- Gestion d'erreurs robuste\n";
+        simplePrompt += "- Application prête pour la production\n";
+        
+        if (stack && stack.includes("vanilla")) {
+          simplePrompt += "\n⚠️ IMPORTANT : Utilise uniquement du code vanilla (HTML/CSS/JavaScript pur) sans framework ni dépendance externe, sauf si absolument nécessaire et justifié.\n";
+        }
+
+        document.getElementById("result-app").textContent = simplePrompt;
+      }
+
+      // Fonction de copie pour l'application
+      function copyAppToClipboard() {
+        const resultText = document.getElementById("result-app").textContent;
+        if (resultText.trim() === "") {
+          alert(
+            "Veuillez d'abord générer un prompt en sélectionnant des options et en cliquant sur 'Générer le Prompt'"
+          );
+          return;
+        }
+
+        if (navigator.clipboard) {
+          navigator.clipboard
+            .writeText(resultText)
+            .then(() => {
+              const copyButton = document.getElementById("copyButtonApp");
+              copyButton.textContent = "Copié ✓";
+              setTimeout(() => {
+                copyButton.textContent = "📋 Copier dans le presse-papier";
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Erreur lors de la copie: ", err);
+              fallbackCopyToClipboard(resultText);
+            });
+        } else {
+          fallbackCopyToClipboard(resultText);
+        }
+      }
+
+      // Fonction de réinitialisation pour l'application
+      function resetAppForm() {
+        document.getElementById("type-select-app").selectedIndex = 0;
+        document.getElementById("stack-select-app").selectedIndex = 0;
+        document.getElementById("platform-select-app").selectedIndex = 0;
+        document.getElementById("fonction-select-app").selectedIndex = 0;
+        document.getElementById("archi-select-app").selectedIndex = 0;
+        document.getElementById("data-select-app").selectedIndex = 0;
+        document.getElementById("auth-select-app").selectedIndex = 0;
+        document.getElementById("design-select-app").selectedIndex = 0;
+        document.getElementById("a11y-select-app").selectedIndex = 0;
+        document.getElementById("features-select-app").selectedIndex = 0;
+        document.getElementById("perf-select-app").selectedIndex = 0;
+        document.getElementById("tests-select-app").selectedIndex = 0;
+        document.getElementById("livrables-select-app").selectedIndex = 0;
+        document.getElementById("contraintes-select-app").selectedIndex = 0;
+        document.getElementById("public-select-app").selectedIndex = 0;
+        document.getElementById("detail-demande-app").value = "";
+        document.getElementById("result-app").textContent = "";
+      }
+
+      // Fonctions de réinitialisation
+      function resetImageForm() {
+        document.getElementById("objectif-select-image").selectedIndex = 0;
+        document.getElementById("genre-select-image").selectedIndex = 0;
+        document.getElementById("format-select-image").selectedIndex = 0;
+        document.getElementById("ambiance-select-image").selectedIndex = 0;
+        document.getElementById("rendu-select-image").selectedIndex = 0;
+        document.getElementById("eviter-select-image").selectedIndex = 0;
+        document.getElementById("ton-select-image").selectedIndex = 0;
+        document.getElementById("inspiration-select-image").selectedIndex = 0;
+        document.getElementById("detail-demande-image").value = "";
+        document.getElementById("result-image").textContent = "";
+      }
+
+      function resetVoyageForm() {
+        document.getElementById("objectif-select-voyage").selectedIndex = 0;
+        document.getElementById("type-select-voyage").selectedIndex = 0;
+        document.getElementById("voyageurs-select-voyage").selectedIndex = 0;
+        document.getElementById("duree-select-voyage").selectedIndex = 0;
+        document.getElementById("budget-select-voyage").selectedIndex = 0;
+        document.getElementById("saison-select-voyage").selectedIndex = 0;
+        document.getElementById("contraintes-select-voyage").selectedIndex = 0;
+        document.getElementById("style-select-voyage").selectedIndex = 0;
+        document.getElementById("references-select-voyage").selectedIndex = 0;
+        document.getElementById("detail-demande-voyage").value = "";
+        document.getElementById("result-voyage").textContent = "";
+      }
+
+      function resetForm() {
+        document.getElementById("objectif-select").selectedIndex = 0;
+        document.getElementById("genre-select").selectedIndex = 0;
+        document.getElementById("language-select").selectedIndex = 0;
+        document.getElementById("thematique-select").selectedIndex = 0;
+        document.getElementById("cadre-select").selectedIndex = 0;
+        document.getElementById("pj-select").selectedIndex = 0;
+        document.getElementById("ton-select").selectedIndex = 0;
+        document.getElementById("detail-demande").value = "";
+        document.getElementById("result").textContent = "";
+      }
+
+      function toggleInfo() {
+        const infoContent = document.getElementById("infoContent");
+        const toggleButton = document.querySelector(".info-toggle");
+        if (infoContent.style.display === "block") {
+          infoContent.style.display = "none";
+          toggleButton.textContent = "Informations sur le générateur ▼";
+        } else {
+          infoContent.style.display = "block";
+          toggleButton.textContent = "Informations sur le générateur ▲";
+        }
+      }
+
+      // Fonctions de copie dans le presse-papier
+      function copyToClipboard() {
+        const resultText = document.getElementById("result").textContent;
+        if (resultText.trim() === "") {
+          alert(
+            "Veuillez d'abord générer un prompt en sélectionnant des options et en cliquant sur 'Générer le Prompt'"
+          );
+          return;
+        }
+
+        if (navigator.clipboard) {
+          navigator.clipboard
+            .writeText(resultText)
+            .then(() => {
+              const copyButton = document.getElementById("copyButton");
+              copyButton.textContent = "Copié ✓";
+              setTimeout(() => {
+                copyButton.textContent = "📋 Copier dans le presse-papier";
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Erreur lors de la copie: ", err);
+              fallbackCopyToClipboard(resultText);
+            });
+        } else {
+          fallbackCopyToClipboard(resultText);
+        }
+      }
+
+      function copyImageToClipboard() {
+        const resultText = document.getElementById("result-image").textContent;
+        if (resultText.trim() === "") {
+          alert(
+            "Veuillez d'abord générer un prompt en sélectionnant des options et en cliquant sur 'Générer le Prompt'"
+          );
+          return;
+        }
+
+        if (navigator.clipboard) {
+          navigator.clipboard
+            .writeText(resultText)
+            .then(() => {
+              const copyButton = document.getElementById("copyButtonImage");
+              copyButton.textContent = "Copié ✓";
+              setTimeout(() => {
+                copyButton.textContent = "📋 Copier dans le presse-papier";
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Erreur lors de la copie: ", err);
+              fallbackCopyToClipboard(resultText);
+            });
+        } else {
+          fallbackCopyToClipboard(resultText);
+        }
+      }
+
+      function copyVoyageToClipboard() {
+        const resultText = document.getElementById("result-voyage").textContent;
+        if (resultText.trim() === "") {
+          alert(
+            "Veuillez d'abord générer un prompt en sélectionnant des options et en cliquant sur 'Générer le Prompt'"
+          );
+          return;
+        }
+
+        if (navigator.clipboard) {
+          navigator.clipboard
+            .writeText(resultText)
+            .then(() => {
+              const copyButton = document.getElementById("copyButtonVoyage");
+              copyButton.textContent = "Copié ✓";
+              setTimeout(() => {
+                copyButton.textContent = "📋 Copier dans le presse-papier";
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Erreur lors de la copie: ", err);
+              fallbackCopyToClipboard(resultText);
+            });
+        } else {
+          fallbackCopyToClipboard(resultText);
+        }
+      }
+
+      // Méthode alternative pour la copie dans le presse-papier
+      function fallbackCopyToClipboard(text) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
+          alert("Texte copié dans le presse-papier");
+        } catch (err) {
+          console.error("Erreur lors de la copie: ", err);
+          alert("Une erreur est survenue lors de la copie");
+        }
+        document.body.removeChild(textarea);
+      }
+
+      // Initialisation au chargement de la page
+      document.addEventListener("DOMContentLoaded", () => {
+        // Configuration des onglets
+        setupTabs();
+
+        // Ajouter des écouteurs pour touchstart sur tous les boutons
+        const buttons = document.querySelectorAll("button");
+        buttons.forEach((button) => {
+          button.addEventListener("touchstart", (event) => {
+            event.preventDefault();
+            button.click();
+          });
+        });
+
+        // Gestion des champs pour l'onglet rédaction
+        setupFieldHandlers([
+          "objectif",
+          "language",
+          "genre",
+          "thematique",
+          "pj",
+          "cadre",
+          "ton",
+        ]);
+
+        // Gestion des champs pour l'onglet image
+        setupFieldHandlers(
+          [
+            "objectif",
+            "genre",
+            "format",
+            "ambiance",
+            "rendu",
+            "eviter",
+            "ton",
+            "inspiration",
+          ],
+          "-image"
+        );
+
+        // Gestion des champs pour l'onglet voyage
+        setupFieldHandlers(
+          [
+            "objectif",
+            "type",
+            "voyageurs",
+            "duree",
+            "budget",
+            "saison",
+            "contraintes",
+            "style",
+            "references",
+          ],
+          "-voyage"
+        );
+
+        // Gestion des champs pour l'onglet code
+        setupFieldHandlers(
+          [
+            "objectif",
+            "role",
+            "langage",
+            "projet",
+            "contraintes",
+            "fichiers",
+            "format",
+            "niveau",
+          ],
+          "-code"
+        );
+
+        // Gestion des champs pour l'onglet application
+        setupFieldHandlers(
+          [
+            "type",
+            "stack",
+            "platform",
+            "fonction",
+            "archi",
+            "data",
+            "auth",
+            "design",
+            "a11y",
+            "features",
+            "perf",
+            "tests",
+            "livrables",
+            "contraintes",
+            "public",
+          ],
+          "-app"
+        );
+
+        // Suppression des options masquées
+        document.querySelectorAll("option[hidden]").forEach((option) => {
+          option.remove();
+        });
+      });
+    </script>
+  </body>
+</html>

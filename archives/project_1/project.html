@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion de Projet - Roadmap</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="project-styles.css" />
+  </head>
+
+  <body>
+    <!--
+      README - GESTION DE PROJET
+      
+      🗺️ Roadmap interactive pour la gestion de projet
+      - Ajout/suppression de tâches
+      - 3 niveaux de priorité (rouge, orange, vert)
+      - Déplacement et réorganisation par drag & drop
+      - Timeline visuelle
+      - Filtrage et recherche
+    -->
+
+    <div class="project-container">
+      <header class="project-header">
+        <h1>🗺️ Do It Fix It</h1>
+
+        <div class="header-actions">
+          <div class="filter-container">
+            <input
+              type="text"
+              id="filter-input"
+              class="filter-input"
+              placeholder="🔍 Filtrer les tâches..."
+              aria-label="Filtrer les tâches"
+            />
+          </div>
+
+          <button
+            class="btn-new-task"
+            id="btn-new-task"
+            aria-label="Ajouter une nouvelle tâche"
+          >
+            ➕ Nouvelle tâche
+          </button>
+        </div>
+      </header>
+
+      <div class="info-section">
+        <button class="info-toggle" id="info-toggle" aria-expanded="false">
+          Comment utiliser ▼
+        </button>
+        <div id="info-content" class="info-content">
+          <p>
+            <strong>🎯 Fonctionnalités:</strong><br />
+            • <strong>Ajouter des tâches:</strong> Cliquez sur "Nouvelle tâche"
+            ou le bouton + dans une phase<br />
+            • <strong>Éditer:</strong> Cliquez sur le texte d'une tâche pour le
+            modifier<br />
+            • <strong>Réorganiser:</strong> Glissez-déposez les tâches entre les
+            phases<br />
+            • <strong>Priorités:</strong> 3 boutons de couleur (rouge = urgent,
+            orange = important, vert = normal)<br />
+            • <strong>Dates:</strong> Définissez des dates de début et fin pour
+            chaque tâche<br />
+            • <strong>Filtrer:</strong> Utilisez la barre de recherche pour
+            filtrer par nom<br />
+            • <strong>Supprimer:</strong> Cliquez sur l'icône 🗑️ pour supprimer
+            une tâche
+          </p>
+          <p>
+            <strong>📅 Phases du projet:</strong><br />
+            Les tâches sont organisées en 4 phases : Planification,
+            Développement, Test, et Déploiement.<br />
+            Vous pouvez déplacer les tâches entre les phases pour suivre leur
+            progression.
+          </p>
+        </div>
+      </div>
+
+      <main
+        class="roadmap-board"
+        id="roadmap-board"
+        role="list"
+        aria-label="Roadmap du projet"
+      >
+        <!-- Les phases seront générées ici par JavaScript -->
+      </main>
+    </div>
+
+    <script src="project-script.js"></script>
+  </body>
+</html>

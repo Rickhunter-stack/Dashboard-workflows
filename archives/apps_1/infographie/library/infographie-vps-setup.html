@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mise en route d'un VPS non managé</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 1.2em;
+            margin-bottom: 50px;
+        }
+        
+        .main-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        
+        .step {
+            flex: 1;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        .step.provider {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+        
+        .step.delivery {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .step.security {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .step.firewall {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .step.packages {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .step.monitoring {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        .step.backup {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: #1e293b;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .step-icon {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .step-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .step-analogy {
+            font-style: italic;
+            margin-bottom: 10px;
+            text-align: center;
+            opacity: 0.9;
+        }
+        
+        .step-content {
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .command {
+            background: rgba(0,0,0,0.3);
+            padding: 8px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin-top: 8px;
+            font-size: 0.85em;
+        }
+        
+        .arrow {
+            font-size: 3em;
+            color: #475569;
+            text-align: center;
+            min-width: 50px;
+        }
+        
+        .warning-box {
+            background: #fff5f5;
+            border-left: 4px solid #fc8181;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        
+        .warning-box h3 {
+            color: #c53030;
+            margin-bottom: 10px;
+        }
+        
+        .warning-box p {
+            color: #742a2a;
+            line-height: 1.6;
+        }
+        
+        .legend {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .legend h2 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .legend-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .legend-item h3 {
+            color: #3b82f6;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .legend-item p {
+            color: #475569;
+            line-height: 1.6;
+        }
+        
+        .example {
+            background: #e0f2fe;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .flow-row {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖥️ Mise en route d'un VPS non managé</h1>
+        <p class="subtitle">Du serveur vierge à la production en 10 étapes</p>
+        
+        <div class="main-flow">
+            <!-- Étape 0 : Livraison -->
+            <div class="flow-row">
+                <div class="step provider">
+                    <div class="step-number">0</div>
+                    <div class="step-icon">🏢</div>
+                    <div class="step-title">Le Fournisseur VPS</div>
+                    <div class="step-analogy">= Le constructeur qui livre l'appartement</div>
+                    <div class="step-content">
+                        <strong>OVH, DigitalOcean, Hetzner, etc.</strong><br><br>
+                        Ce qu'ils livrent :<br>
+                        • Une partition du serveur physique<br>
+                        • Un OS Linux installé (Ubuntu, Debian, CentOS...)<br>
+                        • Les accès root (login + mot de passe)<br>
+                        • Une adresse IP publique
+                        <div class="command">IP: 203.0.113.42<br>User: root<br>Password: Xk9$mP2#vL</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 3em; color: #475569;">↓</div>
+            
+            <!-- Étape 1 : Première connexion -->
+            <div class="flow-row">
+                <div class="step delivery">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">🔐</div>
+                    <div class="step-title">Première Connexion SSH</div>
+                    <div class="step-analogy">= Récupérer les clés de l'appartement</div>
+                    <div class="step-content">
+                        <strong>Connexion sécurisée au serveur</strong><br><br>
+                        Depuis votre ordinateur :
+                        <div class="command">ssh root@203.0.113.42</div>
+                        ⚠️ Vous êtes maintenant <strong>root</strong> = administrateur tout-puissant<br>
+                        Tout ce que vous faites impacte le serveur directement
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 3em; color: #475569;">↓</div>
+            
+            <!-- Étape 2 : Mise à jour -->
+            <div class="flow-row">
+                <div class="step packages">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">📦</div>
+                    <div class="step-title">Mise à jour du système</div>
+                    <div class="step-analogy">= Vérifier que tout fonctionne et est à jour</div>
+                    <div class="step-content">
+                        <strong>Mettre à jour tous les paquets</strong><br><br>
+                        <div class="command">apt update && apt upgrade -y</div>
+                        • <strong>apt update</strong> : récupère la liste des mises à jour<br>
+                        • <strong>apt upgrade</strong> : installe les mises à jour<br>
+                        • <strong>-y</strong> : accepte automatiquement
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 3em; color: #475569;">↓</div>
+            
+            <!-- Étape 3 : Utilisateur non-root -->
+            <div class="flow-row">
+                <div class="step security">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">👤</div>
+                    <div class="step-title">Créer un utilisateur non-root</div>
+                    <div class="step-analogy">= Ne pas utiliser le pass master tous les jours</div>
+                    <div class="step-content">
+                        <strong>Principe : ne JAMAIS travailler en root</strong><br><br>
+                        <div class="command">adduser admin<br>usermod -aG sudo admin</div>
+                        • Crée l'utilisateur "admin"<br>
+                        • Lui donne les droits sudo (élévation temporaire)<br>
+                        • Vous travaillerez toujours avec cet utilisateur
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 3em; color: #475569;">↓</div>
+            
+            <!-- Étape 4 : Clés SSH -->
+            <div class="flow-row">
+                <div class="step security">
+                    <div class="step-number">4</div>
+                    <div class="step-icon">🔑</div>
+                    <div class="step-title">Configurer l'authentification par clé SSH</div>
+                    <div class="step-analogy">= Remplacer la clé physique par un badge sécurisé</div>
+                    <div class="step-content">
+                        <strong>Plus sécurisé qu'un mot de passe</strong><br><br>
+                        Sur votre PC :
+                        <div class="command">ssh-keygen -t ed25519<br>ssh-copy-id admin@203.0.113.42</div>
+                        • Génère une paire clé publique / privée<br>
+                        • Copie la clé publique sur le serveur<br>
+                        • Vous pourrez vous connecter sans mot de passe
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 3em; color: #475569;">↓</div>
+            
+            <!-- Étape 5 : Sécuriser SSH -->
+            <div class="flow-row">
+                <div class="step security">
+                    <div class="step-number">5</div>
+                    <div class="step-icon">🛡️</div>
+                    <div class="step-title">Sécuriser SSH</div>
+                    <div class="step-analogy">= Verrouiller la porte et changer la serrure</div>
+                    <div class="step-content">
+                        <strong>Éditer /etc/ssh/sshd_config</strong><br><br>
+                        <div class="command">PermitRootLogin no<br>PasswordAuthentication no<br>Port 2222</div>
+                        • <strong>Interdire connexion root</strong><br>
+                        • <strong>Désactiver mot de passe</strong> (seulement clé SSH)<br>
+                        • <strong>Changer le port</strong> (optionnel mais recommandé)<br><br>
+                        <div class="command">systemctl restart sshd</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 3em; color: #475569;">↓</div>
+            
+            <!-- Étape 6 : Firewall -->
+            <div class="flow-row">
+                <div class="step firewall">
+                    <div class="step-number">6</div>
+                    <div class="step-icon">🔥</div>
+                    <div class="step-title">Configurer le Pare-feu</div>
+                    <div class="step-analogy">= Installer un système d'alarme</div>
+                    <div class="step-content">
+                        <strong>UFW (Uncomplicated Firewall)</strong><br><br>
+                        <div class="command">ufw allow 2222/tcp    # SSH<br>ufw allow 80/tcp      # HTTP<br>ufw allow 443/tcp     # HTTPS<br>ufw enable</div>
+                        • Bloque tout par défaut<br>
+                        • Autorise seulement les ports nécessaires<br>
+                        • Protège contre les attaques réseau
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 3em; color: #475569;">↓</div>
+            
+            <!-- Étape 7 : Fail2ban -->
+            <div class="flow-row">
+                <div class="step firewall">
+                    <div class="step-number">7</div>
+                    <div class="step-icon">🚫</div>
+                    <div class="step-title">Installer Fail2ban</div>
+                    <div class="step-analogy">= Caméra qui bannit les intrus</div>
+                    <div class="step-content">
+                        <strong>Protection contre le bruteforce</strong><br><br>
+                        <div class="command">apt install fail2ban -y<br>systemctl enable fail2ban</div>
+                        • Surveille les logs de connexion<br>
+                        • Bannit les IP suspectes automatiquement<br>
+                        • Essais répétés = bannissement temporaire/permanent
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 3em; color: #475569;">↓</div>
+            
+            <!-- Étape 8 : Monitoring -->
+            <div class="flow-row">
+                <div class="step monitoring">
+                    <div class="step-number">8</div>
+                    <div class="step-icon">📊</div>
+                    <div class="step-title">Monitoring et Logs</div>
+                    <div class="step-analogy">= Installer des capteurs et caméras</div>
+                    <div class="step-content">
+                        <strong>Surveiller la santé du serveur</strong><br><br>
+                        Outils essentiels :<br>
+                        • <strong>htop</strong> : voir CPU, RAM, processus<br>
+                        • <strong>journalctl</strong> : consulter les logs système<br>
+                        • <strong>netstat -tulpn</strong> : ports ouverts<br><br>
+                        Optionnel : Grafana, Prometheus, Netdata
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 3em; color: #475569;">↓</div>
+            
+            <!-- Étape 9 : Sauvegardes -->
+            <div class="flow-row">
+                <div class="step backup">
+                    <div class="step-number">9</div>
+                    <div class="step-icon">💾</div>
+                    <div class="step-title">Mettre en place les Sauvegardes</div>
+                    <div class="step-analogy">= Assurance en cas de catastrophe</div>
+                    <div class="step-content">
+                        <strong>Planifier des backups automatiques</strong><br><br>
+                        • Snapshots du VPS (côté fournisseur)<br>
+                        • Backup des données importantes (rsync, borg)<br>
+                        • Backup de la base de données (mysqldump)<br>
+                        • Stockage externe : S3, autre serveur, NAS<br><br>
+                        <strong>Règle du 3-2-1 :</strong> 3 copies, 2 supports différents, 1 hors site
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 3em; color: #475569;">↓</div>
+            
+            <!-- Étape 10 : Installation applicative -->
+            <div class="flow-row">
+                <div class="step packages">
+                    <div class="step-number">10</div>
+                    <div class="step-icon">🚀</div>
+                    <div class="step-title">Installer votre stack applicative</div>
+                    <div class="step-analogy">= Aménager l'appartement selon vos besoins</div>
+                    <div class="step-content">
+                        <strong>Maintenant vous pouvez installer :</strong><br><br>
+                        • Serveur Web (Nginx, Apache)<br>
+                        • Base de données (PostgreSQL, MySQL, MongoDB)<br>
+                        • Runtime (Python, Node.js, PHP)<br>
+                        • Certificat SSL (Let's Encrypt / Certbot)<br>
+                        • Votre application (Flask, Django, Express...)<br><br>
+                        🎉 <strong>Votre serveur est prêt pour la production !</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Warning Box -->
+        <div class="warning-box">
+            <h3>⚠️ Points de vigilance critiques</h3>
+            <p>
+                • <strong>TOUJOURS</strong> tester votre connexion SSH avant de fermer la session root<br>
+                • <strong>VÉRIFIER</strong> que vous pouvez vous reconnecter avant de désactiver l'authentification par mot de passe<br>
+                • <strong>NOTER</strong> vos identifiants et configurations dans un gestionnaire de mots de passe<br>
+                • <strong>FAIRE</strong> un snapshot du VPS après chaque étape critique<br>
+                • <strong>NE JAMAIS</strong> exposer des services non sécurisés sur Internet
+            </p>
+        </div>
+        
+        <!-- Légende détaillée -->
+        <div class="legend">
+            <h2>📚 Lexique des termes techniques</h2>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <h3>VPS (Virtual Private Server)</h3>
+                    <p>Serveur privé virtuel : une partition d'un serveur physique qui fonctionne comme un serveur dédié indépendant.</p>
+                    <p>Non managé = vous devez tout configurer vous-même</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>SSH (Secure Shell)</h3>
+                    <p>Protocole réseau crypté pour se connecter à distance et en toute sécurité à un serveur Linux.</p>
+                    <div class="example">ssh utilisateur@adresse-ip</div>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Root</h3>
+                    <p>Le super-utilisateur sous Linux. Il a TOUS les droits sur la machine. Très puissant = très dangereux si mal utilisé.</p>
+                    <p>⚠️ Une erreur en root peut détruire le système</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>sudo</h3>
+                    <p><strong>Super User DO</strong></p>
+                    <p>Permet d'exécuter une commande avec les droits root temporairement.</p>
+                    <div class="example">sudo apt install nginx</div>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Clé SSH</h3>
+                    <p>Paire de clés cryptographiques (publique/privée) pour s'authentifier sans mot de passe.</p>
+                    <p>• Clé privée = garde secrète sur votre PC<br>• Clé publique = mise sur le serveur</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Firewall / UFW</h3>
+                    <p>Pare-feu qui filtre le trafic réseau entrant et sortant. UFW = version simplifiée d'iptables.</p>
+                    <p>Par défaut : tout bloquer, autoriser seulement le nécessaire</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Fail2ban</h3>
+                    <p>Outil qui analyse les logs et bannit automatiquement les IP qui tentent des attaques (bruteforce, scan de ports, etc.)</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Port</h3>
+                    <p>Numéro qui identifie un service réseau sur une machine.</p>
+                    <div class="example">
+                        22 (ou 2222) = SSH<br>
+                        80 = HTTP<br>
+                        443 = HTTPS<br>
+                        3306 = MySQL<br>
+                        5432 = PostgreSQL
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>apt (Advanced Package Tool)</h3>
+                    <p>Gestionnaire de paquets pour Debian/Ubuntu. Permet d'installer, mettre à jour et supprimer des logiciels.</p>
+                    <div class="example">
+                        apt update → MAJ liste paquets<br>
+                        apt upgrade → Installer les MAJ<br>
+                        apt install nginx → Installer Nginx
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>systemctl</h3>
+                    <p>Commande pour gérer les services (démarrer, arrêter, redémarrer, activer au démarrage)</p>
+                    <div class="example">
+                        systemctl start nginx<br>
+                        systemctl enable nginx<br>
+                        systemctl status nginx
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Logs</h3>
+                    <p>Fichiers qui enregistrent tous les événements du système : connexions, erreurs, activités suspectes, etc.</p>
+                    <div class="example">
+                        /var/log/auth.log → Authentifications<br>
+                        /var/log/syslog → Système<br>
+                        journalctl → Logs systemd
+                    </div>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>Snapshot</h3>
+                    <p>Photo instantanée de l'état complet du VPS à un moment donné. Permet de restaurer en cas de problème.</p>
+                    <p>💡 À faire AVANT toute modification critique</p>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #3b82f6 0%, #764ba2 100%); border-radius: 15px; color: white; text-align: center;">
+            <h2 style="margin-bottom: 15px;">🎯 Checklist de mise en production</h2>
+            <div style="text-align: left; max-width: 800px; margin: 0 auto; font-size: 1.1em; line-height: 2;">
+                ✅ Mise à jour système (apt update && upgrade)<br>
+                ✅ Utilisateur non-root créé avec sudo<br>
+                ✅ Authentification SSH par clé uniquement<br>
+                ✅ Connexion root SSH désactivée<br>
+                ✅ Firewall UFW configuré et activé<br>
+                ✅ Fail2ban installé et actif<br>
+                ✅ Monitoring en place (logs + métriques)<br>
+                ✅ Sauvegardes automatiques configurées<br>
+                ✅ Snapshot de sécurité créé<br>
+                ✅ Documentation des configurations sauvegardée<br>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 25px; background: #f8fafc; border-radius: 15px; text-align: center;">
+            <h3 style="color: #1e293b; margin-bottom: 15px;">📖 Ressources utiles</h3>
+            <p style="color: #475569; line-height: 1.8;">
+                • Documentation Ubuntu Server : docs.ubuntu.com<br>
+                • Guides DigitalOcean : digitalocean.com/community/tutorials<br>
+                • Linux Journey : linuxjourney.com<br>
+                • SSH Academy : ssh.com/academy<br>
+                • fail2ban.org pour la documentation officielle
+            </p>
+        </div>
+    </div>
+</body>
+</html>

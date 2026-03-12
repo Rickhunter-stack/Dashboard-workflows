@@ -1,0 +1,2661 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Générateur de Prompts</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Styles généraux */
+      body {
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+        line-height: 1.6;
+      }
+
+      .tabs-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto 20px;
+      }
+
+      .tabs {
+        display: flex;
+        justify-content: center;
+        border-bottom: 2px solid #4a90e2;
+        padding-bottom: 10px;
+      }
+
+      .tab-btn {
+        font-family: "Inter", sans-serif;
+        font-weight: 500;
+        font-size: 18px;
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+        border: none;
+        padding: 12px 20px;
+        margin: 0 5px;
+        border-radius: 6px 6px 0 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .tab-btn.active {
+        background-color: #4a90e2;
+        color: #ffffff;
+      }
+
+      .tab-btn:hover:not(.active) {
+        background-color: #404040;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+
+      .section {
+        background-color: #2d2d2d;
+        padding: 8px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        position: relative;
+      }
+
+      .section h2 {
+        font-family: "Inter", sans-serif;
+        font-weight: 500;
+        font-size: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #4a90e2;
+        margin-top: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .section select {
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #404040;
+        border-radius: 6px;
+        box-sizing: border-box;
+        background-color: #353535;
+        color: #e0e0e0;
+      }
+
+      .highlight {
+        color: #4a90e2;
+        font-weight: bold;
+      }
+
+      .custom-option {
+        color: #2ecc71;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #b0b0b0;
+      }
+
+      input,
+      textarea,
+      select {
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #404040;
+        border-radius: 6px;
+        box-sizing: border-box;
+        background-color: #353535;
+        color: #e0e0e0;
+      }
+
+      option[hidden] {
+        display: none;
+      }
+
+      textarea {
+        min-height: 80px;
+        resize: vertical;
+        display: none;
+      }
+
+      .centered-title {
+        justify-content: center;
+      }
+
+      button {
+        font-family: "Inter", sans-serif;
+        font-weight: 500;
+        font-size: 16px;
+        background-color: #4a90e2;
+        color: #ffffff;
+        border: none;
+        padding: 16px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: block;
+        margin: 20px auto;
+        transition: background-color 0.3s ease;
+        min-height: 65px;
+      }
+
+      button:hover {
+        background-color: #357abd;
+      }
+
+      .toggle-text-button {
+        background-color: #6c757d;
+        color: #ffffff;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-bottom: 15px;
+        transition: background-color 0.3s ease;
+        font-family: "Inter", sans-serif;
+        font-weight: 500;
+      }
+
+      .toggle-text-button:hover {
+        background-color: #5a6268;
+      }
+
+      .result {
+        background-color: #252525;
+        border-left: 5px solid #4a90e2;
+        padding: 15px;
+        margin-top: 20px;
+        white-space: pre-wrap;
+        border-radius: 6px;
+      }
+
+      .help-icon {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        background-color: #4a90e2;
+        color: #ffffff;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 18px;
+        font-size: 12px;
+        margin-left: 10px;
+        cursor: help;
+      }
+
+      .tooltip {
+        position: relative;
+        display: inline-block;
+      }
+
+      .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 250px;
+        background-color: #404040;
+        color: #e0e0e0;
+        text-align: left;
+        border-radius: 6px;
+        padding: 10px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -125px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .letter-box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background-color: #4a90e2;
+        color: #ffffff;
+        border-radius: 6px;
+        margin-right: 10px;
+        font-weight: 600;
+      }
+
+      .copy-button {
+        background-color: #2ecc71;
+        color: #ffffff;
+        border: none;
+        padding: 16px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        display: block;
+        margin: 20px auto;
+        transition: background-color 0.3s ease;
+        min-height: 65px;
+      }
+
+      .copy-button:hover {
+        background-color: #27ae60;
+      }
+
+      .info-toggle {
+        background-color: #353535;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        text-align: center;
+        color: #4a90e2;
+        margin-top: 20px;
+        font-weight: 500;
+      }
+
+      .info-toggle:hover {
+        background-color: #404040;
+      }
+
+      .info-content {
+        display: none;
+        background-color: #2d2d2d;
+        padding: 15px;
+        border-radius: 6px;
+        margin-top: 10px;
+        color: #b0b0b0;
+        font-size: 14px;
+      }
+
+      .detail-demande {
+        grid-column: 1 / -1;
+      }
+
+      .detail-textarea {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #404040;
+        border-radius: 6px;
+        background-color: #353535;
+        color: #e0e0e0;
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .reset-button {
+        background-color: #e74c3c;
+        color: #ffffff;
+        border: none;
+        padding: 16px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+        font-family: "Inter", sans-serif;
+        font-weight: 500;
+        min-height: 65px;
+      }
+
+      .reset-button:hover {
+        background-color: #c0392b;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 20px 0;
+      }
+
+      .button-container button {
+        flex: 1;
+        max-width: 300px;
+        margin: 10px auto;
+        display: block;
+      }
+
+      /* Media query pour écrans < 768px */
+      @media (max-width: 768px) {
+        .grid-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+        .section {
+          width: 100%;
+          max-width: 400px;
+          min-height: 120px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 10px;
+          box-sizing: border-box;
+        }
+        .section h2 {
+          font-size: 18px;
+          margin-bottom: 8px;
+          text-align: center;
+          white-space: normal;
+          overflow: visible;
+          text-overflow: initial;
+        }
+        .section select,
+        .section textarea {
+          width: 100%;
+          max-width: 100%;
+        }
+        .detail-demande {
+          min-height: auto;
+        }
+        .button-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 15px;
+        }
+        .button-container button {
+          width: 100%;
+          max-width: 300px;
+        }
+      }
+
+      /* Media query pour écrans < 400px */
+      @media (max-width: 400px) {
+        .section {
+          padding: 10px;
+          max-width: 100%;
+        }
+        .button-container button {
+          max-width: 100%;
+        }
+        .tab-btn {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="tabs-container">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="custom">
+          Prompts Classiques
+        </button>
+        <button class="tab-btn" data-tab="texte">
+          Générateur de Prompt texte
+        </button>
+        <button class="tab-btn" data-tab="image">
+          Générateur de Prompt image
+        </button>
+        <button class="tab-btn" data-tab="voyage">
+          Générateur de Prompt voyage
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenu de l'onglet PERSONNALISÉ -->
+    <div id="content-custom" class="tab-content active">
+      <!-- Conteneur de grille pour les sections du générateur personnalisé -->
+      <div class="grid-container">
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span>Résumer
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Description de la section A</span
+              ></span
+            >
+          </h2>
+          <select id="section-a-select-custom">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Tu es un assistant IA. Résume la conversation précédente en un paragraphe synthétique, en identifiant les objectifs de l'utilisateur, les actions déjà entreprises, les décisions prises, et les points en suspens. Ce résumé servira de contexte pour recommencer une nouvelle conversation sans avoir à tout réexpliquer. Sois clair, concis et structuré.Reformule ce résumé sous une forme exploitable comme mémoire de conversation pour une future session."
+            >
+              Résumé de la conversation 1
+            </option>
+            <option
+              value="Vous êtes un LLM. Votre tâche est de résumer toute la conversation jusqu'à présent dans un format structuré qui permet à ce contexte d'être transporté dans une nouvelle session et continuée de manière transparente.
+
+                    S'il vous plaît afficher le résumé dans le format suivant en utilisant markdown:
+                    
+                    -
+                    
+                    ### Rapport détaillé 📝
+                    
+                    Un résumé en langage naturel de la conversationLes objectifs, les thèmes et les principales idées.
+                    
+                    -
+                    
+                    ### 🗂 Sujets clés
+                    
+                    - [Liste 3–7 puces résumant les principaux thèmes de discussion]
+                    
+                    -
+                    
+                    ### 🚧 Projets en cours
+                    
+                    Nom du projet: [Nom]
+                    
+                    objectif: [Ce que l'utilisateur essaie d'accomplir]
+                    
+                    - Statut actuel: [Progrès fait jusqu'à présent]
+                    
+                    - Défis: [Tous les bloqueurs ou complexités]
+                    
+                    - Prochaines étapes: [Que devrait-il se passer ensuite]
+                    
+                    (Répéter pour chaque projet)
+                    
+                    -
+                    
+                    ### 🎯 Préférences utilisateur
+                    
+                    - [Tone, formatage, style de flux de travail, instructions spéciales que l'utilisateur a tendance à donner]
+                    
+                    -
+                    
+                    ### ✅ Action Éléments
+                    
+                    - [Listez tous les suivis ou tâches exploitables qui n'étaient pas encore terminés]
+                    "
+            >
+              Résumé de la conversation 2
+            </option>
+            <option
+              value="Vous êtes un assistant expert en synthèse et en présentation d'informations. À partir d'une discussion fournie (texte, transcript, ou lien vers une discussion), créez un résumé clair, concis et schématique de toutes les informations pertinentes en une page au format PDF.
+
+                    Instructions :
+                    
+                    Contenu : Comprendre et résumer les points clés, les arguments principaux, les décisions prises et les conclusions de la discussion. Excluez les détails non essentiels ou redondants.
+                    Structure : Organisez le curriculum vitae de manière schématique avec :
+                    Un titre clair (ex. : 'Résumé de la discussion sur [sujet]')
+                    Une introduction brève (2-3 phrases) contextualisant la discussion
+                    Des sections avec des sous-titres pour chaque thème ou point clé
+                    Des bullet points ou listes numérotées pour une lisibilité optimale
+                    Une conclusion ou synthèse finale (1-2 phrases)
+                    Style : Utilisez un langage professionnel, neutre et direct. Évitez le jargon sauf si nécessaire, et expliquez les termes techniques.
+                    Format : Le curriculum vitae doit tenir sur une seule page A4, avec une mise en page claire (polices lisibles, espacement équilibré, éventuellement des encadrés ou tableaux pour les données clés).
+                    Sortie : Générez un fichier PDF téléchargeable ou fournissez une description textuelle précise de la mise en page pour que je puisse la recréer. Si des outils spécifiques sont nécessaires (ex. : Canva, LaTeX), mentionnez-les.
+                    Données d'entrée : [Insérez ici le texte de la discussion, un lien vers celle-ci, ou une description si applicable].
+                    Exemple de ton attendu :
+                    
+                    Titre : Résumé de la réunion du 03/05/2025 sur la stratégie marketing
+                    Introduction : La réunion a réuni l'équipe marketing pour discuter des objectifs 2025.
+                    Section 1 : Objectifs principaux
+                    Augmenter la visibilité de la marque de 20 %.
+                    Lancer une campagne digitale en juin.
+                    Section 2 : Décisions prises
+                    Budget alloué : 50 000 €.
+                    Responsable : M. Dupont.
+                    Conclusion : La stratégie est validée, avec un suivi prévu en juillet.
+                    Merci de produire un curriculum vitae respectant ces critères et de m'indiquer comment accéder au PDF ou recréer le document."
+            >
+              PDF des idées de la conversation
+            </option>
+            <option value="Option 2">Option 2</option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span>Réfléchir
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Description de la section B</span
+              ></span
+            >
+          </h2>
+          <select id="section-b-select-custom">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Je souhaite que tu adoptes une approche structurée pour résoudre ce problème. Pour cela :
+
+                    1. Commence par identifier clairement le problème et reformule-le avec tes propres mots
+                    2. Décompose le problème en sous-parties ou questions clés
+                    3. Pour chaque sous-partie :
+                       - Explore plusieurs perspectives ou solutions possibles
+                       - Évalue les avantages et inconvénients de chaque approche
+                       - Identifie les hypothèses que tu fais et leurs implications
+                    4. Remets en question tes premières intuitions en cherchant des contre-exemples
+                    5. Synthétise ton raisonnement en une réponse finale claire
+                    6. Indique ton niveau de confiance dans ta réponse et les points qui mériteraient plus d'exploration
+                    
+                    N'hésite pas à penser étape par étape, comme si tu résolvais ce problème à voix haute."
+            >
+              Réflexion poussée 1
+            </option>
+            <option
+              value="Pour ce problème, je te demande d'utiliser une technique appelée "
+              chaîne
+              de
+              pensée
+              (chain
+              of
+              thought).
+              Voici
+              comment
+              procéder
+              :
+              1.
+              Avant
+              d
+              arriver
+              à
+              toute
+              conclusion,
+              exprime
+              clairement
+              ton
+              raisonnement
+              étape
+              par
+              étape
+              2.
+              Décompose
+              ta
+              réflexion
+              en
+              notant
+              explicitement
+              chaque
+              étape
+              intermédiaire
+              de
+              ton
+              processus
+              de
+              pensée
+              3.
+              Pose-toi
+              des
+              questions
+              à
+              chaque
+              étape
+              :
+              Qu
+              est-ce
+              que
+              je
+              sais
+              maintenant
+              ?,
+              Quelle
+              est
+              la
+              prochaine
+              information
+              dont
+              j
+              ai
+              besoin
+              ?
+              4.
+              Explore
+              plusieurs
+              pistes
+              de
+              raisonnement
+              en
+              parallèle
+              si
+              nécessaire
+              5.
+              Si
+              tu
+              rencontres
+              une
+              impasse,
+              reviens
+              en
+              arrière
+              et
+              explore
+              une
+              approche
+              alternative
+              6.
+              Pour
+              les
+              problèmes
+              quantitatifs,
+              écris
+              les
+              calculs
+              en
+              détail
+              7.
+              Pour
+              les
+              analyses
+              textuelles,
+              décompose
+              ton
+              interprétation
+              progressivement
+              8.
+              Avant
+              de
+              finaliser
+              ta
+              réponse,
+              vérifie
+              si
+              ton
+              raisonnement
+              comporte
+              des
+              erreurs
+              ou
+              des
+              suppositions
+              non
+              vérifiées
+              Le
+              problème
+              à
+              résoudre
+              est
+              :
+              [insérer
+              votre
+              problème
+              ici]
+            >
+              Réflexion poussée 1
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span>Extraire Informations
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Description de la section C</span
+              ></span
+            >
+          </h2>
+          <select id="section-c-select-custom">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Voici deux prompts spécialisés dans l'extraction d'informations :
+                    1. Prompt pour l'extraction structurée d'informations clés d'un texte :
+                    Je souhaite que tu extraies des informations spécifiques à partir du texte suivant. Procède de cette façon :
+                    
+                    1. Analyse minutieusement le texte ci-dessous pour identifier tous les éléments correspondant aux catégories demandées
+                    2. Pour chaque catégorie, extrais UNIQUEMENT les informations explicitement mentionnées dans le texte (ne fais aucune supposition)
+                    3. Présente les résultats dans un format tabulaire clair avec les colonnes suivantes :
+                       • Catégorie
+                       • Information extraite
+                       • Position dans le texte (paragraphe ou ligne)
+                       • Niveau de confiance (certain, probable, possible)
+                    4. Si une information demandée n'est pas présente dans le texte, indique Non mentionné 
+                    5. Ne reformule pas les informations extraites - utilise les termes exacts du texte original
+                    6. Après le tableau, indique si certaines informations semblent contradictoires ou ambiguës
+                    
+                    Catégories à extraire :
+                    - [Liste des catégories spécifiques]
+                    
+                    TEXTE :
+                    [Insérez votre texte ici] 1"
+            >
+              Extraction 1
+            </option>
+            <option
+              value="Analyse le document technique suivant pour en extraire les entités et leurs relations. Voici la méthode à suivre :
+
+                    1. Identifie toutes les entités principales appartenant aux types suivants :
+                       • Concepts techniques (technologies, méthodes, processus)
+                       • Organisations et acteurs (entreprises, institutions, rôles)
+                       • Métriques et valeurs quantitatives (avec leurs unités)
+                       • Dates et périodes temporelles importantes
+                    
+                    2. Pour chaque entité identifiée, extrais :
+                       • Son nom exact tel qu'il apparaît dans le document
+                       • Sa définition ou description (si présente)
+                       • Les attributs associés (propriétés, caractéristiques)
+                       • Sa portée et son contexte d'utilisation
+                    
+                    3. Cartographie les relations entre ces entités :
+                       • Type de relation (partie-de, cause-effet, dépendance, etc.)
+                       • Direction de la relation (unidirectionnelle ou bidirectionnelle)
+                       • Force de la relation (explicite ou implicite)
+                    
+                    4. Présente les résultats sous forme de :
+                       • Liste hiérarchique des entités avec leurs attributs
+                       • Graphe de relations sous forme textuelle
+                       • Tableau récapitulatif des principaux concepts et leurs interconnexions
+                    
+                    Fournis uniquement les informations directement extraites du texte sans ajouter d'interprétations personnelles.
+                    
+                    DOCUMENT TECHNIQUE :
+                    [Insérez votre document ici]"
+            >
+              Extraction 2 doc technique
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2></h2>
+        <h2></h2>
+        <h2></h2>
+        <h2></h2>
+        <h2></h2>
+        <h2></h2>
+        <h2></h2>
+        <h2></h2>
+        <h2>Votre Prompt Personnalisé</h2>
+        <div class="button-container">
+          <button role="button" tabindex="0" onclick="generateCustomPrompt()">
+            Générer un Prompt normal
+          </button>
+          <button
+            role="button"
+            tabindex="0"
+            onclick="generateCustomOproPrompt()"
+          >
+            🔁 Prompt/méthode OPRO
+          </button>
+          <button
+            id="copyButtonCustom"
+            class="copy-button"
+            role="button"
+            tabindex="0"
+            onclick="copyCustomToClipboard()"
+          >
+            Copier dans le presse-papier
+          </button>
+          <button
+            role="button"
+            tabindex="0"
+            onclick="resetCustomForm()"
+            class="reset-button"
+          >
+            Réinitialiser
+          </button>
+        </div>
+        <div id="result-custom" class="result"></div>
+      </div>
+    </div>
+
+    <!-- Contenu de l'onglet TEXTE -->
+    <div id="content-texte" class="tab-content">
+      <!-- Conteneur de grille pour les sections du générateur texte -->
+      <div class="grid-container">
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span>Objectif
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Que doit faire précisément l'IA ? (analyse, création, résumé,
+                etc.)</span
+              ></span
+            >
+          </h2>
+          <select id="objectif-select">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Créer une nouvelle fonction dans un script existant afin d'améliorer mon programme."
+            >
+              Créer une nouvelle fonction
+            </option>
+            <option
+              value="Créer une nouvelle interface avec un design moderne et soigné."
+            >
+              Créer une nouvelle interface
+            </option>
+            <option
+              value="Résoudre un problème technique dans mon code, étape par étape, avec des explications concrètes et sans blabla."
+            >
+              Corriger un bug efficacement
+            </option>
+            <option
+              value="Améliorer la performance et la lisibilité de mon script, sans changer la structure si ce n'est pas nécessaire."
+            >
+              Optimiser un script
+            </option>
+            <option value="Créer un nouveau script ou un nouveau programme.">
+              Créer un nouveau script
+            </option>
+            <option
+              value="M'enseigner une notion ou une compétence utile avec des exemples concrets, en m'expliquant pourquoi et comment."
+            >
+              Acquérir des nouvelles compétences
+            </option>
+            <option
+              value="Automatiser une tâche métier répétitive avec un script clair, stable et maintenable."
+            >
+              Automatiser un processus
+            </option>
+            <option value="Créer un dataset de données pour un projet IA.">
+              Créer un Dataset
+            </option>
+            <option
+              value="Structurer un plan de projet en étapes claires, pragmatiques, avec priorités."
+            >
+              Planifier un projet
+            </option>
+            <option
+              value="Structurer une réflexion sur une idée de business en étapes claires, pragmatiques, avec priorités. Etat du marché, demande, perspectives, scalabilité."
+            >
+              Tester un idée de business
+            </option>
+            <option value="Défini ci dessous.">Autre</option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span>Genre / rôle
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Qui est l'IA ? Dans quel rôle agit-elle ?</span
+              ></span
+            >
+          </h2>
+          <select id="genre-select">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Joue le rôle d'un Développeur de logiciel expert en codage."
+            >
+              Développeur
+            </option>
+            <option
+              value="Joue le rôle d'un Data Scientist, expert en IA appliquée, qui rend les choses simples et facile à utiliser."
+            >
+              Expert IA
+            </option>
+            <option
+              value="Joue le rôle d'un Data Engineer expert en raisonnement et résolution de problèmes ou d'algorithmes."
+            >
+              Expert en Résolution de problème
+            </option>
+            <option
+              value="Joue le rôle d'un Data Analyst spécialisé en analyse prédictive et business intelligence."
+            >
+              Data scientist
+            </option>
+            <option
+              value="Joue le rôle d'un Développeur data engineer expert en optimisation de scripts et d'algorithmes."
+            >
+              Expert en optimisation
+            </option>
+            <option
+              value="Joue le rôle d'un Professeur pédagogue expert de ton domaine avec un QI de 180, qui connaît bien les barrières des débutants et les guide sans jargon inutile."
+            >
+              Professeur
+            </option>
+            <option value="Joue le rôle d'un coach s'adressant à son élève.">
+              Coach
+            </option>
+            <option
+              value="Joue le rôle d’un médecin-chercheur spécialisé en biologie."
+            >
+              Médecin biologiste
+            </option>
+            <option
+              value="Joue le rôle d’un analyste géopolitique avec une vision critique."
+            >
+              Analyste géopolitique
+            </option>
+            <option
+              value="Joue le rôle d’un entrepreneur tech partageant une stratégie de startup."
+            >
+              Entrepreneur startup
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span>Language
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Quel langage de programmation doit être utilisé.</span
+              ></span
+            >
+          </h2>
+          <select id="language-select">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Peu importe – Tu choisis le meilleur langage pour la tâche."
+            >
+              Peu importe
+            </option>
+            <option
+              value="Utilise le language Python pour réaliser la tâche demandée."
+            >
+              Python
+            </option>
+            <option
+              value="Utilise le language Html/CSS/JS pour réaliser la tâche demandée."
+            >
+              Html/CSS/JS
+            </option>
+            <option
+              value="Utilise le language Javascript pour réaliser la tâche demandée."
+            >
+              Javascript
+            </option>
+            <option
+              value="Utilise le language Kotlin pour réaliser la tâche demandée."
+            >
+              Kotlin
+            </option>
+            <option
+              value="Utilise le language Dart/Flutter pour réaliser la tâche demandée."
+            >
+              Dart/Flutter
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">D</span>Thématique / contexte
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Informations spécifiques à ton cas d'usage</span
+              ></span
+            >
+          </h2>
+          <select id="thematique-select">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Nous travaillons sur un projet IA pour développer une application permettant de décrypter les analyses d'une ordonnance de biologie médicale (via un OCR et un modèle d'IA (LayoutLMv3) fine tuné sur notre dataset d'ordonnances). L'application détecte les données à récupérer sur l'ordonnance (nom médecin, date de l'ordonnance, numéro RPPS, numéro ADELI, poids et liste des analyses) pour les transmettre dans une trame Hprim et permettre l'automatisation de l'enregistrement du dossier. Je veux que tu m'aides à développer ce projet. Prends une bonne inspiration et raisonne ensuite par étapes en te basant sur les documents que tu as dans le projet. Soit synthétique dans tes réponses et réponds par petites étapes et tests et attends le retour du test de l'étape en cours avant de passer à l'étape suivante."
+            >
+              Projet Ordonnances
+            </option>
+            <option
+              value="Je souhaite créer un logiciel de reconnaissance et d’interprétation d’ordonnances de biologie médicale en python basé sur DocTR pour l’OCR et un modèle d’IA pour l’interprétation du texte afin qu’il détecte des données précises sur le pdf ou l’image de l’ordonnance comme : -le nom du médecin -l’adresse du médecin -la spécialité du médecin -le numéro Adeli -le numéro RPPS -Le nom et prénom du patient -La date de l’ordonnance -La date de naissance du patient -Le poids du patient -les analyses de biologie Contexte du développement : Il faut gérer plusieurs problèmes: 1-Il faut implémenter un tri des ordonnances avec une reconnaissance des ordonnances manuscrites qui seront exclues du traitement en amont et la reconnaissance des ordonnances dactylographiées qui seront traitées par le script de reconnaissance et d’interprétation d’ordonnances. 2-Le prétraitement des images avec rotation pour les mettre les mots à l’horizontale. 3-La détection du texte par DocTR Mindee (Text Detection) : localisation des zones de textes par Dbnet ou LinkNe. Attention il faut bien récupérer les coordonnées des box englobant les mots afin de pouvoir utiliser ces coordonnées pour effectuer un surlignage des entités reconnues. 4-La reconnaissance de texte (Texte Recognition) : conversion des zones en texte lisibles avec des modèles comme CRNN ou MASTER. 5-L’utilisation d’un modèle pour les étapes supplémentaires : identification des noms, extraction des adresses, dates, numéros d’identification, liste des analyses. 6-L’utilisation d’un fichier csv prenant en charge les codes des analyses ainsi que leurs synonymes et des règles contextuelles sur ces analyses et permettant de compenser certaines erreurs de lecture de l’OCR ou de prédiction du modèle. 7-Le surlignage des entitées reconnues ou prédites par le modèle 8-La création d’une trame Hprim finale dans laquelle seront incorporés les identifiants du médecin (nom/Rpps/Adeli), la date de l’ordonnance, l’identité du patient (nom/prénom/date de naissance, poids) et la liste des analyses. Tout ceci dans l’objectif final d’automatiser complètement l’enregistrement des analyses. Prends une bonne inspiration et raisonne ensuite par étapes en te basant sur les documents que tu as dans le projet. Soit synthétique dans tes réponses et réponds par petites étapes et tests et attends le retour du test de l'étape en cours avant de passer à l'étape suivante."
+            >
+              Projet ordos détail script
+            </option>
+            <option
+              value="Je développe un assistant IA pour laboratoire médical, utile aux patients et aux professionnels. Il doit s'appuyer sur des documents internes fiables. Le Chatbot doit pouvoir répondre aux questions des patients sur les analyses (nature, explications, conditions préanalytiques) et sur le laboratoire (horaires, lieux, historique, conditions de paiement, conditions de prises de rendez vous) ainsi qu'aux questions des professionnels travaillant dans le laboratoire (questions scientifiques, performances analytiques, système de management de la qualité, contextes médicaux, significativité clinique des tests"
+            >
+              Projet ChatBot
+            </option>
+            <option
+              value="Nous souhaitons créer un formulaire au design soigné et pratique à utiliser."
+            >
+              Projet Formulaire
+            </option>
+            <option
+              value="Je développe un tableau de bord pour visualiser des données médicales en temps réel."
+            >
+              Projet Dashboard
+            </option>
+            <option
+              value="Nous souhaitons développer un business, autour de l'IA en utilisant son potentiel applicatif."
+            >
+              Projet Business
+            </option>
+            <option
+              value="Je veux acquérir des connaissances et développer mes compétences sur ce sujet, mieux structurer mes idées et gagner en autonomie."
+            >
+              Projet de formation
+            </option>
+            <option
+              value="Je construis des workflows IA pour gagner du temps sur les tâches à faible valeur ajoutée."
+            >
+              Projet d'automatisation de workflow
+            </option>
+            <option
+              value="Je veux automatiser la gestion de logs dans un pipeline DevOps."
+            >
+              Automatiser gestion de logs dans pipeline DevOps.
+            </option>
+            <option
+              value="Tu es un mentor personnel et un coach d'apprentissage avec un QI de 180, expert absolu dans la pédagogie efficace. Tu dois systématiquement viser l'efficacité maximale : - Va à l'essentiel et ignore tout ce qui est superficiel. - Priorise uniquement les méthodes et ressources ayant le meilleur ratio temps/résultat. - Décompose les concepts complexes en étapes claires et accessibles. - Identifie et corrige rapidement mes blocages et mes angles morts. - Stimule ma réflexion autonome plutôt que de simplement fournir des réponses toutes faites."
+            >
+              Programme de coaching
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">E</span>Cadre<span
+              class="tooltip help-icon"
+              >?<span class="tooltiptext">Contraintes ou limites</span></span
+            >
+          </h2>
+          <select id="cadre-select">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Explique moi absolument étape par étape. Fais-moi progresser pas à pas. Donne-moi une action à faire, je l'exécute puis tu contrôles le résultat et tu corriges si besoin; et quand c'est bon, tu me fais faire l'action suivante et ainsi de suite."
+            >
+              Progression Étape par étape
+            </option>
+            <option
+              value="Explique-moi seulement ce qui change dans le code, comment l'insérer et où. Fais ça de manière simple, claire, pédagogique. Pas de blabla inutile."
+            >
+              Réécris juste les parties à modifier
+            </option>
+            <option
+              value="Réécris tout le script proprement avec commentaires et structure lisible. Priorité à la clarté. Ne change que ce qui est nécessaire et garde bien toute l'intégrité du code d'origine."
+            >
+              Réécris tout le script
+            </option>
+            <option
+              value="Explique moi le concept en totalité et détaille tout dans une réponse."
+            >
+              Explique tout en une fois
+            </option>
+            <option
+              value="Utilise uniquement des outils open-source fiables, bien documentés."
+            >
+              Utilise seulement de l'open-source
+            </option>
+            <option
+              value="Code propre, concis, efficace. En pensant maintenance et lisibilité."
+            >
+              Vise un code optimisé
+            </option>
+            <option
+              value="Priorise les solutions scalables et maintenables (DevOps/IA)."
+            >
+              Priorise solutions scalables et maintenables
+            </option>
+            <option
+              value="Utilise des références scientifiques récentes (post-2023)."
+            >
+              Utilise des références scientifiques récentes (post-2023)
+            </option>
+            <option
+              value="Inclus des analogies tirées de la musique ou de l’histoire."
+            >
+              Analogies musique ou histoire
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">F</span>Pièces jointes<span
+              class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Ajoute des cas concrets pour illustrer ton besoin</span
+              ></span
+            >
+          </h2>
+          <select id="pj-select">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Aucune">Aucune</option>
+            <option
+              value="Voir la capture d'écran. Elle illustre un comportement ou une erreur."
+            >
+              Copie écran
+            </option>
+            <option value="Voir la photo jointe.">Photo</option>
+            <option
+              value="Voir le script joint. Tu dois l'améliorer sans altérer sa logique globale."
+            >
+              Script
+            </option>
+            <option
+              value="Voir le fichier joint. Il contient un exemple de données ou de structure à respecter."
+            >
+              Fichier
+            </option>
+            <option
+              value="Voir le CSV. Ce sont des données à analyser ou structurer."
+            >
+              CSV
+            </option>
+            <option value="Voir le PDF joint, il contient le texte à analyser.">
+              PDF
+            </option>
+            <option value="Voir la pièce jointe que je te fournis.">
+              Autre
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">G</span>Ton/Style de réponse
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Quel ton ou style doit adopter l'IA dans sa réponse ?</span
+              ></span
+            >
+          </h2>
+          <select id="ton-select">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Réponds en markdown, Synthétique, direct et concis, sans fioritures, Pas de répétition,Pas de disclaimer inutile et à la fin de ta réponse fais un résumé des actions à mener"
+            >
+              Synthétique
+            </option>
+            <option
+              value="Technique et précis, avec un focus sur les détails pratiques, Formate en tableau avec 3 colonnes : analyse, interprétation, conduite"
+            >
+              Technique
+            </option>
+            <option
+              value="Pédagogique, clair et accessible, idéal pour apprendre"
+            >
+              Pédagogique
+            </option>
+            <option value="Fournis une checklist numérotée">Checklist</option>
+          </select>
+        </div>
+
+        <div class="section detail-demande">
+          <h2 class="centered-title">
+            <span class="letter-box">H</span>Expliquez en détail votre demande
+            ci-dessous<span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Expliquez ici plus en détail votre demande...</span
+              ></span
+            >
+          </h2>
+          <textarea
+            id="detail-demande"
+            class="detail-textarea"
+            placeholder="Expliquez ici plus en détail votre demande..."
+            rows="6"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Votre Prompt</h2>
+        <div class="button-container">
+          <button role="button" tabindex="0" onclick="generatePrompt()">
+            Générer un Prompt normal
+          </button>
+          <button role="button" tabindex="0" onclick="generateOproPrompt()">
+            🔁 Prompt/méthode OPRO
+          </button>
+          <button
+            id="copyButton"
+            class="copy-button"
+            role="button"
+            tabindex="0"
+            onclick="copyToClipboard()"
+          >
+            Copier dans le presse-papier
+          </button>
+          <button
+            role="button"
+            tabindex="0"
+            onclick="resetForm()"
+            class="reset-button"
+          >
+            Réinitialiser
+          </button>
+        </div>
+        <div id="result" class="result"></div>
+      </div>
+    </div>
+
+    <!-- Contenu de l'onglet IMAGE -->
+    <div id="content-image" class="tab-content">
+      <!-- Conteneur de grille pour les sections du générateur d'images -->
+      <div class="grid-container">
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span>Objectif
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Que doit faire précisément l'IA ? (génération, modification,
+                etc.)</span
+              ></span
+            >
+          </h2>
+          <select id="objectif-select-image">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Générer une image réaliste qui correspond précisément à ma description."
+            >
+              Générer une image réaliste
+            </option>
+            <option
+              value="Créer une illustration artistique basée sur ma description."
+            >
+              Créer une illustration artistique
+            </option>
+            <option
+              value="Concevoir un logo professionnel pour mon entreprise/projet."
+            >
+              Concevoir un logo
+            </option>
+            <option
+              value="Transformer mon esquisse en une image de qualité professionnelle."
+            >
+              Transformer une esquisse
+            </option>
+            <option
+              value="Modifier une image existante selon mes instructions."
+            >
+              Modifier une image existante
+            </option>
+            <option
+              value="Capturer un paysage réaliste avec des détails naturels précis."
+            >
+              Image de paysage réaliste
+            </option>
+            <option
+              value="Créer une peinture abstraite avec des formes géométriques dynamiques."
+            >
+              Image formes géométriques dynamiques
+            </option>
+            <option
+              value="Concevoir une affiche de film dans un style affichiste vintage."
+            >
+              Concevoir une affiche de film
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span>Style artistique
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Quel style visuel souhaitez-vous ?</span
+              ></span
+            >
+          </h2>
+          <select id="genre-select-image">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Photographie professionnelle, hyperréaliste, haute définition"
+            >
+              Photographie hyperréaliste
+            </option>
+            <option value="Photographie réaliste de National Geographic">
+              Photographie National Geographic
+            </option>
+            <option value="Illustration digitale moderne, style épuré">
+              Illustration digitale
+            </option>
+            <option value="Art fantastique, atmosphère onirique">
+              Art fantastique
+            </option>
+            <option value="Style minimaliste, épuré, design moderne">
+              Minimaliste/Épuré
+            </option>
+            <option value="Style rétro/vintage, inspiré des années 80">
+              Rétro/Vintage
+            </option>
+            <option
+              value="Style affichiste français des années 50 (Marcel-like)."
+            >
+              Affichistes
+            </option>
+            <option value="Abstraction géométrique inspirée de Mondrian.">
+              Abstraction Mondrian
+            </option>
+            <option value="Peinture à l'huile traditionnelle, texture visible">
+              Peinture traditionnelle
+            </option>
+            <option value="Anime/Manga japonais, style caractéristique">
+              Anime/Manga
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span>Format
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Quel format d'image souhaitez-vous ?</span
+              ></span
+            >
+          </h2>
+          <select id="format-select-image">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Format standard 1:1 (carré)">Carré (1:1)</option>
+            <option value="Format portrait 2:3 (vertical)">
+              Portrait (2:3)
+            </option>
+            <option value="Format paysage 3:2 (horizontal)">
+              Paysage (3:2)
+            </option>
+            <option value="Format panoramique 16:9">Panoramique (16:9)</option>
+            <option value="Format story/réseaux sociaux 9:16">
+              Story (9:16)
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">D</span>Ambiance / contexte
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Quelle ambiance souhaitez-vous créer ?</span
+              ></span
+            >
+          </h2>
+          <select id="ambiance-select-image">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Ambiance joyeuse et lumineuse, couleurs vives">
+              Joyeuse/Lumineuse
+            </option>
+            <option value="Atmosphère sombre et mystérieuse, contrastes forts">
+              Sombre/Mystérieuse
+            </option>
+            <option value="Ambiance sereine et apaisante, tons doux">
+              Sereine/Apaisante
+            </option>
+            <option value="Style dramatique et émotionnel, jeux d'ombres">
+              Dramatique/Émotionnelle
+            </option>
+            <option value="Ambiance futuriste et technologique">
+              Futuriste/Technologique
+            </option>
+            <option value="Style naturel et organique, tons terreux">
+              Naturelle/Organique
+            </option>
+            <option value="Ambiance nostalgique, teintes douces">
+              Nostalgique
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">E</span>Rendu<span
+              class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Quel niveau de qualité souhaitez-vous ?</span
+              ></span
+            >
+          </h2>
+          <select id="rendu-select-image">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Haute qualité, ultra-détaillé, 8K, clarté maximale">
+              Ultra-haute définition
+            </option>
+            <option value="Qualité professionnelle, détails soignés">
+              Qualité professionnelle
+            </option>
+            <option value="Majestueux et sauvage (montagnes, forêts).">
+              Majestueux et sauvage
+            </option>
+            <option value="Urbain et vibrant (villes modernes).">
+              Urbain et vibrant
+            </option>
+            <option value="Éthéré et structuré (abstrait géométrique).">
+              Éthéré et structuré
+            </option>
+            <option value="Rendu artistique, textures riches">
+              Artistique/Texturé
+            </option>
+            <option value="Style épuré, peu de détails, minimaliste">
+              Minimaliste
+            </option>
+            <option value="Rendu expérimental, effets uniques">
+              Expérimental
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">F</span>Éléments à éviter<span
+              class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Ce que vous ne voulez pas voir dans l'image</span
+              ></span
+            >
+          </h2>
+          <select id="eviter-select-image">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Éviter : texte illisible, déformations, proportions incorrectes"
+            >
+              Défauts techniques
+            </option>
+            <option
+              value="Éviter : couleurs criardes ou saturées excessivement."
+            >
+              Couleurs criardes ou saturées
+            </option>
+            <option
+              value="Éviter : détails inutiles qui encombrent les grands espaces."
+            >
+              Détails inutiles
+            </option>
+            <option value="Éviter : effets numériques trop artificiels.">
+              Effets numériques trop artificiels
+            </option>
+            <option
+              value="Éviter : visages déformés, mains étranges, anatomie incorrecte"
+            >
+              Problèmes anatomiques
+            </option>
+            <option value="Éviter : éléments dérangeants, scènes choquantes">
+              Contenu dérangeant
+            </option>
+            <option value="Éviter : clichés visuels, compositions banales">
+              Clichés visuels
+            </option>
+            <option value="Éviter : surcharge de détails, image trop chargée">
+              Surcharge visuelle
+            </option>
+            <option value="Aucune restriction particulière">
+              Aucune restriction
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">G</span>Ton/Style de réponse
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Quel ton ou style doit refléter l'image générée ?</span
+              ></span
+            >
+          </h2>
+          <select id="ton-select-image">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Aucun style particulier">Aucun</option>
+            <option value="Factuel, réaliste, avec une précision visuelle">
+              Factuel
+            </option>
+            <option value="Évocateur, riche en émotions et en atmosphère">
+              Évocateur
+            </option>
+            <option value="Minimaliste, simple et épuré dans la composition">
+              Minimaliste
+            </option>
+            <option value="Dramatique, intense, avec des contrastes marqués">
+              Dramatique
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">H</span>Inspiration visuelle
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Références visuelles, univers esthétiques ou artistes que vous
+                souhaitez évoquer.</span
+              ></span
+            >
+          </h2>
+          <select id="inspiration-select-image">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Aucune inspiration particulière">Aucune</option>
+            <option value="Inspiré par l’univers de Studio Ghibli">
+              Studio Ghibli
+            </option>
+            <option
+              value="Inspiré par l’esthétique de Wes Anderson (cadrages symétriques, couleurs pastel)"
+            >
+              Wes Anderson
+            </option>
+            <option value="Inspiré par les œuvres de Hayao Miyazaki">
+              Hayao Miyazaki
+            </option>
+            <option
+              value="Inspiré par les films de science-fiction rétro comme Blade Runner"
+            >
+              Blade Runner
+            </option>
+            <option value="Inspiré par l’art de Moebius (Jean Giraud)">
+              Moebius
+            </option>
+            <option
+              value="Inspiré par les peintures de Monet (impressionnisme)"
+            >
+              Monet
+            </option>
+            <option value="Inspiré par l’univers cyberpunk">Cyberpunk</option>
+            <option value="Inspiré par les décors de Pixar">Pixar</option>
+            <option value="Inspiré par l’esthétique Art Déco">Art Déco</option>
+          </select>
+        </div>
+
+        <div class="section detail-demande">
+          <h2 class="centered-title">
+            <span class="letter-box">I</span>Description détaillée de l'image
+            souhaitée<span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Décrivez précisément ce que vous voulez voir dans
+                l'image...</span
+              ></span
+            >
+          </h2>
+          <textarea
+            id="detail-demande-image"
+            class="detail-textarea"
+            placeholder="Décrivez précisément ce que vous voulez voir dans l'image..."
+            rows="6"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Votre Prompt d'Image</h2>
+        <div class="button-container">
+          <button role="button" tabindex="0" onclick="generateImagePrompt()">
+            Générer un Prompt normal
+          </button>
+          <button
+            role="button"
+            tabindex="0"
+            onclick="generateImageOproPrompt()"
+          >
+            🔁 Prompt/méthode OPRO
+          </button>
+          <button
+            id="copyButtonImage"
+            class="copy-button"
+            role="button"
+            tabindex="0"
+            onclick="copyImageToClipboard()"
+          >
+            Copier dans le presse-papier
+          </button>
+          <button
+            role="button"
+            tabindex="0"
+            onclick="resetImageForm()"
+            class="reset-button"
+          >
+            Réinitialiser
+          </button>
+        </div>
+        <div id="result-image" class="result"></div>
+      </div>
+    </div>
+
+    <!-- Contenu de l'onglet VOYAGE -->
+    <div id="content-voyage" class="tab-content">
+      <!-- Conteneur de grille pour les sections du générateur voyages -->
+      <div class="grid-container">
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span>Objectif
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Que voulez-vous planifier pour votre voyage ?</span
+              ></span
+            >
+          </h2>
+          <select id="objectif-select-voyage">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Planifier un itinéraire détaillé pour mon voyage avec les étapes clés."
+            >
+              Planifier un itinéraire
+            </option>
+            <option
+              value="Trouver des activités et attractions incontournables dans ma destination."
+            >
+              Trouver des activités
+            </option>
+            <option
+              value="Établir un budget réaliste pour mon voyage avec répartition des coûts."
+            >
+              Établir un budget
+            </option>
+            <option
+              value="Organiser les aspects logistiques : transport, hébergement, documents."
+            >
+              Organiser la logistique
+            </option>
+            <option
+              value="Découvrir la culture locale et les expériences authentiques."
+            >
+              Découvrir la culture locale
+            </option>
+            <option
+              value="Créer un guide personnalisé adapté à mes centres d'intérêt."
+            >
+              Créer un guide personnalisé
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span>Type de voyage
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Quel style de voyage envisagez-vous ?</span
+              ></span
+            >
+          </h2>
+          <select id="type-select-voyage">
+            <option value="" disabled selected>Choisir une option</option>
+            <option
+              value="Voyage culturel et historique, visite de musées et sites patrimoniaux"
+            >
+              Culturel/Historique
+            </option>
+            <option
+              value="Voyage d'aventure et nature, randonnées et activités outdoor"
+            >
+              Aventure/Nature
+            </option>
+            <option value="Voyage détente et bien-être, spa et relaxation">
+              Détente/Bien-être
+            </option>
+            <option value="Voyage gastronomique, découverte culinaire locale">
+              Gastronomique
+            </option>
+            <option value="Voyage en famille avec enfants, activités adaptées">
+              Familial
+            </option>
+            <option value="Voyage romantique en couple">Romantique</option>
+            <option value="Voyage d'affaires avec temps libre limité">
+              Professionnel
+            </option>
+            <option value="Voyage routard/backpacker, budget serré">
+              Routard/Backpacker
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span>Durée
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Combien de temps dure votre voyage ?</span
+              ></span
+            >
+          </h2>
+          <select id="duree-select-voyage">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Week-end (2-3 jours)">Week-end (2-3 jours)</option>
+            <option value="Court séjour (4-7 jours)">
+              Court séjour (4-7 jours)
+            </option>
+            <option value="Séjour moyen (10 jours)">
+              Séjour moyen (10 jours)
+            </option>
+            <option value="Long séjour (3-4 semaines)">
+              Long séjour (3-4 semaines)
+            </option>
+            <option value="Voyage prolongé (1 mois et plus)">
+              Voyage prolongé (1 mois+)
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">D</span>Budget
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Quelle gamme de budget envisagez-vous ?</span
+              ></span
+            >
+          </h2>
+          <select id="budget-select-voyage">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Budget serré, solutions économiques prioritaires">
+              Budget serré
+            </option>
+            <option value="Budget modéré, bon rapport qualité-prix">
+              Budget modéré
+            </option>
+            <option value="Budget confortable, prestations de qualité">
+              Budget confortable
+            </option>
+            <option value="Budget élevé, expériences premium et luxe">
+              Budget élevé
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">E</span>Saison<span
+              class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >À quelle période envisagez-vous de voyager ?</span
+              ></span
+            >
+          </h2>
+          <select id="saison-select-voyage">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Printemps (mars-mai), climat doux et floraisons">
+              Printemps
+            </option>
+            <option value="Été (juin-août), saison haute et climat chaud">
+              Été
+            </option>
+            <option value="Automne (septembre-novembre), saison intermédiaire">
+              Automne
+            </option>
+            <option
+              value="Hiver (décembre-février), saison basse et climat froid"
+            >
+              Hiver
+            </option>
+            <option value="Période flexible selon les meilleures conditions">
+              Flexible
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">F</span>Transports<span
+              class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Y a-t-il des limitations à prendre en compte ?</span
+              ></span
+            >
+          </h2>
+          <select id="contraintes-select-voyage">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Ajouter des aller-retour en avion depuis Paris">
+              A/R avion Paris
+            </option>
+            <option value="Ajouter des aller-retour en avion depuis Bordeaux">
+              A/R avion Bordeaux
+            </option>
+            <option value="Ajouter des aller-retour en train depuis Paris">
+              A/R avion Paris
+            </option>
+            <option
+              value="Éviter : vols long-courriers, destinations trop éloignées"
+            >
+              Éviter long-courriers
+            </option>
+            <option
+              value="Créer un voyage sans voiture (avion, train, bateau, bus...)"
+            >
+              Créer un voyage sans voiture
+            </option>
+            <option value="Aucune contrainte particulière">
+              Aucune contrainte
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">G</span>Style de réponse
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Comment souhaitez-vous recevoir les conseils voyage ?</span
+              ></span
+            >
+          </h2>
+          <select id="style-select-voyage">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="Guide pratique avec planning détaillé jour par jour">
+              Guide pratique détaillé
+            </option>
+            <option
+              value="Conseils inspirants avec anecdotes et récits de voyage"
+            >
+              Conseils inspirants
+            </option>
+            <option value="Informations factuelles concises et organisées">
+              Informations factuelles
+            </option>
+            <option value="Format liste avec recommandations hiérarchisées">
+              Format liste
+            </option>
+          </select>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">H</span>Voyageurs
+            <span class="tooltip help-icon"
+              >?<span class="tooltiptext">Qui voyage ?</span></span
+            >
+          </h2>
+          <select id="references-select-voyage">
+            <option value="" disabled selected>Choisir une option</option>
+            <option value="2 adultes + 2 enfants">
+              2 adultes et 2 enfants de 10 et 12 ans
+            </option>
+            <option value="2 adultes">2 adultes</option>
+            <option value="1 adulte">1 adulte</option>
+          </select>
+        </div>
+
+        <div class="section detail-demande">
+          <h2 class="centered-title">
+            <span class="letter-box">I</span>Description détaillée de votre
+            projet voyage<span class="tooltip help-icon"
+              >?<span class="tooltiptext"
+                >Décrivez précisément votre destination et vos attentes...</span
+              ></span
+            >
+          </h2>
+          <textarea
+            id="detail-demande-voyage"
+            class="detail-textarea"
+            placeholder="Précisez votre destination, vos centres d'intérêt, le nombre de personnes, vos expériences de voyage passées..."
+            rows="6"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Votre Prompt de Voyage</h2>
+        <div class="button-container">
+          <button role="button" tabindex="0" onclick="generateVoyagePrompt()">
+            Générer un Prompt normal
+          </button>
+          <button
+            role="button"
+            tabindex="0"
+            onclick="generateVoyageOproPrompt()"
+          >
+            🔁 Prompt/méthode OPRO
+          </button>
+          <button
+            id="copyButtonVoyage"
+            class="copy-button"
+            role="button"
+            tabindex="0"
+            onclick="copyVoyageToClipboard()"
+          >
+            Copier dans le presse-papier
+          </button>
+          <button
+            role="button"
+            tabindex="0"
+            onclick="resetVoyageForm()"
+            class="reset-button"
+          >
+            Réinitialiser
+          </button>
+        </div>
+        <div id="result-voyage" class="result"></div>
+      </div>
+    </div>
+
+    <!-- Section d'informations (déplacée en dehors des onglets) -->
+    <div class="info-toggle" onclick="toggleInfo()">
+      Informations sur le générateur ▼
+    </div>
+    <div class="info-content" id="infoContent">
+      <strong>Fonctionnalités du générateur :</strong><br />
+      1. <strong>Structure complète</strong> : objectif, Intention, Genre/rôle,
+      Résultat attendu, pj, Ton, Thématique/contexte, cadre.<br />
+      2. <strong>Interface améliorée</strong> : Design moderne, lettres en cases
+      colorées, infobulles d'aide, pj inclus.<br />
+      3. <strong>Fonctionnalités pratiques</strong> : Copie dans le
+      presse-papier avec confirmation, mise en forme soignée, menus déroulants
+      prédéfinis.<br /><br />
+      <strong>Utilisation :</strong><br />
+      1. Remplissez les champs ou sélectionnez des options prédéfinies.<br />
+      2. Cliquez sur "Générer le Prompt" pour obtenir un prompt structuré
+      classique RACE (Rôle, action, contexte, exemples).<br />
+      3. Cliquez sur "Prompt/méthode OPRO" for an optimized prompt using the
+      OPRO method: Automatically generate multiple prompt variants for a
+      specific task. Each prompt is evaluated on data to measure its
+      performance, then the best ones are selected, combined, or modified by an
+      optimization algorithm. This process iterates until the most effective
+      prompts are obtained. Consider pasting the result obtained from one AI
+      into the chat of a second AI to avoid self-influence. 4. Copiez le
+      résultat avec "Copier dans le presse-papier".<br />
+      5. Collez le prompt dans votre outil d'IA préféré.<br /><br />
+      Cette méthode crée des prompts structurés pour des résultats optimaux avec
+      les modèles d'IA.
+    </div>
+
+    <script>
+      // Fonction pour gérer les onglets
+      function setupTabs() {
+        const tabBtns = document.querySelectorAll(".tab-btn");
+
+        // Ajouter des écouteurs pour click et touchstart
+        tabBtns.forEach((btn) => {
+          btn.addEventListener("click", handleTabInteraction);
+          btn.addEventListener("touchstart", handleTabInteraction);
+        });
+
+        // Vérifier s'il y a un onglet actif stocké dans localStorage
+        const activeTab = localStorage.getItem("activeTab");
+        if (activeTab) {
+          const activeBtn = document.querySelector(
+            `.tab-btn[data-tab="${activeTab}"]`
+          );
+          if (activeBtn) {
+            activeBtn.click();
+          } else {
+            // Si l'onglet stocké n'existe pas, activer l'onglet personnalisé par défaut
+            document.querySelector('.tab-btn[data-tab="custom"]').click();
+          }
+        } else {
+          // Activer l'onglet personnalisé par défaut
+          document.querySelector('.tab-btn[data-tab="custom"]').click();
+        }
+      }
+
+      // Gestionnaire d'interaction pour les onglets (click ou touch)
+      function handleTabInteraction(event) {
+        event.preventDefault();
+        const targetTab = this.dataset.tab;
+
+        // Supprimer la classe active de tous les boutons et contenus
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((c) => c.classList.remove("active"));
+
+        // Ajouter la classe active au bouton cliqué
+        this.classList.add("active");
+
+        // Afficher le contenu correspondant
+        document.getElementById(`content-${targetTab}`).classList.add("active");
+
+        // Stocker la préférence d'onglet dans localStorage
+        localStorage.setItem("activeTab", targetTab);
+      }
+
+      // Fonctions communes pour la gestion des champs
+      function updateField(fieldId, value) {
+        const field = document.getElementById(fieldId);
+        field.value = value;
+        field.style.display = "block";
+        field.previousElementSibling.textContent =
+          "Masquer le texte personnalisé";
+      }
+
+      function toggleTextArea(fieldId) {
+        const textArea = document.getElementById(fieldId);
+        const button = textArea.previousElementSibling;
+        if (textArea.style.display === "block") {
+          textArea.style.display = "none";
+          button.textContent = "Ajouter du texte personnalisé";
+        } else {
+          textArea.style.display = "block";
+          button.textContent = "Masquer le texte personnalisé";
+        }
+      }
+
+      function handleSelectChange(fieldId, value) {
+        const textArea = document.getElementById(fieldId);
+        if (value === "custom") {
+          textArea.style.display = "block";
+          textArea.value = "";
+        } else {
+          textArea.style.display = "none";
+          textArea.value = value;
+        }
+      }
+
+      function showTextArea(fieldId) {
+        const textArea = document.getElementById(fieldId);
+        textArea.style.display = "block";
+      }
+
+      function hideTextArea(fieldId) {
+        const textArea = document.getElementById(fieldId);
+        textArea.style.display = "none";
+      }
+
+      // Fonctions pour le générateur de prompt personnalisé
+      function generateCustomPrompt() {
+        const sectionA = document
+          .getElementById("section-a-select-custom")
+          .value.trim();
+        const sectionB = document
+          .getElementById("section-b-select-custom")
+          .value.trim();
+        const sectionC = document
+          .getElementById("section-c-select-custom")
+          .value.trim();
+
+        let prompt =
+          "Voici ma demande structurée pour le générateur personnalisé :\n\n";
+
+        if (sectionA) prompt += `• Section A : ${sectionA}\n`;
+        if (sectionB) prompt += `• Section B : ${sectionB}\n`;
+        if (sectionC) prompt += `• Section C : ${sectionC}\n`;
+
+        prompt += `\n👉 Génère une réponse claire et structurée basée sur ces sélections.`;
+
+        document.getElementById("result-custom").textContent = prompt;
+      }
+
+      function generateCustomOproPrompt() {
+        const sectionA = document
+          .getElementById("section-a-select-custom")
+          .value.trim();
+        const sectionB = document
+          .getElementById("section-b-select-custom")
+          .value.trim();
+        const sectionC = document
+          .getElementById("section-c-select-custom")
+          .value.trim();
+
+        let basePrompt =
+          "Voici ma demande structurée pour le générateur personnalisé :\n\n";
+        if (sectionA) basePrompt += `• Section A : ${sectionA}\n`;
+        if (sectionB) basePrompt += `• Section B : ${sectionB}\n`;
+        if (sectionC) basePrompt += `• Section C : ${sectionC}\n`;
+
+        basePrompt += `\n👉 Génère une réponse claire et structurée basée sur ces sélections.\n`;
+
+        const oproInstructions = `
+    🔁 Instructions OPRO :
+
+    Tu es un expert en prompt engineering. À partir du prompt ci-dessus, effectue les étapes suivantes :
+
+    1. Présente la réponse sous forme de liste à puce: une puce par prompt
+    2. Commence par la première puce avec le résumé du prompt original ci-dessus
+    3. Génère 5 variantes de prompts basés sur celui-ci.
+    4. Pour chaque prompt, évalue sa pertinence sur une échelle de 0 à 100.
+       Critères de notation :
+       - Clarté
+       - Pertinence
+       - Spécificité
+       - Capacité à guider un LLM vers une réponse utile
+    5. Ajoute à la fin la commande suivante: Tu vas agir comme un expert en Prompt Engineering spécialisé dans les IA génératives. En te basant sur tes connaissances, tes compétences et les prompts notés que je t'ai partagé, tu vas rédiger le prompt parfait pour le LLM.
+
+    Objectif final : identifier le meilleur prompt pour la tâche demandée.
+
+    Prompt de départ :
+    """
+    ${basePrompt}
+    """
+    `;
+
+        document.getElementById("result-custom").textContent = oproInstructions;
+      }
+
+      function resetCustomForm() {
+        document.getElementById("section-a-select-custom").selectedIndex = 0;
+        document.getElementById("section-b-select-custom").selectedIndex = 0;
+        document.getElementById("section-c-select-custom").selectedIndex = 0;
+        document.getElementById("result-custom").textContent = "";
+      }
+
+      function copyCustomToClipboard() {
+        const resultText = document.getElementById("result-custom").textContent;
+        if (resultText.trim() === "") {
+          alert(
+            "Veuillez d'abord générer un prompt en sélectionnant des options et en cliquant sur 'Générer le Prompt'"
+          );
+          return;
+        }
+
+        if (navigator.clipboard) {
+          navigator.clipboard
+            .writeText(resultText)
+            .then(() => {
+              const copyButton = document.getElementById("copyButtonCustom");
+              copyButton.textContent = "Copié ✓";
+              setTimeout(() => {
+                copyButton.textContent = "Copier dans le presse-papier";
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Erreur lors de la copie: ", err);
+              fallbackCopyToClipboard(resultText);
+            });
+        } else {
+          fallbackCopyToClipboard(resultText);
+        }
+      }
+
+      // Fonctions pour le générateur de prompt texte
+      function generatePrompt() {
+        const objectif = document
+          .getElementById("objectif-select")
+          .value.trim();
+        const language = document
+          .getElementById("language-select")
+          .value.trim();
+        const genre = document.getElementById("genre-select").value.trim();
+        const thematique = document
+          .getElementById("thematique-select")
+          .value.trim();
+        const pj = document.getElementById("pj-select").value.trim();
+        const cadre = document.getElementById("cadre-select").value.trim();
+        const ton = document.getElementById("ton-select").value.trim();
+        const detailDemande = document
+          .getElementById("detail-demande")
+          .value.trim();
+
+        let prompt =
+          "Voici ma demande structurée pour que tu puisses y répondre au mieux :\n\n";
+
+        if (objectif) prompt += `• Objectif : ${objectif}\n`;
+        if (genre) prompt += `• Rôle IA : ${genre}\n`;
+        if (language) prompt += `• Langage demandé : ${language}\n`;
+        if (thematique) prompt += `• Contexte : ${thematique}\n`;
+        if (cadre) prompt += `• Contraintes : ${cadre}\n`;
+        if (pj && pj !== "Aucune") prompt += `• Pièce jointe : ${pj}\n`;
+        if (ton) prompt += `• Ton/Style : ${ton}\n`;
+        if (detailDemande)
+          prompt += `\n🔎 Détail de la demande :\n${detailDemande}\n`;
+
+        prompt += `\n👉 Donne une réponse claire, structurée, pédagogique, avec des exemples concrets si possible. Va à l'essentiel et ignore tout ce qui est superficiel. Priorise uniquement les méthodes et ressources ayant le meilleur ratio temps/résultat. Décompose les concepts complexes en étapes claires et accessibles.`;
+
+        document.getElementById("result").textContent = prompt;
+      }
+
+      function generateOproPrompt() {
+        const ton = document.getElementById("ton-select").value.trim();
+        const objectif = document
+          .getElementById("objectif-select")
+          .value.trim();
+        const language = document
+          .getElementById("language-select")
+          .value.trim();
+        const genre = document.getElementById("genre-select").value.trim();
+        const thematique = document
+          .getElementById("thematique-select")
+          .value.trim();
+        const pj = document.getElementById("pj-select").value.trim();
+        const cadre = document.getElementById("cadre-select").value.trim();
+        const detailDemande = document
+          .getElementById("detail-demande")
+          .value.trim();
+
+        let basePrompt =
+          "Voici ma demande structurée pour que tu puisses y répondre au mieux :\n\n";
+        if (objectif) basePrompt += `• Objectif : ${objectif}\n`;
+        if (genre) basePrompt += `• Rôle IA : ${genre}\n`;
+        if (language) basePrompt += `• Langage demandé : ${language}\n`;
+        if (thematique) basePrompt += `• Contexte : ${thematique}\n`;
+        if (cadre) basePrompt += `• Contraintes : ${cadre}\n`;
+        if (pj && pj !== "Aucune") basePrompt += `• Pièce jointe : ${pj}\n`;
+        if (detailDemande)
+          basePrompt += `\n🔎 Détail de la demande :\n${detailDemande}\n`;
+        if (ton) basePrompt += `• Ton/Style : ${ton}\n`;
+
+        basePrompt += `\n👉 Donne une réponse claire, structurée, pédagogique, avec des exemples concrets si possible.\n`;
+
+        const oproInstructions = `
+    🔁 Instructions OPRO :
+
+    Tu es un expert en prompt engineering. À partir du prompt ci-dessus, effectue les étapes suivantes :
+
+    1. Présente la réponse sous forme de liste à puce: une puce par prompt
+    2. Commence par la première puce avec le résumé du prompt original ci-dessus
+    3. Génère 5 variantes de prompts basés sur celui-ci.
+    4. Pour chaque prompt, évalue sa pertinence sur une échelle de 0 à 100.
+       Critères de notation :
+       - Clarté
+       - Pertinence
+       - Spécificité
+       - Capacité à guider un LLM vers une réponse utile
+    5. Ajoute à la fin la commande suivante: Tu vas agir comme un expert en Prompt Engineering spécialisé dans les IA génératives. En te basant sur tes connaissances, tes compétences et les prompts notés que je t'ai partagé, tu vas rédiger le prompt parfait pour le LLM.
+
+    Objectif final : identifier le meilleur prompt pour la tâche demandée.
+
+    Prompt de départ :
+    """
+    ${basePrompt}
+    """
+    `;
+
+        document.getElementById("result").textContent = oproInstructions;
+      }
+
+      // Fonctions pour le générateur de prompt image
+      function generateImagePrompt() {
+        const objectif = document
+          .getElementById("objectif-select-image")
+          .value.trim();
+        const style = document
+          .getElementById("genre-select-image")
+          .value.trim();
+        const format = document
+          .getElementById("format-select-image")
+          .value.trim();
+        const ambiance = document
+          .getElementById("ambiance-select-image")
+          .value.trim();
+        const rendu = document
+          .getElementById("rendu-select-image")
+          .value.trim();
+        const eviter = document
+          .getElementById("eviter-select-image")
+          .value.trim();
+        const ton = document.getElementById("ton-select-image").value.trim();
+        const inspiration = document
+          .getElementById("inspiration-select-image")
+          .value.trim();
+        const detailDemande = document
+          .getElementById("detail-demande-image")
+          .value.trim();
+
+        let prompt = "Voici ma demande structurée pour générer une image :\n\n";
+
+        if (objectif) prompt += `• Objectif : ${objectif}\n`;
+        if (style) prompt += `• Style : ${style}\n`;
+        if (format) prompt += `• Format : ${format}\n`;
+        if (ambiance) prompt += `• Ambiance : ${ambiance}\n`;
+        if (rendu) prompt += `• Rendu : ${rendu}\n`;
+        if (eviter) prompt += `• À éviter : ${eviter}\n`;
+        if (ton) prompt += `• Ton/Style : ${ton}\n`;
+        if (inspiration) prompt += `• Inspiration : ${inspiration}\n`;
+        if (detailDemande)
+          prompt += `\n🔎 Description détaillée :\n${detailDemande}\n`;
+
+        prompt += `\n👉 Générez une image qui correspond exactement à cette description.`;
+
+        document.getElementById("result-image").textContent = prompt;
+      }
+
+      function generateImageOproPrompt() {
+        const ton = document.getElementById("ton-select-image").value.trim();
+        const objectif = document
+          .getElementById("objectif-select-image")
+          .value.trim();
+        const style = document
+          .getElementById("genre-select-image")
+          .value.trim();
+        const format = document
+          .getElementById("format-select-image")
+          .value.trim();
+        const ambiance = document
+          .getElementById("ambiance-select-image")
+          .value.trim();
+        const rendu = document
+          .getElementById("rendu-select-image")
+          .value.trim();
+        const eviter = document
+          .getElementById("eviter-select-image")
+          .value.trim();
+        const detailDemande = document
+          .getElementById("detail-demande-image")
+          .value.trim();
+
+        let basePrompt =
+          "Voici ma demande structurée pour générer une image :\n\n";
+        if (objectif) basePrompt += `• Objectif : ${objectif}\n`;
+        if (style) basePrompt += `• Style : ${style}\n`;
+        if (format) basePrompt += `• Format : ${format}\n`;
+        if (ambiance) basePrompt += `• Ambiance : ${ambiance}\n`;
+        if (rendu) basePrompt += `• Rendu : ${rendu}\n`;
+        if (eviter) basePrompt += `• À éviter : ${eviter}\n`;
+        if (detailDemande)
+          basePrompt += `\n🔎 Description détaillée :\n${detailDemande}\n`;
+        if (ton) basePrompt += `• Ton/Style : ${ton}\n`;
+
+        basePrompt += `\n👉 Générez une image qui correspond exactement à cette description.\n`;
+
+        const oproInstructions = `
+    🔁 Instructions OPRO :
+
+    Tu es un expert en prompt engineering pour la génération d'images. À partir du prompt ci-dessus, effectue les étapes suivantes :
+
+    1. Présente la réponse sous forme de liste à puce: une puce par prompt
+    2. Commence par la première puce avec le résumé du prompt original ci-dessus
+    3. Génère 5 variantes de prompts basés sur celui-ci.
+    4. Pour chaque prompt, évalue sa pertinence sur une échelle de 0 à 100.
+       Critères de notation :
+       - Clarté des instructions visuelles
+       - Cohérence stylistique
+       - Précision descriptive
+       - Capacité à guider l'IA vers une image de qualité
+    5. Ajoute à la fin la commande suivante: Tu vas agir comme un expert en Prompt Engineering spécialisé dans les IA génératives d'images. En te basant sur tes connaissances, tes compétences et les prompts notés que je t'ai partagé, tu vas rédiger le prompt parfait pour l'IA d'image.
+
+    Objectif final : identifier le meilleur prompt pour générer l'image demandée.
+
+    Prompt de départ :
+    """
+    ${basePrompt}
+    """
+    `;
+
+        document.getElementById("result-image").textContent = oproInstructions;
+      }
+
+      // Fonctions pour le générateur de prompt voyage
+      function generateVoyagePrompt() {
+        const objectif = document
+          .getElementById("objectif-select-voyage")
+          .value.trim();
+        const type = document.getElementById("type-select-voyage").value.trim();
+        const duree = document
+          .getElementById("duree-select-voyage")
+          .value.trim();
+        const budget = document
+          .getElementById("budget-select-voyage")
+          .value.trim();
+        const saison = document
+          .getElementById("saison-select-voyage")
+          .value.trim();
+        const contraintes = document
+          .getElementById("contraintes-select-voyage")
+          .value.trim();
+        const style = document
+          .getElementById("style-select-voyage")
+          .value.trim();
+        const references = document
+          .getElementById("references-select-voyage")
+          .value.trim();
+        const detailDemande = document
+          .getElementById("detail-demande-voyage")
+          .value.trim();
+
+        let prompt =
+          "Voici ma demande structurée pour planifier mon voyage :  Place toi en tant que tour operator expert des demandes d'organisation de séjour avec connaissance de toutes les ressources documentaires nécessaires pour y parvenir\n\n";
+
+        if (objectif) prompt += `• Objectif : ${objectif}\n`;
+        if (type) prompt += `• Type de voyage : ${type}\n`;
+        if (duree) prompt += `• Durée : ${duree}\n`;
+        if (budget) prompt += `• Budget : ${budget}\n`;
+        if (saison) prompt += `• Saison : ${saison}\n`;
+        if (contraintes) prompt += `• Contraintes : ${contraintes}\n`;
+        if (style) prompt += `• Style de réponse : ${style}\n`;
+        if (references) prompt += `• Références : ${references}\n`;
+        if (detailDemande)
+          prompt += `\n🔎 Description détaillée :\n${detailDemande}\n`;
+
+        prompt += `\n👉 Créez un plan de voyage détaillé, pratique et personnalisé selon ces critères.`;
+
+        document.getElementById("result-voyage").textContent = prompt;
+      }
+
+      function generateVoyageOproPrompt() {
+        const objectif = document
+          .getElementById("objectif-select-voyage")
+          .value.trim();
+        const type = document.getElementById("type-select-voyage").value.trim();
+        const duree = document
+          .getElementById("duree-select-voyage")
+          .value.trim();
+        const budget = document
+          .getElementById("budget-select-voyage")
+          .value.trim();
+        const saison = document
+          .getElementById("saison-select-voyage")
+          .value.trim();
+        const contraintes = document
+          .getElementById("contraintes-select-voyage")
+          .value.trim();
+        const style = document
+          .getElementById("style-select-voyage")
+          .value.trim();
+        const references = document
+          .getElementById("references-select-voyage")
+          .value.trim();
+        const detailDemande = document
+          .getElementById("detail-demande-voyage")
+          .value.trim();
+
+        let basePrompt =
+          "Voici ma demande structurée pour planifier mon voyage :\n\n";
+        if (objectif) basePrompt += `• Objectif : ${objectif}\n`;
+        if (type) basePrompt += `• Type de voyage : ${type}\n`;
+        if (duree) basePrompt += `• Durée : ${duree}\n`;
+        if (budget) basePrompt += `• Budget : ${budget}\n`;
+        if (saison) basePrompt += `• Saison : ${saison}\n`;
+        if (contraintes) basePrompt += `• Contraintes : ${contraintes}\n`;
+        if (style) basePrompt += `• Style de réponse : ${style}\n`;
+        if (references) basePrompt += `• Références : ${references}\n`;
+        if (detailDemande)
+          basePrompt += `\n🔎 Description détaillée :\n${detailDemande}\n`;
+
+        basePrompt += `\n👉 Créez un plan de voyage détaillé, pratique et personnalisé selon ces critères.\n`;
+
+        const oproInstructions = `
+    🔁 Instructions OPRO :
+
+    Tu es un expert en prompt engineering pour la planification de voyages. À partir du prompt ci-dessus, effectue les étapes suivantes :
+
+    1. Présente la réponse sous forme de liste à puce: une puce par prompt
+    2. Commence par la première puce avec le résumé du prompt original ci-dessus
+    3. Génère 5 variantes de prompts basés sur celui-ci.
+    4. Pour chaque prompt, évalue sa pertinence sur une échelle de 0 à 100.
+       Critères de notation :
+       - Clarté des instructions voyage
+       - Cohérence avec les contraintes
+       - Précision des demandes
+       - Capacité à guider l'IA vers un plan voyage utile
+    5. Ajoute à la fin la commande suivante: Tu vas agir comme un expert en Prompt Engineering spécialisé dans la planification de voyages. En te basant sur tes connaissances, tes compétences et les prompts notés que je t'ai partagé, tu vas rédiger le prompt parfait pour l'IA voyage.
+
+    Objectif final : identifier le meilleur prompt pour planifier le voyage demandé.
+
+    Prompt de départ :
+    """
+    ${basePrompt}
+    """
+    `;
+
+        document.getElementById("result-voyage").textContent = oproInstructions;
+      }
+
+      // Fonctions de réinitialisation
+      function resetImageForm() {
+        document.getElementById("objectif-select-image").selectedIndex = 0;
+        document.getElementById("genre-select-image").selectedIndex = 0;
+        document.getElementById("format-select-image").selectedIndex = 0;
+        document.getElementById("ambiance-select-image").selectedIndex = 0;
+        document.getElementById("rendu-select-image").selectedIndex = 0;
+        document.getElementById("eviter-select-image").selectedIndex = 0;
+        document.getElementById("ton-select-image").selectedIndex = 0;
+        document.getElementById("inspiration-select-image").selectedIndex = 0;
+        document.getElementById("detail-demande-image").value = "";
+        document.getElementById("result-image").textContent = "";
+      }
+
+      function resetVoyageForm() {
+        document.getElementById("objectif-select-voyage").selectedIndex = 0;
+        document.getElementById("type-select-voyage").selectedIndex = 0;
+        document.getElementById("duree-select-voyage").selectedIndex = 0;
+        document.getElementById("budget-select-voyage").selectedIndex = 0;
+        document.getElementById("saison-select-voyage").selectedIndex = 0;
+        document.getElementById("contraintes-select-voyage").selectedIndex = 0;
+        document.getElementById("style-select-voyage").selectedIndex = 0;
+        document.getElementById("references-select-voyage").selectedIndex = 0;
+        document.getElementById("detail-demande-voyage").value = "";
+        document.getElementById("result-voyage").textContent = "";
+      }
+
+      function resetForm() {
+        document.getElementById("objectif-select").selectedIndex = 0;
+        document.getElementById("genre-select").selectedIndex = 0;
+        document.getElementById("language-select").selectedIndex = 0;
+        document.getElementById("thematique-select").selectedIndex = 0;
+        document.getElementById("cadre-select").selectedIndex = 0;
+        document.getElementById("pj-select").selectedIndex = 0;
+        document.getElementById("ton-select").selectedIndex = 0;
+        document.getElementById("detail-demande").value = "";
+        document.getElementById("result").textContent = "";
+      }
+
+      function toggleInfo() {
+        const infoContent = document.getElementById("infoContent");
+        const toggleButton = document.querySelector(".info-toggle");
+        if (infoContent.style.display === "block") {
+          infoContent.style.display = "none";
+          toggleButton.textContent = "Informations sur le générateur ▼";
+        } else {
+          infoContent.style.display = "block";
+          toggleButton.textContent = "Informations sur le générateur ▲";
+        }
+      }
+
+      // Fonctions de copie dans le presse-papier
+      function copyToClipboard() {
+        const resultText = document.getElementById("result").textContent;
+        if (resultText.trim() === "") {
+          alert(
+            "Veuillez d'abord générer un prompt en sélectionnant des options et en cliquant sur 'Générer le Prompt'"
+          );
+          return;
+        }
+
+        if (navigator.clipboard) {
+          navigator.clipboard
+            .writeText(resultText)
+            .then(() => {
+              const copyButton = document.getElementById("copyButton");
+              copyButton.textContent = "Copié ✓";
+              setTimeout(() => {
+                copyButton.textContent = "Copier dans le presse-papier";
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Erreur lors de la copie: ", err);
+              fallbackCopyToClipboard(resultText);
+            });
+        } else {
+          fallbackCopyToClipboard(resultText);
+        }
+      }
+
+      function copyImageToClipboard() {
+        const resultText = document.getElementById("result-image").textContent;
+        if (resultText.trim() === "") {
+          alert(
+            "Veuillez d'abord générer un prompt en sélectionnant des options et en cliquant sur 'Générer le Prompt'"
+          );
+          return;
+        }
+
+        if (navigator.clipboard) {
+          navigator.clipboard
+            .writeText(resultText)
+            .then(() => {
+              const copyButton = document.getElementById("copyButtonImage");
+              copyButton.textContent = "Copié ✓";
+              setTimeout(() => {
+                copyButton.textContent = "Copier dans le presse-papier";
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Erreur lors de la copie: ", err);
+              fallbackCopyToClipboard(resultText);
+            });
+        } else {
+          fallbackCopyToClipboard(resultText);
+        }
+      }
+
+      function copyVoyageToClipboard() {
+        const resultText = document.getElementById("result-voyage").textContent;
+        if (resultText.trim() === "") {
+          alert(
+            "Veuillez d'abord générer un prompt en sélectionnant des options et en cliquant sur 'Générer le Prompt'"
+          );
+          return;
+        }
+
+        if (navigator.clipboard) {
+          navigator.clipboard
+            .writeText(resultText)
+            .then(() => {
+              const copyButton = document.getElementById("copyButtonVoyage");
+              copyButton.textContent = "Copié ✓";
+              setTimeout(() => {
+                copyButton.textContent = "Copier dans le presse-papier";
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Erreur lors de la copie: ", err);
+              fallbackCopyToClipboard(resultText);
+            });
+        } else {
+          fallbackCopyToClipboard(resultText);
+        }
+      }
+
+      // Méthode alternative pour la copie dans le presse-papier
+      function fallbackCopyToClipboard(text) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
+          alert("Texte copié dans le presse-papier");
+        } catch (err) {
+          console.error("Erreur lors de la copie: ", err);
+          alert("Une erreur est survenue lors de la copie");
+        }
+        document.body.removeChild(textarea);
+      }
+
+      // Initialisation au chargement de la page
+      document.addEventListener("DOMContentLoaded", () => {
+        // Configuration des onglets
+        setupTabs();
+
+        // Ajouter des écouteurs pour touchstart sur tous les boutons
+        const buttons = document.querySelectorAll("button");
+        buttons.forEach((button) => {
+          button.addEventListener("touchstart", (event) => {
+            event.preventDefault();
+            button.click();
+          });
+        });
+
+        // Gestion des champs
+        const fields = [
+          "objectif",
+          "language",
+          "genre",
+          "thematique",
+          "pj",
+          "cadre",
+        ];
+        fields.forEach((fieldId) => {
+          const select = document.getElementById(fieldId + "-select");
+          if (select) {
+            select.addEventListener("change", (e) =>
+              handleSelectChange(fieldId, e.target.value)
+            );
+          }
+        });
+
+        // Suppression des options masquées
+        document.querySelectorAll("option[hidden]").forEach((option) => {
+          option.remove();
+        });
+      });
+    </script>
+  </body>
+</html>

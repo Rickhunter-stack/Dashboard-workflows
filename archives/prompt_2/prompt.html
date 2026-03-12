@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Générateur de Prompts IA</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link
+      rel="alternate icon"
+      type="image/png"
+      href="favicon.png"
+      sizes="any"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <h1>🚀 Générateur de Prompts IA</h1>
+
+    <!-- Section d'informations -->
+    <div class="info-section">
+      <button class="info-toggle" onclick="toggleInfo()">
+        Informations sur le générateur ▼
+      </button>
+      <div id="infoContent" class="info-content">
+        <p>
+          <strong>Comment ça marche ? </strong><br />
+          Ce générateur facilite la création de prompts optimisés pour l'IA en
+          utilisant la méthode OPRO (Optimization by PROmpting). Sélectionnez
+          vos critères dans chaque section, puis cliquez sur "Générer le
+          Prompt".
+        </p>
+        <p>
+          <strong>Qu'est-ce que OPRO ? </strong><br />
+          OPRO est une technique qui permet d'améliorer automatiquement vos
+          prompts en générant plusieurs variantes et en les évaluant pour
+          trouver la meilleure formulation.
+        </p>
+        <p>
+          <strong>Conseils d'utilisation :</strong><br />
+          • Remplissez au minimum l'objectif et ajoutez une description
+          détaillée<br />
+          • Plus vous donnez de contexte, meilleur sera le résultat<br />
+          • Utilisez l'option "Personnalisé" pour des besoins spécifiques<br />
+          • Copiez le prompt généré et collez-le dans votre IA préférée
+        </p>
+      </div>
+    </div>
+
+    <!-- Onglets -->
+    <div class="tabs-container">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'redaction')">
+          ✍️ Rédaction
+        </button>
+        <button class="tab-btn" onclick="openTab(event, 'image')">
+          🎨 Génération d'images
+        </button>
+        <button class="tab-btn" onclick="openTab(event, 'voyage')">
+          ✈️ Planification voyage
+        </button>
+        <button class="tab-btn" onclick="openTab(event, 'code')">
+          💻 Génération de Code
+        </button>
+        <button class="tab-btn" onclick="openTab(event, 'app')">
+          📱 Génération application
+        </button>
+      </div>
+    </div>
+
+    <!-- Onglet Rédaction -->
+    <div id="redaction" class="tab-content active">
+      <div class="grid-container">
+        <div class="section">
+          <h2>📝 Type de contenu</h2>
+          <select id="redac-type-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Poser une question à un LLM">
+              🗣️ Poser une question à un LLM
+            </option>
+            <option
+              value="Explique-moi le concept de [détails de la demande] en programmation comme si j'étais quelqu'un qui n'a jamais codé de sa vie. Utilise : Une analogie de la vie quotidienne que tout le monde peut comprendre (cuisine, construction, vie courante, etc.). Un exemple concret et visuel qui illustre le concept pas à pas. Un vocabulaire ultra-simple sans jargon technique (ou en expliquant chaque terme technique utilisé). Des comparaisons entre ce que fait le code et ce qui se passe dans la vraie vie. Structure ta réponse ainsi : D'abord : l'analogie simple. Ensuite : pourquoi on en a besoin. Puis : comment ça fonctionne concrètement. Enfin : un mini-exemple illustratif. Ton but est que je puisse l'expliquer à mon tour à ma grand-mère qui n'a jamais touché un ordinateur."
+            >
+              🗣️ Demander à un LLM d'expliquer un concept informatique
+            </option>
+            <option value="Résumer une conversation">
+              🗣️ Résumer une conversation
+            </option>
+            <option
+              value="Analyse ces textes et produis une synthèse structurée selon les critères suivants :
+1. Extraction intelligente :
+
+Identifie les concepts clés, idées maîtresses et arguments principaux
+Élimine les redondances et informations secondaires
+Repère les liens logiques entre les idées
+
+2. Organisation hiérarchique :
+
+Classe les concepts par thématiques/catégories pertinentes
+Structure en niveaux : concepts principaux → sous-concepts → détails essentiels
+Établis une progression logique (cause-effet, chronologique, thématique)
+
+3. Format de sortie :
+
+Utilise des titres courts et percutants
+Emploie des puces et sous-puces pour la clarté
+Mets en gras les termes/concepts critiques
+Ajoute des émojis 🎯 pour les points clés si pertinent
+Limite chaque point à 1-2 phrases maximum
+
+4. Critères de qualité :
+
+Synthèse = 20-30% de la longueur originale
+Langage clair et accessible sans jargon inutile
+Préserve la nuance et les idées complexes
+Actionnable : le lecteur doit pouvoir saisir l'essentiel en 2 minutes
+
+5. Structure finale attendue :
+🎯 IDÉE CENTRALE (1 phrase)
+
+📌 CONCEPTS CLÉS
+- Concept 1 : explication brève
+- Concept 2 : explication brève
+- Concept 3 : explication brève
+
+💡 INSIGHTS MAJEURS
+- [Points marquants/découvertes]
+
+⚡ CONCLUSION/IMPLICATIONS
+[Synthèse finale en 2-3 phrases]"
+            >
+              📝 Résumer un texte
+            </option>
+            <option
+              value="Générez une carte mentale en format HTML structurée sur le sujet suivant : [details de la demande]. Utilisez du HTML pur avec CSS intégré pour une visualisation claire et hiérarchique. Commencez par un nœud central stylé (par exemple, avec une div centrale). Développez 4 à 6 branches principales comme des éléments connectés (utilisez des listes ul/li ou des divs positionnées). Pour chaque branche principale, ajoutez 2 à 3 sous-branches avec des détails ou exemples. Assurez une interactivité basique (par exemple, hover pour afficher plus d'infos) et une responsivité. Le rendu doit être autonome, sans dépendances externes, et optimisé pour une lecture fluide sur desktop et mobile."
+            >
+              🗣️ Créer une mind map
+            </option>
+            <option value="Article de blog">📰 Article de blog</option>
+            <option value="Post réseaux sociaux">
+              📱 Post réseaux sociaux
+            </option>
+            <option value="Email professionnel">📧 Email professionnel</option>
+            <option value="Description de produit">
+              🛍️ Description de produit
+            </option>
+            <option value="Newsletter">📬 Newsletter</option>
+            <option value="Autre">✏️ Autre</option>
+          </select>
+          <textarea
+            id="redac-type-custom"
+            placeholder="Précisez votre type de contenu..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎯 Objectif principal</h2>
+          <select id="redac-objectif-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Informer / Éduquer">💡 Informer / Éduquer</option>
+            <option value="Convaincre / Persuader">
+              🎯 Convaincre / Persuader
+            </option>
+            <option value="Divertir / Engager">😊 Divertir / Engager</option>
+            <option value="Inspirer / Motiver">✨ Inspirer / Motiver</option>
+            <option value="Expliquer / Tutoriel">
+              📖 Expliquer / Tutoriel
+            </option>
+          </select>
+          <textarea
+            id="redac-objectif-custom"
+            placeholder="Précisez votre objectif..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>👥 Public cible</h2>
+          <select id="redac-public-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Grand public">🌍 Grand public</option>
+            <option value="Professionnels">👔 Professionnels</option>
+            <option value="Experts du domaine">🎓 Experts du domaine</option>
+            <option value="Débutants">🌱 Débutants</option>
+            <option value="Jeunes / Adolescents">
+              👶 Jeunes / Adolescents
+            </option>
+            <option value="Seniors">👴 Seniors</option>
+            <option value="B2B">🏢 B2B</option>
+            <option value="B2C">🛒 B2C</option>
+          </select>
+          <textarea
+            id="redac-public-custom"
+            placeholder="Décrivez votre public cible..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎨 Ton / Style</h2>
+          <select id="redac-ton-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Professionnel">👔 Professionnel</option>
+            <option value="Décontracté / Casual">
+              😊 Décontracté / Casual
+            </option>
+            <option value="Humoristique">😂 Humoristique</option>
+            <option value="Inspirant / Motivant">
+              ✨ Inspirant / Motivant
+            </option>
+            <option value="Technique / Précis">🔧 Technique / Précis</option>
+            <option value="Storytelling">📖 Storytelling</option>
+            <option value="Académique">🎓 Académique</option>
+            <option value="Persuasif / Vendeur">🎯 Persuasif / Vendeur</option>
+          </select>
+          <textarea
+            id="redac-ton-custom"
+            placeholder="Précisez le ton souhaité..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🌐 Langue</h2>
+          <select id="redac-langue-select">
+            <option value="Français" selected>🇫🇷 Français</option>
+            <option value="Anglais">🇬🇧 Anglais</option>
+            <option value="Espagnol">🇪🇸 Espagnol</option>
+            <option value="Allemand">🇩🇪 Allemand</option>
+            <option value="Italien">🇮🇹 Italien</option>
+            <option value="Portugais">🇵🇹 Portugais</option>
+            <option value="Autre">🌍 Autre</option>
+          </select>
+          <textarea
+            id="redac-langue-custom"
+            placeholder="Précisez la langue..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>📊 Format souhaité</h2>
+          <select id="redac-format-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Paragraphes">📄 Paragraphes</option>
+            <option value="Liste à puces">• Liste à puces</option>
+            <option value="Liste numérotée">1️⃣ Liste numérotée</option>
+            <option value="Questions / Réponses">
+              ❓ Questions / Réponses
+            </option>
+            <option value="Tutoriel par étapes">👣 Tutoriel par étapes</option>
+            <option value="Tableau">📊 Tableau</option>
+            <option value="Mixte">🎨 Mixte</option>
+          </select>
+          <textarea
+            id="redac-format-custom"
+            placeholder="Précisez le format..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎬 Angle / Approche</h2>
+          <select id="redac-angle-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Problème → Solution">🔧 Problème → Solution</option>
+            <option value="Avant / Après">⏳ Avant / Après</option>
+            <option value="Guide complet">📚 Guide complet</option>
+            <option value="Top / Liste classée">🏆 Top / Liste classée</option>
+            <option value="Comparaison">⚖️ Comparaison</option>
+            <option value="Étude de cas">📊 Étude de cas</option>
+            <option value="Tendances / Actualité">
+              📈 Tendances / Actualité
+            </option>
+            <option value="Astuces / Tips">💡 Astuces / Tips</option>
+          </select>
+          <textarea
+            id="redac-angle-custom"
+            placeholder="Précisez l'angle..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>📏 Longueur ciblée</h2>
+          <select id="redac-longueur-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Adapte la longueur au besoin de la demande">
+              ⚡ adapté
+            </option>
+            <option value="Court (50-200 mots)">⚡ Court (50-200 mots)</option>
+            <option value="Moyen (200-500 mots)">
+              📝 Moyen (200-500 mots)
+            </option>
+            <option value="Long (500-1000 mots)">
+              📄 Long (500-1000 mots)
+            </option>
+            <option value="Très long (1000-2000 mots)">
+              📚 Très long (1000-2000 mots)
+            </option>
+            <option value="Ultra long (2000+ mots)">
+              📖 Ultra long (2000+ mots)
+            </option>
+          </select>
+          <textarea
+            id="redac-longueur-custom"
+            placeholder="Précisez la longueur..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🏗️ Structure</h2>
+          <select id="redac-structure-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Intro / Développement / Conclusion">
+              📐 Intro / Développement / Conclusion
+            </option>
+            <option value="Pyramide inversée">🔻 Pyramide inversée</option>
+            <option value="Hook / Corps / CTA">🎣 Hook / Corps / CTA</option>
+            <option value="5 parties distinctes">
+              5️⃣ 5 parties distinctes
+            </option>
+            <option value="Plusieurs chapitres">📚 Plusieurs chapitres</option>
+            <option value="Pas de structure fixe">
+              🎨 Pas de structure fixe
+            </option>
+          </select>
+          <textarea
+            id="redac-structure-custom"
+            placeholder="Précisez la structure..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🔍 SEO / Mots-clés</h2>
+          <textarea
+            id="redac-seo-custom"
+            style="display: block"
+            placeholder="Ex: marketing digital, SEO, réseaux sociaux..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎯 Call-to-Action</h2>
+          <select id="redac-cta-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Aucun CTA">❌ Aucun CTA</option>
+            <option value="Inscription newsletter">
+              ✉️ Inscription newsletter
+            </option>
+            <option value="Incitation à l'achat">
+              🛒 Incitation à l'achat
+            </option>
+            <option value="Partage réseaux sociaux">
+              📤 Partage réseaux sociaux
+            </option>
+            <option value="Prise de contact">📞 Prise de contact</option>
+            <option value="Téléchargement">⬇️ Téléchargement</option>
+            <option value="Lire plus / Suite">📖 Lire plus / Suite</option>
+            <option value="Laisser un commentaire">
+              💬 Laisser un commentaire
+            </option>
+          </select>
+          <textarea
+            id="redac-cta-custom"
+            placeholder="Précisez le CTA..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>📚 Sources / Références</h2>
+          <select id="redac-sources-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Pas de sources">❌ Pas de sources</option>
+            <option value="Mentionner des sources">
+              📝 Mentionner des sources
+            </option>
+            <option value="Citer des sources précises">
+              📌 Citer des sources précises
+            </option>
+            <option value="Inclure des études">📊 Inclure des études</option>
+            <option value="Inclure des statistiques">
+              📈 Inclure des statistiques
+            </option>
+            <option value="Citer des experts">🎓 Citer des experts</option>
+          </select>
+          <textarea
+            id="redac-sources-custom"
+            placeholder="Précisez les sources..."
+          ></textarea>
+        </div>
+
+        <div class="section section-full">
+          <h2>📋 Description détaillée</h2>
+          <textarea
+            id="detail-demande"
+            style="display: block; min-height: 120px"
+            placeholder="Décrivez précisément votre demande : sujet, points clés, contraintes, exemples, etc."
+          ></textarea>
+        </div>
+      </div>
+
+      <div
+        style="
+          display: flex;
+          gap: 16px;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin: 24px 0;
+        "
+      >
+        <button onclick="generatePrompt()" style="flex: 1; min-width: 250px">
+          ✨ Générer le Prompt OPRO
+        </button>
+        <button
+          onclick="generateSimplePrompt()"
+          style="
+            flex: 1;
+            min-width: 250px;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);
+          "
+        >
+          ⚡ Générer un Prompt SIMPLE
+        </button>
+      </div>
+      <button
+        id="copyButton"
+        onclick="copyToClipboard()"
+        style="
+          background: rgba(255, 255, 255, 0.08);
+          color: #b8c5d6;
+          box-shadow: none;
+        "
+      >
+        📋 Copier dans le presse-papier
+      </button>
+      <button
+        onclick="resetForm()"
+        style="
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          box-shadow: none;
+        "
+      >
+        🔄 Réinitialiser
+      </button>
+
+      <!-- Zone de résultat -->
+      <div class="result" id="result"></div>
+    </div>
+
+    <!-- Onglet Image -->
+    <div id="image" class="tab-content">
+      <div class="grid-container">
+        <div class="section">
+          <h2>🎨 Type d'image</h2>
+          <select id="img-type-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Photo réaliste">📷 Photo réaliste</option>
+            <option value="Illustration">🎨 Illustration</option>
+            <option value="Art digital">💻 Art digital</option>
+            <option value="Rendu 3D">🎲 Rendu 3D</option>
+            <option value="Peinture">🖌️ Peinture</option>
+            <option value="Dessin">✏️ Dessin</option>
+            <option value="Pixel Art">🕹️ Pixel Art</option>
+            <option value="Anime / Manga">🎌 Anime / Manga</option>
+            <option value="Bande dessinée">📚 Bande dessinée</option>
+            <option value="Aquarelle">🎨 Aquarelle</option>
+          </select>
+          <textarea
+            id="img-type-custom"
+            placeholder="Précisez le type d'image..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎭 Style artistique</h2>
+          <select id="img-style-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Moderne">🆕 Moderne</option>
+            <option value="Classique">🏛️ Classique</option>
+            <option value="Minimaliste">⚪ Minimaliste</option>
+            <option value="Baroque">👑 Baroque</option>
+            <option value="Art Nouveau">🌸 Art Nouveau</option>
+            <option value="Cyberpunk">🤖 Cyberpunk</option>
+            <option value="Steampunk">⚙️ Steampunk</option>
+            <option value="Fantastique">🧙 Fantastique</option>
+            <option value="Science-Fiction">🚀 Science-Fiction</option>
+            <option value="Surréaliste">🎪 Surréaliste</option>
+          </select>
+          <textarea
+            id="img-style-custom"
+            placeholder="Précisez le style..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎨 Palette de couleurs</h2>
+          <select id="img-couleurs-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Couleurs vibrantes">🌈 Couleurs vibrantes</option>
+            <option value="Tons pastel">🎀 Tons pastel</option>
+            <option value="Noir et blanc">⚫⚪ Noir et blanc</option>
+            <option value="Sépia / Vintage">📜 Sépia / Vintage</option>
+            <option value="Néon">💡 Néon</option>
+            <option value="Tons chauds">🔥 Tons chauds</option>
+            <option value="Tons froids">❄️ Tons froids</option>
+            <option value="Monochromatique">🎨 Monochromatique</option>
+            <option value="Contraste élevé">⚡ Contraste élevé</option>
+          </select>
+          <textarea
+            id="img-couleurs-custom"
+            placeholder="Précisez la palette..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>💡 Éclairage</h2>
+          <select id="img-eclairage-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Lumière naturelle">☀️ Lumière naturelle</option>
+            <option value="Éclairage studio">📸 Éclairage studio</option>
+            <option value="Golden hour">🌅 Golden hour</option>
+            <option value="Blue hour">🌆 Blue hour</option>
+            <option value="Éclairage dramatique">
+              🎭 Éclairage dramatique
+            </option>
+            <option value="Lumière douce">🕯️ Lumière douce</option>
+            <option value="Néon">💡 Néon</option>
+            <option value="Contre-jour">🌄 Contre-jour</option>
+            <option value="Clair-obscur">🎨 Clair-obscur</option>
+          </select>
+          <textarea
+            id="img-eclairage-custom"
+            placeholder="Précisez l'éclairage..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎬 Ambiance / Mood</h2>
+          <select id="img-ambiance-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Joyeuse / Positive">😊 Joyeuse / Positive</option>
+            <option value="Mystérieuse">🔮 Mystérieuse</option>
+            <option value="Sombre / Dark">🌑 Sombre / Dark</option>
+            <option value="Romantique">💕 Romantique</option>
+            <option value="Énergique">⚡ Énergique</option>
+            <option value="Paisible / Zen">🕊️ Paisible / Zen</option>
+            <option value="Nostalgique">📼 Nostalgique</option>
+            <option value="Futuriste">🚀 Futuriste</option>
+            <option value="Dramatique">🎭 Dramatique</option>
+          </select>
+          <textarea
+            id="img-ambiance-custom"
+            placeholder="Précisez l'ambiance..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>📐 Format / Ratio</h2>
+          <select id="img-format-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Carré (1:1)">⬛ Carré (1:1)</option>
+            <option value="Paysage (16:9)">🖼️ Paysage (16:9)</option>
+            <option value="Portrait (9:16)">📱 Portrait (9:16)</option>
+            <option value="Ultra-wide (21:9)">🖥️ Ultra-wide (21:9)</option>
+            <option value="4:3">📺 4:3</option>
+            <option value="Cinéma (2.35:1)">🎬 Cinéma (2.35:1)</option>
+            <option value="Story Instagram (9:16)">
+              📲 Story Instagram (9:16)
+            </option>
+            <option value="Bannière">📰 Bannière</option>
+          </select>
+          <textarea
+            id="img-format-custom"
+            placeholder="Précisez le format..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>📸 Niveau de détail</h2>
+          <select id="img-detail-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Très détaillé">🔍 Très détaillé</option>
+            <option value="Détaillé">✨ Détaillé</option>
+            <option value="Modéré">📊 Modéré</option>
+            <option value="Simple / Minimaliste">
+              ⚪ Simple / Minimaliste
+            </option>
+            <option value="Abstrait">🎨 Abstrait</option>
+          </select>
+          <textarea
+            id="img-detail-custom"
+            placeholder="Précisez le niveau de détail..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎯 Inspiration / Référence</h2>
+          <select id="img-inspiration-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Studio Ghibli">🎌 Studio Ghibli</option>
+            <option value="Disney">🏰 Disney</option>
+            <option value="Pixar">💡 Pixar</option>
+            <option value="Van Gogh">🎨 Van Gogh</option>
+            <option value="Picasso">🖼️ Picasso</option>
+            <option value="Banksy">🎭 Banksy</option>
+            <option value="Greg Rutkowski">🎮 Greg Rutkowski</option>
+            <option value="ArtStation">💻 ArtStation</option>
+            <option value="Trending">📈 Trending</option>
+          </select>
+          <textarea
+            id="img-inspiration-custom"
+            placeholder="Précisez les inspirations..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎯 Sujet principal</h2>
+          <textarea
+            id="img-sujet-custom"
+            style="display: block"
+            placeholder="Ex: un chat, un paysage montagneux, un personnage..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>📐 Composition</h2>
+          <select id="img-composition-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Règle des tiers">📊 Règle des tiers</option>
+            <option value="Centré">🎯 Centré</option>
+            <option value="Symétrique">⚖️ Symétrique</option>
+            <option value="Asymétrique">🎨 Asymétrique</option>
+            <option value="Diagonale">📐 Diagonale</option>
+            <option value="Cadre naturel">🖼️ Cadre naturel</option>
+            <option value="Plan large">🌄 Plan large</option>
+            <option value="Gros plan">🔍 Gros plan</option>
+          </select>
+          <textarea
+            id="img-composition-custom"
+            placeholder="Précisez la composition..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🌍 Contexte / Lieu</h2>
+          <select id="img-contexte-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Intérieur">🏠 Intérieur</option>
+            <option value="Extérieur">🌳 Extérieur</option>
+            <option value="Urbain">🏙️ Urbain</option>
+            <option value="Nature">🌲 Nature</option>
+            <option value="Plage">🏖️ Plage</option>
+            <option value="Montagne">⛰️ Montagne</option>
+            <option value="Espace">🌌 Espace</option>
+            <option value="Lieu historique">🏛️ Lieu historique</option>
+            <option value="Monde fantastique">🧙 Monde fantastique</option>
+          </select>
+          <textarea
+            id="img-contexte-custom"
+            placeholder="Précisez le contexte..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎨 Éléments secondaires</h2>
+          <textarea
+            id="img-elements-custom"
+            style="display: block"
+            placeholder="Ex: arbres, nuages, personnages en arrière-plan..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>✨ Qualité / Résolution</h2>
+          <select id="img-qualite-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="4K Ultra HD">🖥️ 4K Ultra HD</option>
+            <option value="8K">🎬 8K</option>
+            <option value="HD (1080p)">📺 HD (1080p)</option>
+            <option value="Qualité impression">🖨️ Qualité impression</option>
+            <option value="Optimisé web">🌐 Optimisé web</option>
+            <option value="Haute définition">✨ Haute définition</option>
+          </select>
+          <textarea
+            id="img-qualite-custom"
+            placeholder="Précisez la qualité..."
+          ></textarea>
+        </div>
+
+        <div class="section section-full">
+          <h2>📋 Description détaillée</h2>
+          <textarea
+            id="detail-demande-image"
+            style="display: block; min-height: 120px"
+            placeholder="Décrivez précisément l'image souhaitée : scène, éléments spécifiques, action, émotions, textures, etc."
+          ></textarea>
+        </div>
+      </div>
+
+      <div
+        style="
+          display: flex;
+          gap: 16px;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin: 24px 0;
+        "
+      >
+        <button
+          onclick="generateImagePrompt()"
+          style="flex: 1; min-width: 250px"
+        >
+          ✨ Générer le Prompt OPRO
+        </button>
+        <button
+          onclick="generateSimpleImagePrompt()"
+          style="
+            flex: 1;
+            min-width: 250px;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);
+          "
+        >
+          ⚡ Générer un Prompt SIMPLE
+        </button>
+      </div>
+      <button
+        id="copyButtonImage"
+        onclick="copyImageToClipboard()"
+        style="
+          background: rgba(255, 255, 255, 0.08);
+          color: #b8c5d6;
+          box-shadow: none;
+        "
+      >
+        📋 Copier dans le presse-papier
+      </button>
+      <button
+        onclick="resetImageForm()"
+        style="
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          box-shadow: none;
+        "
+      >
+        🔄 Réinitialiser
+      </button>
+
+      <div class="result" id="result-image"></div>
+    </div>
+
+    <!-- Onglet Voyage -->
+    <div id="voyage" class="tab-content">
+      <div class="grid-container">
+        <div class="section">
+          <h2>🌍 Destination</h2>
+          <textarea
+            id="voyage-destination-custom"
+            style="display: block"
+            placeholder="Ex: Japon, Europe du Sud, Asie du Sud-Est, Alpes françaises..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎯 Objectif du voyage</h2>
+          <select id="voyage-objectif-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Détente et repos">🏖️ Détente et repos</option>
+            <option value="Aventure">🏔️ Aventure</option>
+            <option value="Culture et découverte">
+              🎭 Culture et découverte
+            </option>
+            <option value="Gastronomie">🍽️ Gastronomie</option>
+            <option value="Nature et randonnée">🌲 Nature et randonnée</option>
+            <option value="Sport">⚽ Sport</option>
+            <option value="Voyage romantique">💑 Voyage romantique</option>
+            <option value="Voyage en famille">👨‍👩‍👧‍👦 Voyage en famille</option>
+            <option value="Voyage d'affaires">💼 Voyage d'affaires</option>
+          </select>
+          <textarea
+            id="voyage-objectif-custom"
+            placeholder="Précisez l'objectif..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🗺️ Type de voyage</h2>
+          <select id="voyage-type-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Voyage organisé">🗺️ Voyage organisé</option>
+            <option value="Voyage indépendant">🎒 Voyage indépendant</option>
+            <option value="Road trip">🚗 Road trip</option>
+            <option value="Backpacking">🎒 Backpacking</option>
+            <option value="Croisière">🚢 Croisière</option>
+            <option value="Tout inclus">🏖️ Tout inclus</option>
+            <option value="Voyage de luxe">💎 Voyage de luxe</option>
+            <option value="Éco-responsable">🌱 Éco-responsable</option>
+          </select>
+          <textarea
+            id="voyage-type-custom"
+            placeholder="Précisez le type..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>👥 Nombre de voyageurs</h2>
+          <select id="voyage-voyageurs-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Solo (1 personne)">🚶 Solo (1 personne)</option>
+            <option value="Couple (2 personnes)">
+              💑 Couple (2 personnes)
+            </option>
+            <option value="Petit groupe (3-5 personnes)">
+              👨‍👩‍👧 Petit groupe (3-5 personnes)
+            </option>
+            <option value="Groupe (6-10 personnes)">
+              👥 Groupe (6-10 personnes)
+            </option>
+            <option value="Grand groupe (10+ personnes)">
+              🎉 Grand groupe (10+ personnes)
+            </option>
+          </select>
+          <textarea
+            id="voyage-voyageurs-custom"
+            placeholder="Précisez le nombre..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>⏱️ Durée</h2>
+          <select id="voyage-duree-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Weekend (2-3 jours)">⏰ Weekend (2-3 jours)</option>
+            <option value="Semaine (5-7 jours)">📅 Semaine (5-7 jours)</option>
+            <option value="Deux semaines (10-15 jours)">
+              🗓️ Deux semaines (10-15 jours)
+            </option>
+            <option value="Trois semaines (20-25 jours)">
+              📆 Trois semaines (20-25 jours)
+            </option>
+            <option value="Un mois+">🌍 Un mois+</option>
+          </select>
+          <textarea
+            id="voyage-duree-custom"
+            placeholder="Précisez la durée..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>💰 Budget</h2>
+          <select id="voyage-budget-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Petit budget">💵 Petit budget</option>
+            <option value="Budget moyen">💶 Budget moyen</option>
+            <option value="Budget confortable">💷 Budget confortable</option>
+            <option value="Budget luxe">💎 Budget luxe</option>
+            <option value="Sans limite">♾️ Sans limite</option>
+          </select>
+          <textarea
+            id="voyage-budget-custom"
+            placeholder="Précisez le budget..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🌸 Saison / Période</h2>
+          <select id="voyage-saison-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Printemps">🌸 Printemps</option>
+            <option value="Été">☀️ Été</option>
+            <option value="Automne">🍂 Automne</option>
+            <option value="Hiver">❄️ Hiver</option>
+            <option value="Flexible">📅 Flexible</option>
+          </select>
+          <textarea
+            id="voyage-saison-custom"
+            placeholder="Précisez la saison..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>⚠️ Contraintes</h2>
+          <select id="voyage-contraintes-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Aucune contrainte">✅ Aucune contrainte</option>
+            <option value="Allergies alimentaires">
+              🤧 Allergies alimentaires
+            </option>
+            <option value="Mobilité réduite">♿ Mobilité réduite</option>
+            <option value="Jeunes enfants">👶 Jeunes enfants</option>
+            <option value="Animaux de compagnie">
+              🐕 Animaux de compagnie
+            </option>
+            <option value="Contraintes médicales">
+              💊 Contraintes médicales
+            </option>
+            <option value="Régime alimentaire spécial">
+              🥗 Régime alimentaire spécial
+            </option>
+          </select>
+          <textarea
+            id="voyage-contraintes-custom"
+            placeholder="Précisez les contraintes..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>📝 Style de réponse</h2>
+          <select id="voyage-style-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Itinéraire détaillé jour par jour">
+              📋 Itinéraire détaillé jour par jour
+            </option>
+            <option value="Suggestions et conseils">
+              💡 Suggestions et conseils
+            </option>
+            <option value="Recommandations principales">
+              ⭐ Recommandations principales
+            </option>
+            <option value="Liste des incontournables">
+              📝 Liste des incontournables
+            </option>
+            <option value="Mixte">🎨 Mixte</option>
+          </select>
+          <textarea
+            id="voyage-style-custom"
+            placeholder="Précisez le style..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>📸 Références / Inspirations</h2>
+          <select id="voyage-references-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Destinations Instagram">
+              📷 Destinations Instagram
+            </option>
+            <option value="Authenticité / Hors des sentiers battus">
+              🏡 Authenticité / Hors des sentiers battus
+            </option>
+            <option value="Lieux populaires / Iconiques">
+              🎉 Lieux populaires / Iconiques
+            </option>
+            <option value="Expérience locale">🍽️ Expérience locale</option>
+            <option value="Expériences haut de gamme">
+              💎 Expériences haut de gamme
+            </option>
+          </select>
+          <textarea
+            id="voyage-references-custom"
+            placeholder="Précisez les références..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎯 Activités souhaitées</h2>
+          <select id="voyage-activites-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Visites de monuments">
+              🏛️ Visites de monuments
+            </option>
+            <option value="Musées et culture">🎨 Musées et culture</option>
+            <option value="Randonnée / Trekking">
+              🥾 Randonnée / Trekking
+            </option>
+            <option value="Plage et détente">🏖️ Plage et détente</option>
+            <option value="Sports / Aventure">⚽ Sports / Aventure</option>
+            <option value="Découvertes gastronomiques">
+              🍽️ Découvertes gastronomiques
+            </option>
+            <option value="Shopping">🛍️ Shopping</option>
+            <option value="Vie nocturne">🌃 Vie nocturne</option>
+            <option value="Observation nature / Faune">
+              🌲 Observation nature / Faune
+            </option>
+            <option value="Mix d'activités">🎯 Mix d'activités</option>
+          </select>
+          <textarea
+            id="voyage-activites-custom"
+            placeholder="Précisez les activités..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🏨 Type d'hébergement</h2>
+          <select id="voyage-hebergement-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Hôtel">🏨 Hôtel</option>
+            <option value="Auberge de jeunesse">🛏️ Auberge de jeunesse</option>
+            <option value="Airbnb / Location">🏠 Airbnb / Location</option>
+            <option value="Camping">⛺ Camping</option>
+            <option value="Hôtel de luxe / Resort">
+              💎 Hôtel de luxe / Resort
+            </option>
+            <option value="Chambre d'hôtes">🏡 Chambre d'hôtes</option>
+            <option value="Échange de maisons">🔄 Échange de maisons</option>
+            <option value="Mixte selon étapes">🎨 Mixte selon étapes</option>
+          </select>
+          <textarea
+            id="voyage-hebergement-custom"
+            placeholder="Précisez l'hébergement..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🚗 Mode de transport</h2>
+          <select id="voyage-transport-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Avion">✈️ Avion</option>
+            <option value="Train">🚄 Train</option>
+            <option value="Voiture de location">🚗 Voiture de location</option>
+            <option value="Bus / Car">🚌 Bus / Car</option>
+            <option value="Vélo">🚴 Vélo</option>
+            <option value="Moto">🏍️ Moto</option>
+            <option value="Bateau / Ferry">⛵ Bateau / Ferry</option>
+            <option value="Transports en commun">
+              🚇 Transports en commun
+            </option>
+            <option value="Combinaison de transports">
+              🎯 Combinaison de transports
+            </option>
+          </select>
+          <textarea
+            id="voyage-transport-custom"
+            placeholder="Précisez le transport..."
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>🎨 Centres d'intérêt</h2>
+          <select id="voyage-interets-select">
+            <option value="" selected hidden>Sélectionnez...</option>
+            <option value="Histoire">📜 Histoire</option>
+            <option value="Art et architecture">🎨 Art et architecture</option>
+            <option value="Photographie">📸 Photographie</option>
+            <option value="Cuisine locale">🍽️ Cuisine locale</option>
+            <option value="Plages">🏖️ Plages</option>
+            <option value="Montagnes">⛰️ Montagnes</option>
+            <option value="Vie nocturne">🌃 Vie nocturne</option>
+            <option value="Spiritualité / Bien-être">
+              🧘 Spiritualité / Bien-être
+            </option>
+            <option value="Faune et nature">🦁 Faune et nature</option>
+            <option value="Festivals et événements">
+              🎉 Festivals et événements
+            </option>
+          </select>
+          <textarea
+            id="voyage-interets-custom"
+            placeholder="Précisez les centres d'intérêt..."
+          ></textarea>
+        </div>
+
+        <div class="section section-full">
+          <h2>📋 Informations complémentaires</h2>
+          <textarea
+            id="detail-demande-voyage"
+            style="display: block; min-height: 120px"
+            placeholder="Ajoutez tous les détails importants : dates précises, préférences spécifiques, expériences recherchées, etc."
+          ></textarea>
+        </div>
+      </div>
+
+      <div
+        style="
+          display: flex;
+          gap: 16px;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin: 24px 0;
+        "
+      >
+        <button
+          onclick="generateVoyagePrompt()"
+          style="flex: 1; min-width: 250px"
+        >
+          ✨ Générer le Prompt OPRO
+        </button>
+        <button
+          onclick="generateSimpleVoyagePrompt()"
+          style="
+            flex: 1;
+            min-width: 250px;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);
+          "
+        >
+          ⚡ Générer un Prompt SIMPLE
+        </button>
+      </div>
+      <button
+        id="copyButtonVoyage"
+        onclick="copyVoyageToClipboard()"
+        style="
+          background: rgba(255, 255, 255, 0.08);
+          color: #b8c5d6;
+          box-shadow: none;
+        "
+      >
+        📋 Copier dans le presse-papier
+      </button>
+      <button
+        onclick="resetVoyageForm()"
+        style="
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          box-shadow: none;
+        "
+      >
+        🔄 Réinitialiser
+      </button>
+
+      <div class="result" id="result-voyage"></div>
+    </div>
+
+    <!-- Onglet Code -->
+    <div id="code" class="tab-content">
+      <div class="grid-container">
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span> Objectif
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Que doit faire précisément l'IA ? (analyse, création,
+                optimisation, etc.)
+              </span>
+            </span>
+          </h2>
+          <select id="objectif-select-code">
+            <option value="" hidden>Choisissez un objectif</option>
+            <option
+              value="Créer un workflow divisé en tâches indivisibles constituant des scripts autonomes réutilisables avec NDJson"
+            >
+              🔄 Créer un workflow avec scripts autonomes
+            </option>
+            <option
+              value="Diviser un workflow existant en scripts modulaires et réutilisables"
+            >
+              🧩 Diviser un workflow en modules
+            </option>
+            <option
+              value="Coder un script qui correspond exactement à mes besoins"
+            >
+              💻 Coder un nouveau script
+            </option>
+            <option
+              value="Réécrire et optimiser un script pour gagner en efficacité et en performance"
+            >
+              ⚡ Optimiser un script existant
+            </option>
+            <option
+              value="Nettoyer du code résiduel, supprimer les parties inutiles et améliorer la lisibilité"
+            >
+              🧹 Nettoyer du code
+            </option>
+            <option value="Assembler plusieurs scripts en un workflow cohérent">
+              🔗 Assembler des scripts
+            </option>
+            <option
+              value="Créer une nouvelle fonction dans un script existant pour améliorer mon programme"
+            >
+              ➕ Ajouter une fonction
+            </option>
+            <option
+              value="Créer une interface moderne et soignée avec un design professionnel"
+            >
+              🎨 Créer une interface
+            </option>
+            <option
+              value="Résoudre un bug technique étape par étape avec des explications concrètes"
+            >
+              🐛 Corriger un bug
+            </option>
+            <option
+              value="Automatiser une tâche répétitive avec un script clair et maintenable"
+            >
+              🤖 Automatiser un processus
+            </option>
+            <option value="Créer un dataset de données pour un projet IA">
+              📊 Créer un Dataset
+            </option>
+            <option
+              value="Structurer un plan de projet en étapes claires avec priorités"
+            >
+              📋 Planifier un projet
+            </option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="objectif-text-code"
+            placeholder="Décrivez votre objectif..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span> Rôle de l'IA
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Définissez le rôle que l'IA doit adopter (expert, développeur,
+                etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="role-select-code">
+            <option value="" hidden>Choisissez un rôle</option>
+            <option value="Expert en prompt engineering">
+              🧠 Expert en prompt engineering
+            </option>
+            <option value="Développeur senior full-stack">
+              💻 Développeur senior full-stack
+            </option>
+            <option value="Architecte logiciel">🏗️ Architecte logiciel</option>
+            <option value="Data scientist">📊 Data scientist</option>
+            <option value="DevOps engineer">☁️ DevOps engineer</option>
+            <option value="QA tester">🧪 QA tester</option>
+            <option value="Code reviewer">🔍 Code reviewer</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="role-text-code"
+            placeholder="Décrivez le rôle souhaité..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span> Langage / Technologie
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Spécifiez le langage de programmation ou la technologie à
+                utiliser.
+              </span>
+            </span>
+          </h2>
+          <select id="langage-select-code">
+            <option value="" hidden>Choisissez un langage</option>
+            <option value="Python">🐍 Python</option>
+            <option value="JavaScript / Node.js">
+              🌐 JavaScript / Node.js
+            </option>
+            <option value="Java">☕ Java</option>
+            <option value="C# / .NET">🔷 C# / .NET</option>
+            <option value="Go">🦦 Go</option>
+            <option value="Ruby">💎 Ruby</option>
+            <option value="PHP">🐘 PHP</option>
+            <option value="SQL">🗄️ SQL</option>
+            <option value="Shell / Bash">🐚 Shell / Bash</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="langage-text-code"
+            placeholder="Décrivez le langage ou techno..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">D</span> Type de projet
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Le type de projet (web, mobile, script, etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="projet-select-code">
+            <option value="" hidden>Choisissez un type</option>
+            <option value="Script autonome">📜 Script autonome</option>
+            <option value="Application web">🌐 Application web</option>
+            <option value="Application mobile">📱 Application mobile</option>
+            <option value="API / Backend">🔌 API / Backend</option>
+            <option value="Script d'automatisation">
+              🤖 Script d'automatisation
+            </option>
+            <option value="Projet data / ML">📊 Projet data / ML</option>
+            <option value="Outil CLI">⌨️ Outil CLI</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="projet-text-code"
+            placeholder="Décrivez le type de projet..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">E</span> Contraintes techniques
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Limites ou exigences spécifiques (performances, sécurité, etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="contraintes-select-code">
+            <option value="" hidden>Choisissez des contraintes</option>
+            <option value="Optimisé pour les performances">
+              ⚡ Optimisé pour les performances
+            </option>
+            <option value="Sécurité renforcée">🔒 Sécurité renforcée</option>
+            <option value="Scalabilité">📈 Scalabilité</option>
+            <option value="Offline first">📴 Offline first</option>
+            <option value="Intégration cloud">☁️ Intégration cloud</option>
+            <option value="Respect des standards">
+              ✅ Respect des standards
+            </option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="contraintes-text-code"
+            placeholder="Décrivez les contraintes..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">F</span> Fichiers joints
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Indiquez si des fichiers sont joints (code existant, specs,
+                etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="fichiers-select-code">
+            <option value="" hidden>Choisissez des fichiers</option>
+            <option value="Code existant à optimiser">
+              📄 Code existant à optimiser
+            </option>
+            <option value="Spécifications techniques">
+              📝 Spécifications techniques
+            </option>
+            <option value="Dataset / Données">📊 Dataset / Données</option>
+            <option value="Diagramme / Schema">🗺️ Diagramme / Schema</option>
+            <option value="Aucun fichier joint">🚫 Aucun fichier joint</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="fichiers-text-code"
+            placeholder="Décrivez les fichiers joints..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">G</span> Format de sortie
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Le format de la réponse (code seul, explications, etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="format-select-code">
+            <option value="" hidden>Choisissez un format</option>
+            <option
+              value="Code seul, N'écris aucun fichier explicatif, pas de README ni documentation."
+            >
+              💻 Code seul
+            </option>
+            <option value="Code commenté avec explications">
+              📝 Code commenté avec explications
+            </option>
+            <option value="Documentation complète">
+              📖 Documentation complète
+            </option>
+            <option value="Plan d'exécution">🗺️ Plan d'exécution</option>
+            <option value="Exemples d'utilisation">
+              🔍 Exemples d'utilisation
+            </option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="format-text-code"
+            placeholder="Décrivez le format souhaité..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h2>
+            <span class="letter-box">H</span> Niveau d'expertise
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Le niveau de détail technique attendu.
+              </span>
+            </span>
+          </h2>
+          <select id="niveau-select-code">
+            <option value="" hidden>Choisissez un niveau</option>
+            <option value="Débutant">🌱 Débutant</option>
+            <option value="Intermédiaire">📈 Intermédiaire</option>
+            <option value="Expert">🎓 Expert</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="niveau-text-code"
+            placeholder="Décrivez le niveau souhaité..."
+            style="display: none"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Champ de description détaillée -->
+      <div class="section" style="margin-top: 24px">
+        <button class="toggle-text-button" onclick="toggleDetailTextCode()">
+          📝 Ajouter une description détaillée
+        </button>
+        <textarea
+          id="detail-demande-code"
+          placeholder="Ajoutez ici tous les détails importants : contexte spécifique, contraintes, exemples, code existant, fonctionnalités précises..."
+        ></textarea>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div
+        style="
+          display: flex;
+          gap: 16px;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin: 24px 0;
+        "
+      >
+        <button
+          onclick="generateCodePrompt()"
+          style="flex: 1; min-width: 250px"
+        >
+          ✨ Générer le Prompt OPRO
+        </button>
+        <button
+          onclick="generateSimpleCodePrompt()"
+          style="
+            flex: 1;
+            min-width: 250px;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);
+          "
+        >
+          ⚡ Générer un Prompt SIMPLE
+        </button>
+      </div>
+      <button
+        id="copyButtonCode"
+        onclick="copyCodeToClipboard()"
+        style="
+          background: rgba(255, 255, 255, 0.08);
+          color: #b8c5d6;
+          box-shadow: none;
+        "
+      >
+        📋 Copier dans le presse-papier
+      </button>
+      <button
+        onclick="resetCodeForm()"
+        style="
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          box-shadow: none;
+        "
+      >
+        🔄 Réinitialiser
+      </button>
+
+      <!-- Zone de résultat -->
+      <div class="result" id="result-code"></div>
+    </div>
+
+    <!-- Onglet Application -->
+    <div id="app" class="tab-content">
+      <div class="grid-container">
+        <!-- Section A: Type d'application -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">A</span> Type d'application
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Spécifiez le type global d'application (web app, mobile app,
+                etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="type-select-app">
+            <option value="" hidden>Choisissez un type</option>
+            <option value="Web App">🌐 Web App</option>
+            <option value="Mobile App">📱 Mobile App</option>
+            <option value="Desktop App">💻 Desktop App</option>
+            <option value="CLI Tool">⌨️ CLI Tool</option>
+            <option value="API Service">🔌 API Service</option>
+            <option value="Extension Browser">🧩 Extension Browser</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="type-text-app"
+            placeholder="Décrivez le type d'application..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section B: Stack technique -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">B</span> Stack technique
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Choisissez le stack technologique principal.
+              </span>
+            </span>
+          </h2>
+          <select id="stack-select-app">
+            <option value="" hidden>Choisissez un stack</option>
+            <option value="Vanilla (HTML/CSS/JS)">
+              📄 Vanilla (HTML/CSS/JS)
+            </option>
+            <option value="React / Next.js">⚛️ React / Next.js</option>
+            <option value="Vue.js">🖼️ Vue.js</option>
+            <option value="Angular">🅰️ Angular</option>
+            <option value="Node.js / Express">🌐 Node.js / Express</option>
+            <option value="Python / Flask">🐍 Python / Flask</option>
+            <option value="Python / Django">🐍 Python / Django</option>
+            <option value="Java / Spring">☕ Java / Spring</option>
+            <option value="C# / .NET">🔷 C# / .NET</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="stack-text-app"
+            placeholder="Décrivez le stack technique..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section C: Plateforme -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">C</span> Plateforme(s)
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Les plateformes cibles (web, iOS, Android, etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="platform-select-app">
+            <option value="" hidden>Choisissez une plateforme</option>
+            <option value="Web (responsive)">🌐 Web (responsive)</option>
+            <option value="iOS">🍎 iOS</option>
+            <option value="Android">🤖 Android</option>
+            <option value="Cross-platform (React Native)">
+              📱 Cross-platform (React Native)
+            </option>
+            <option value="Desktop (Electron)">💻 Desktop (Electron)</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="platform-text-app"
+            placeholder="Décrivez la plateforme..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section D: Fonction principale -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">D</span> Fonction principale
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                La fonctionnalité core de l'application.
+              </span>
+            </span>
+          </h2>
+          <select id="fonction-select-app">
+            <option value="" hidden>Choisissez une fonction</option>
+            <option value="Gestion de tâches">📋 Gestion de tâches</option>
+            <option value="Réseau social">👥 Réseau social</option>
+            <option value="E-commerce">🛒 E-commerce</option>
+            <option value="Dashboard analytique">
+              📊 Dashboard analytique
+            </option>
+            <option value="Outil de productivité">
+              🛠️ Outil de productivité
+            </option>
+            <option value="App de chat">💬 App de chat</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="fonction-text-app"
+            placeholder="Décrivez la fonction principale..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section E: Architecture -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">E</span> Architecture
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Le pattern architectural (MVC, microservices, etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="archi-select-app">
+            <option value="" hidden>Choisissez une architecture</option>
+            <option value="MVC">🏗️ MVC</option>
+            <option value="Microservices">🔗 Microservices</option>
+            <option value="Monolithique">🗼 Monolithique</option>
+            <option value="Serverless">☁️ Serverless</option>
+            <option value="Event-driven">⚡ Event-driven</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="archi-text-app"
+            placeholder="Décrivez l'architecture..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section F: Gestion des données -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">F</span> Gestion des données
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Comment gérer les données (DB, API, etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="data-select-app">
+            <option value="" hidden>Choisissez une gestion</option>
+            <option value="Local Storage">💾 Local Storage</option>
+            <option value="SQLite">🗄️ SQLite</option>
+            <option value="PostgreSQL">🐘 PostgreSQL</option>
+            <option value="MongoDB">🍃 MongoDB</option>
+            <option value="Firebase">🔥 Firebase</option>
+            <option value="API externe">🔌 API externe</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="data-text-app"
+            placeholder="Décrivez la gestion des données..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section G: Authentification -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">G</span> Authentification
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Méthode d'authentification des utilisateurs.
+              </span>
+            </span>
+          </h2>
+          <select id="auth-select-app">
+            <option value="" hidden>Choisissez une auth</option>
+            <option value="Aucune">🚫 Aucune</option>
+            <option value="Email / Password">✉️ Email / Password</option>
+            <option value="OAuth (Google, etc.)">
+              🔑 OAuth (Google, etc.)
+            </option>
+            <option value="JWT">🛡️ JWT</option>
+            <option value="Firebase Auth">🔥 Firebase Auth</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="auth-text-app"
+            placeholder="Décrivez l'authentification..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section H: Design System -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">H</span> Design System
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext"> Le système de design pour l'UI. </span>
+            </span>
+          </h2>
+          <select id="design-select-app">
+            <option value="" hidden>Choisissez un design</option>
+            <option value="Tailwind CSS">🌬️ Tailwind CSS</option>
+            <option value="Bootstrap">📦 Bootstrap</option>
+            <option value="Material UI">🎨 Material UI</option>
+            <option value="Ant Design">🐜 Ant Design</option>
+            <option value="Custom CSS">✏️ Custom CSS</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="design-text-app"
+            placeholder="Décrivez le design system..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section I: Accessibilité -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">I</span> Accessibilité
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Niveau d'accessibilité (WCAG, etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="a11y-select-app">
+            <option value="" hidden>Choisissez un niveau</option>
+            <option value="WCAG AA">✅ WCAG AA</option>
+            <option value="WCAG AAA">⭐ WCAG AAA</option>
+            <option value="Basique">📋 Basique</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="a11y-text-app"
+            placeholder="Décrivez l'accessibilité..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section J: Features UI/UX -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">J</span> Features UI/UX
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Fonctionnalités UI/UX spécifiques.
+              </span>
+            </span>
+          </h2>
+          <select id="features-select-app">
+            <option value="" hidden>Choisissez des features</option>
+            <option value="Dark Mode">🌙 Dark Mode</option>
+            <option value="Responsive Design">📱 Responsive Design</option>
+            <option value="Animations">🎭 Animations</option>
+            <option value="PWA">🖥️ PWA</option>
+            <option value="Notifications">🔔 Notifications</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="features-text-app"
+            placeholder="Décrivez les features UI/UX..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section K: Performance -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">K</span> Performance
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Exigences de performance (lazy loading, etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="perf-select-app">
+            <option value="" hidden>Choisissez des optimisations</option>
+            <option value="Lazy Loading">⚡ Lazy Loading</option>
+            <option value="Caching">💾 Caching</option>
+            <option value="Minification">📦 Minification</option>
+            <option value="CDN">🌐 CDN</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="perf-text-app"
+            placeholder="Décrivez les optimisations performance..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section L: Tests -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">L</span> Tests
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext"> Types de tests à inclure. </span>
+            </span>
+          </h2>
+          <select id="tests-select-app">
+            <option value="" hidden>Choisissez des tests</option>
+            <option value="Unit Tests">🧪 Unit Tests</option>
+            <option value="Integration Tests">🔗 Integration Tests</option>
+            <option value="E2E Tests">🌐 E2E Tests</option>
+            <option value="Aucun test">🚫 Aucun test</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="tests-text-app"
+            placeholder="Décrivez les tests..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section M: Livrables -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">M</span> Livrables
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Ce qui doit être fourni (code, docs, etc.).
+              </span>
+            </span>
+          </h2>
+          <select id="livrables-select-app">
+            <option value="" hidden>Choisissez des livrables</option>
+            <option value="Code source complet">💻 Code source complet</option>
+            <option value="README / Docs">📖 README / Docs</option>
+            <option value="Fichiers de config">⚙️ Fichiers de config</option>
+            <option value="Déploiement instructions">
+              🚀 Déploiement instructions
+            </option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="livrables-text-app"
+            placeholder="Décrivez les livrables..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section N: Contraintes -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">N</span> Contraintes
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Contraintes techniques ou autres.
+              </span>
+            </span>
+          </h2>
+          <select id="contraintes-select-app">
+            <option value="" hidden>Choisissez des contraintes</option>
+            <option value="Pas de dépendances externes">
+              🚫 Pas de dépendances externes
+            </option>
+            <option value="Optimisé mobile">📱 Optimisé mobile</option>
+            <option value="Sécurité renforcée">🔒 Sécurité renforcée</option>
+            <option value="Pas de frameworks tiers">
+              ⛔ Pas de frameworks tiers
+            </option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="contraintes-text-app"
+            placeholder="Décrivez les contraintes..."
+            style="display: none"
+          ></textarea>
+        </div>
+
+        <!-- Section O: Public cible -->
+        <div class="section">
+          <h2>
+            <span class="letter-box">O</span> Public cible
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltiptext">
+                Qui utilisera cette application ?
+              </span>
+            </span>
+          </h2>
+          <select id="public-select-app">
+            <option value="" hidden>Public cible</option>
+            <option value="Usage personnel uniquement">
+              👤 Usage personnel
+            </option>
+            <option value="Petite équipe (< 10 personnes)">
+              👥 Petite équipe
+            </option>
+            <option value="Équipe moyenne (10-100)">🏢 Équipe moyenne</option>
+            <option value="Large public (100+)">🌍 Large public</option>
+            <option value="B2B / Entreprises">💼 B2B / Entreprises</option>
+            <option value="B2C / Grand public">🛒 B2C / Grand public</option>
+            <option value="custom" class="custom-option">
+              ✏️ Personnalisé
+            </option>
+          </select>
+          <textarea
+            id="public-text-app"
+            placeholder="Décrivez le public cible..."
+            style="display: none"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Description détaillée -->
+      <div class="section" style="margin-top: 24px">
+        <button class="toggle-text-button" onclick="toggleDetailTextApp()">
+          📝 Ajouter une description détaillée de l'application
+        </button>
+        <textarea
+          id="detail-demande-app"
+          placeholder="Décrivez en détail votre application : fonctionnalités précises, cas d'usage, workflow utilisateur, écrans principaux, données manipulées, interactions clés, exemples concrets, contraintes techniques, inspirations..."
+        ></textarea>
+      </div>
+
+      <!-- Boutons -->
+      <div
+        style="
+          display: flex;
+          gap: 16px;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin: 24px 0;
+        "
+      >
+        <button onclick="generateAppPrompt()" style="flex: 1; min-width: 250px">
+          ✨ Générer le Prompt OPRO
+        </button>
+        <button
+          onclick="generateSimpleAppPrompt()"
+          style="
+            flex: 1;
+            min-width: 250px;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);
+          "
+        >
+          ⚡ Générer un Prompt SIMPLE
+        </button>
+      </div>
+      <button
+        id="copyButtonApp"
+        onclick="copyAppToClipboard()"
+        style="
+          background: rgba(255, 255, 255, 0.08);
+          color: #b8c5d6;
+          box-shadow: none;
+        "
+      >
+        📋 Copier dans le presse-papier
+      </button>
+      <button
+        onclick="resetAppForm()"
+        style="
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          box-shadow: none;
+        "
+      >
+        🔄 Réinitialiser
+      </button>
+
+      <div class="result" id="result-app"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

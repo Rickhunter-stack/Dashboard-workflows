@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Générateur de Workflows</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="workflow-styles.css" />
+  </head>
+
+  <body>
+    <div id="home-view">
+      <h1>🔄 Générateur de Workflows</h1>
+
+      <div class="info-section">
+        <button class="info-toggle" onclick="toggleInfo()">
+          Informations sur le générateur ▼
+        </button>
+        <div id="infoContent" class="info-content">
+          <p>
+            <strong>Comment ça marche ?</strong><br />
+            Ce générateur vous aide à décomposer et visualiser vos workflows en
+            sous-processus logiques hiérarchiques. Créez un nouveau workflow,
+            définissez vos entrées et sorties, puis organisez les étapes
+            intermédiaires.
+          </p>
+          <p>
+            <strong>Navigation hiérarchique :</strong><br />
+            • Cliquez sur "Créer sous-processus" pour décomposer une étape en
+            sous-étapes<br />
+            • Chaque sous-processus contient 9 cartes par défaut<br />
+            • Utilisez le fil d'Ariane pour remonter dans la hiérarchie<br />
+            • Profondeur illimitée : processus → sous-processus →
+            sous-sous-processus...
+          </p>
+          <p>
+            <strong>Conseils d'utilisation :</strong><br />
+            • Commencez par définir clairement vos données d'entrée (INPUT)<br />
+            • Décomposez votre processus en sous-étapes logiques<br />
+            • Réorganisez les cartes en les glissant-déposant<br />
+            • Pour les étapes complexes, créez des sous-processus<br />
+            • Terminez par définir vos données de sortie (OUTPUT)
+          </p>
+        </div>
+      </div>
+
+      <button class="create-workflow-btn" onclick="createNewWorkflow()">
+        ➕ Nouveau Workflow
+      </button>
+
+      <div id="workflows-list" class="workflows-grid"></div>
+    </div>
+
+    <div id="workflow-editor" style="display: none">
+      <div class="editor-header">
+        <button class="back-btn" onclick="backToHome()">← Retour</button>
+        <input
+          type="text"
+          id="workflow-title"
+          class="workflow-title-input"
+          placeholder="Titre du workflow"
+        />
+        <div class="editor-actions">
+          <button class="save-btn" onclick="saveWorkflow()">
+            💾 Sauvegarder
+          </button>
+          <button class="export-btn" onclick="exportWorkflowJSON()">
+            📥 Export JSON
+          </button>
+          <button
+            class="icon-btn tree-btn"
+            title="Arborescence"
+            aria-label="Arborescence"
+            onclick="openTreeView && openTreeView()"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <!-- tronc -->
+              <path
+                d="M12 4v6M12 16v4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <!-- branches -->
+              <path
+                d="M12 8h6M12 12H6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <!-- nœuds -->
+              <circle cx="18" cy="8" r="2" fill="currentColor" />
+              <circle cx="6" cy="12" r="2" fill="currentColor" />
+              <circle cx="12" cy="4" r="2" fill="currentColor" />
+              <circle cx="12" cy="20" r="2" fill="currentColor" />
+            </svg>
+          </button>
+          <button class="delete-btn" onclick="deleteCurrentWorkflow()">
+            🗑️ Supprimer
+          </button>
+        </div>
+      </div>
+
+      <!-- Sélecteur de cartes en haut -->
+      <div class="card-size-selector">
+        <label>Nombre de cartes :</label>
+        <button class="size-btn" data-size="4" onclick="setCardCount(4)">
+          4 cartes
+        </button>
+        <!-- (déjà présent) -->
+        <button class="size-btn" data-size="6" onclick="setCardCount(6)">
+          6 cartes
+        </button>
+        <button class="size-btn" data-size="9" onclick="setCardCount(9)">
+          9 cartes
+        </button>
+        <button
+          class="size-btn active"
+          data-size="12"
+          onclick="setCardCount(12)"
+        >
+          12 cartes
+        </button>
+        <button class="size-btn" data-size="16" onclick="setCardCount(16)">
+          16 cartes
+        </button>
+        <button class="size-btn" data-size="20" onclick="setCardCount(20)">
+          20 cartes
+        </button>
+      </div>
+
+      <!-- Fil d'Ariane en dessous -->
+      <div id="breadcrumb" class="breadcrumb-container"></div>
+
+      <div id="workflow-canvas" class="workflow-canvas"></div>
+    </div>
+
+    <!-- Modale pour le code Python -->
+    <div id="code-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeCodeModal()">&times;</span>
+        <h2>Code Python pour cette carte</h2>
+        <textarea id="code-textarea"></textarea>
+        <button class="save-code-btn" onclick="saveCode()">Sauvegarder</button>
+      </div>
+    </div>
+
+    <!-- Modale Arborescence -->
+    <div id="tree-modal" class="modal">
+      <div class="modal-content tree-modal-content">
+        <span class="close-modal" onclick="closeTreeView()">&times;</span>
+        <h2>Arborescence du Workflow</h2>
+        <div id="tree-container" class="tree-container"></div>
+      </div>
+    </div>
+
+    <script src="workflow-script.js"></script>
+  </body>
+</html>

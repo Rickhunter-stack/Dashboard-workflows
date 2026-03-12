@@ -1,0 +1,119 @@
+{
+  "id": 1762071656373,
+  "title": "Dashboard Général BIOXA",
+  "createdAt": "2025-11-02T08:20:56.373Z",
+  "cardCount": 12,
+  "cards": [
+    {
+      "id": 0,
+      "order": 1,
+      "type": "input",
+      "title": "Toutes les Data",
+      "description": "Décrivez les données d'entrée...",
+      "titleEdited": true,
+      "descriptionEdited": false,
+      "color": "none"
+    },
+    {
+      "id": 1,
+      "order": 2,
+      "type": "process",
+      "title": "Dashboard Pré/post",
+      "description": "Décrivez ce sous-processus...",
+      "titleEdited": true,
+      "descriptionEdited": false
+    },
+    {
+      "id": 2,
+      "order": 3,
+      "type": "process",
+      "title": "Dashboard analytique",
+      "description": "Décrivez ce sous-processus...",
+      "titleEdited": true,
+      "descriptionEdited": false
+    },
+    {
+      "id": 3,
+      "order": 4,
+      "type": "process",
+      "title": "Dashboard Financier",
+      "description": "Décrivez ce sous-processus...",
+      "titleEdited": true,
+      "descriptionEdited": false
+    },
+    {
+      "id": 4,
+      "order": 5,
+      "type": "process",
+      "title": "Dashboard Cofrac",
+      "description": "Décrivez ce sous-processus...",
+      "titleEdited": true,
+      "descriptionEdited": false
+    },
+    {
+      "id": 5,
+      "order": 6,
+      "type": "process",
+      "title": "Dashbord RSE",
+      "description": "Décrivez ce sous-processus...",
+      "titleEdited": true,
+      "descriptionEdited": false
+    },
+    {
+      "id": 6,
+      "order": 7,
+      "type": "process",
+      "title": "Dashboard RH",
+      "description": "Décrivez ce sous-processus...",
+      "titleEdited": true,
+      "descriptionEdited": false
+    },
+    {
+      "id": 7,
+      "order": 8,
+      "type": "process",
+      "title": "Sous-processus 7",
+      "description": "Décrivez ce sous-processus...",
+      "titleEdited": false,
+      "descriptionEdited": false
+    },
+    {
+      "id": 8,
+      "order": 9,
+      "type": "process",
+      "title": "Sous-processus 8",
+      "description": "Décrivez ce sous-processus...",
+      "titleEdited": false,
+      "descriptionEdited": false
+    },
+    {
+      "id": 9,
+      "order": 10,
+      "type": "process",
+      "title": "Sous-processus 9",
+      "description": "Décrivez ce sous-processus...",
+      "titleEdited": false,
+      "descriptionEdited": false
+    },
+    {
+      "id": 10,
+      "order": 11,
+      "type": "process",
+      "title": "Sous-processus 10",
+      "description": "Décrivez ce sous-processus...",
+      "titleEdited": false,
+      "descriptionEdited": false
+    },
+    {
+      "id": 11,
+      "order": 12,
+      "type": "output",
+      "title": "Dashboard général Pro Perso avec switch simple",
+      "description": "Décrivez les données de sortie...",
+      "titleEdited": true,
+      "descriptionEdited": false
+    }
+  ],
+  "titleEdited": true,
+  "color": "none"
+}

@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mind Map - Création Dashboard Frontend</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      .container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 15px;
+        color: white;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .header h1 {
+        font-size: 2.2em;
+        font-weight: 700;
+        margin-bottom: 5px;
+        letter-spacing: -0.5px;
+      }
+
+      .header p {
+        font-size: 0.95em;
+        opacity: 0.95;
+        font-weight: 400;
+      }
+
+      .mindmap-wrapper {
+        flex: 1;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .mindmap-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .mindmap {
+        position: absolute;
+        transform-origin: 0 0;
+        transition: transform 0.3s ease;
+      }
+
+      svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+      }
+
+      .node {
+        position: absolute;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        padding: 10px;
+      }
+
+      .node:hover {
+        transform: scale(1.12) translateY(-2px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+      }
+
+      .node.selected {
+        transform: scale(1.12);
+        box-shadow: 0 0 0 5px rgba(255, 215, 0, 0.6),
+          0 12px 35px rgba(0, 0, 0, 0.25);
+      }
+
+      .node.large {
+        width: 160px;
+        height: 160px;
+        font-size: 1.4em;
+      }
+
+      .node.medium {
+        width: 130px;
+        height: 130px;
+        font-size: 1.05em;
+      }
+
+      .node.small {
+        width: 110px;
+        height: 110px;
+        font-size: 0.92em;
+      }
+
+      .bg-blue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .bg-purple {
+        background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+      }
+      .bg-purple-light {
+        background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+      }
+      .bg-green {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+      .bg-green-light {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      }
+      .bg-orange {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      }
+      .bg-orange-light {
+        background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+      }
+      .bg-red {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      }
+      .bg-red-light {
+        background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+      }
+      .bg-cyan {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+      }
+      .bg-cyan-light {
+        background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+      }
+      .bg-pink {
+        background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+      }
+      .bg-pink-light {
+        background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+      }
+
+      .controls {
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .control-row {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .control-btn {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-size: 1.3em;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+      }
+
+      .control-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .control-btn:active {
+        transform: translateY(0);
+      }
+
+      .description-box {
+        position: absolute;
+        bottom: 30px;
+        left: 30px;
+        right: 180px;
+        background: white;
+        padding: 28px 32px;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        border-left: 5px solid #667eea;
+        z-index: 2;
+        display: none;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .description-box.active {
+        display: block;
+        animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .description-box h3 {
+        color: #1e293b;
+        font-size: 1.6em;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+
+      .description-box .subtitle {
+        color: #64748b;
+        font-size: 0.95em;
+        margin-bottom: 16px;
+        font-style: italic;
+      }
+
+      .description-box .content {
+        color: #475569;
+        font-size: 1.02em;
+        line-height: 1.7;
+      }
+
+      .description-box ul {
+        margin: 12px 0;
+        padding-left: 20px;
+      }
+
+      .description-box li {
+        margin: 8px 0;
+        color: #475569;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 24px;
+        background: none;
+        border: none;
+        font-size: 1.8em;
+        color: #94a3b8;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+      }
+
+      .close-btn:hover {
+        color: #1e293b;
+        background: #f1f5f9;
+      }
+
+      .description-box::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .description-box::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+      }
+
+      .description-box::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+
+      .description-box::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Mind Map - Création Dashboard Frontend</h1>
+        <p>Cliquez sur un nœud pour voir sa description détaillée</p>
+      </div>
+
+      <div class="mindmap-wrapper">
+        <div class="mindmap-container">
+          <div class="mindmap" id="mindmap">
+            <svg id="svg"></svg>
+            <div id="nodes"></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="control-row">
+            <button
+              class="control-btn"
+              onclick="moveMap('up')"
+              title="Déplacer vers le haut"
+            >
+              ↑
+            </button>
+          </div>
+          <div class="control-row">
+            <button
+              class="control-btn"
+              onclick="moveMap('left')"
+              title="Déplacer vers la gauche"
+            >
+              ←
+            </button>
+            <button class="control-btn" onclick="zoomMap('in')" title="Zoomer">
+              +
+            </button>
+            <button
+              class="control-btn"
+              onclick="zoomMap('out')"
+              title="Dézoomer"
+            >
+              −
+            </button>
+            <button
+              class="control-btn"
+              onclick="moveMap('right')"
+              title="Déplacer vers la droite"
+            >
+              →
+            </button>
+          </div>
+          <div class="control-row">
+            <button
+              class="control-btn"
+              onclick="moveMap('down')"
+              title="Déplacer vers le bas"
+            >
+              ↓
+            </button>
+          </div>
+          <div class="control-row">
+            <button
+              class="control-btn"
+              onclick="resetView()"
+              title="Réinitialiser la vue"
+              style="font-size: 1.1em"
+            >
+              ⟲
+            </button>
+          </div>
+        </div>
+
+        <div class="description-box" id="descriptionBox">
+          <button class="close-btn" onclick="closeDescription()">×</button>
+          <h3 id="descTitle"></h3>
+          <div class="subtitle" id="descSubtitle"></div>
+          <div class="content" id="descText"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const nodes = [
+        // Centre
+        {
+          id: "dashboard",
+          x: 700,
+          y: 450,
+          label: "Dashboard Frontend",
+          color: "bg-blue",
+          size: "large",
+        },
+
+        // Branches principales
+        {
+          id: "frameworks",
+          x: 280,
+          y: 200,
+          label: "Frameworks",
+          color: "bg-purple",
+          size: "medium",
+        },
+        {
+          id: "ui",
+          x: 1120,
+          y: 200,
+          label: "UI/Design",
+          color: "bg-green",
+          size: "medium",
+        },
+        {
+          id: "data",
+          x: 220,
+          y: 680,
+          label: "Gestion Données",
+          color: "bg-orange",
+          size: "medium",
+        },
+        {
+          id: "features",
+          x: 1180,
+          y: 680,
+          label: "Fonctionnalités",
+          color: "bg-red",
+          size: "medium",
+        },
+        {
+          id: "tools",
+          x: 700,
+          y: 100,
+          label: "Outils Dev",
+          color: "bg-cyan",
+          size: "medium",
+        },
+        {
+          id: "deploy",
+          x: 700,
+          y: 800,
+          label: "Déploiement",
+          color: "bg-pink",
+          size: "medium",
+        },
+
+        // Sous-branches Frameworks
+        {
+          id: "react",
+          x: 90,
+          y: 70,
+          label: "React",
+          color: "bg-purple-light",
+          size: "small",
+        },
+        {
+          id: "vue",
+          x: 260,
+          y: 30,
+          label: "Vue.js",
+          color: "bg-purple-light",
+          size: "small",
+        },
+        {
+          id: "angular",
+          x: 450,
+          y: 80,
+          label: "Angular",
+          color: "bg-purple-light",
+          size: "small",
+        },
+        {
+          id: "svelte",
+          x: 380,
+          y: 210,
+          label: "Svelte",
+          color: "bg-purple-light",
+          size: "small",
+        },
+
+        // Sous-branches UI/Design
+        {
+          id: "components",
+          x: 1000,
+          y: 30,
+          label: "Composants",
+          color: "bg-green-light",
+          size: "small",
+        },
+        {
+          id: "tailwind",
+          x: 1200,
+          y: 60,
+          label: "Tailwind CSS",
+          color: "bg-green-light",
+          size: "small",
+        },
+        {
+          id: "material",
+          x: 1320,
+          y: 160,
+          label: "Material UI",
+          color: "bg-green-light",
+          size: "small",
+        },
+        {
+          id: "charts",
+          x: 1120,
+          y: 220,
+          label: "Graphiques",
+          color: "bg-green-light",
+          size: "small",
+        },
+
+        // Sous-branches Gestion Données
+        {
+          id: "api",
+          x: 40,
+          y: 600,
+          label: "API REST",
+          color: "bg-orange-light",
+          size: "small",
+        },
+        {
+          id: "state",
+          x: 90,
+          y: 770,
+          label: "State Mgmt",
+          color: "bg-orange-light",
+          size: "small",
+        },
+        {
+          id: "cache",
+          x: 260,
+          y: 840,
+          label: "Cache",
+          color: "bg-orange-light",
+          size: "small",
+        },
+        {
+          id: "websocket",
+          x: 400,
+          y: 790,
+          label: "WebSocket",
+          color: "bg-orange-light",
+          size: "small",
+        },
+
+        // Sous-branches Fonctionnalités
+        {
+          id: "auth",
+          x: 1320,
+          y: 600,
+          label: "Auth",
+          color: "bg-red-light",
+          size: "small",
+        },
+        {
+          id: "tables",
+          x: 1200,
+          y: 840,
+          label: "Tables",
+          color: "bg-red-light",
+          size: "small",
+        },
+        {
+          id: "forms",
+          x: 1000,
+          y: 790,
+          label: "Formulaires",
+          color: "bg-red-light",
+          size: "small",
+        },
+        {
+          id: "routing",
+          x: 1360,
+          y: 760,
+          label: "Routing",
+          color: "bg-red-light",
+          size: "small",
+        },
+
+        // Sous-branches Outils Dev
+        {
+          id: "vite",
+          x: 600,
+          y: 20,
+          label: "Vite",
+          color: "bg-cyan-light",
+          size: "small",
+        },
+        {
+          id: "typescript",
+          x: 800,
+          y: 20,
+          label: "TypeScript",
+          color: "bg-cyan-light",
+          size: "small",
+        },
+
+        // Sous-branches Déploiement
+        {
+          id: "vercel",
+          x: 600,
+          y: 920,
+          label: "Vercel",
+          color: "bg-pink-light",
+          size: "small",
+        },
+        {
+          id: "netlify",
+          x: 800,
+          y: 920,
+          label: "Netlify",
+          color: "bg-pink-light",
+          size: "small",
+        },
+      ];
+
+      const connections = [
+        { from: "dashboard", to: "frameworks" },
+        { from: "dashboard", to: "ui" },
+        { from: "dashboard", to: "data" },
+        { from: "dashboard", to: "features" },
+        { from: "dashboard", to: "tools" },
+        { from: "dashboard", to: "deploy" },
+        { from: "frameworks", to: "react" },
+        { from: "frameworks", to: "vue" },
+        { from: "frameworks", to: "angular" },
+        { from: "frameworks", to: "svelte" },
+        { from: "ui", to: "components" },
+        { from: "ui", to: "tailwind" },
+        { from: "ui", to: "material" },
+        { from: "ui", to: "charts" },
+        { from: "data", to: "api" },
+        { from: "data", to: "state" },
+        { from: "data", to: "cache" },
+        { from: "data", to: "websocket" },
+        { from: "features", to: "auth" },
+        { from: "features", to: "tables" },
+        { from: "features", to: "forms" },
+        { from: "features", to: "routing" },
+        { from: "tools", to: "vite" },
+        { from: "tools", to: "typescript" },
+        { from: "deploy", to: "vercel" },
+        { from: "deploy", to: "netlify" },
+      ];
+
+      const descriptions = {
+        dashboard: {
+          subtitle: "Application web moderne de gestion et visualisation",
+          content: `Un dashboard frontend est une interface utilisateur centralisée pour gérer et visualiser des données en temps réel.
+                <ul>
+                    <li><strong>Interface intuitive</strong> : Design responsive et ergonomique pour tous les écrans</li>
+                    <li><strong>Temps réel</strong> : Mise à jour automatique des données sans rechargement</li>
+                    <li><strong>Visualisations</strong> : Graphiques, KPIs, tableaux pour analyser les données</li>
+                    <li><strong>Performance</strong> : Optimisation pour un chargement et une navigation rapides</li>
+                </ul>`,
+        },
+        frameworks: {
+          subtitle: "Bibliothèques JavaScript pour structurer l'application",
+          content: `Les frameworks modernes facilitent le développement d'interfaces complexes et maintenables.
+                <ul>
+                    <li><strong>Composants réutilisables</strong> : Architecture modulaire pour éviter la duplication</li>
+                    <li><strong>Réactivité</strong> : Mise à jour automatique de l'UI lors des changements de données</li>
+                    <li><strong>Écosystème riche</strong> : Bibliothèques et outils pour accélérer le développement</li>
+                    <li><strong>Communauté active</strong> : Documentation, tutoriels et support disponibles</li>
+                </ul>`,
+        },
+        react: {
+          subtitle: "Bibliothèque JavaScript développée par Meta",
+          content: `React est le framework le plus populaire pour créer des dashboards complexes.
+                <ul>
+                    <li><strong>Virtual DOM</strong> : Rendu optimisé pour des performances maximales</li>
+                    <li><strong>Hooks</strong> : useState, useEffect pour gérer l'état et les effets de bord</li>
+                    <li><strong>JSX</strong> : Syntaxe permettant d'écrire du HTML dans JavaScript</li>
+                    <li><strong>Écosystème</strong> : Next.js, React Query, Redux pour étendre les fonctionnalités</li>
+                </ul>`,
+        },
+        vue: {
+          subtitle: "Framework progressif et accessible",
+          content: `Vue.js offre une approche douce et flexible pour construire des interfaces.
+                <ul>
+                    <li><strong>Simplicité</strong> : Courbe d'apprentissage progressive, facile à démarrer</li>
+                    <li><strong>Composition API</strong> : Organisation logique du code par fonctionnalité</li>
+                    <li><strong>Single File Components</strong> : Template, script et style dans un même fichier</li>
+                    <li><strong>Nuxt.js</strong> : Framework meta pour le SSR et génération statique</li>
+                </ul>`,
+        },
+        angular: {
+          subtitle: "Framework complet développé par Google",
+          content: `Angular est une solution tout-en-un pour les applications d'entreprise.
+                <ul>
+                    <li><strong>TypeScript natif</strong> : Typage fort et outillage avancé inclus</li>
+                    <li><strong>CLI puissant</strong> : Génération automatique de composants, services, modules</li>
+                    <li><strong>RxJS</strong> : Programmation réactive pour gérer les flux de données complexes</li>
+                    <li><strong>Batteries included</strong> : Routing, forms, HTTP client intégrés</li>
+                </ul>`,
+        },
+        svelte: {
+          subtitle: "Compilateur qui génère du JavaScript optimisé",
+          content: `Svelte compile les composants en JavaScript vanilla ultra-performant.
+                <ul>
+                    <li><strong>Sans Virtual DOM</strong> : Modifications directes du DOM pour plus de rapidité</li>
+                    <li><strong>Réactivité native</strong> : Syntaxe simple avec $: pour les valeurs dérivées</li>
+                    <li><strong>Bundle léger</strong> : Pas de runtime, seulement le code nécessaire</li>
+                    <li><strong>SvelteKit</strong> : Framework full-stack pour applications complètes</li>
+                </ul>`,
+        },
+        ui: {
+          subtitle: "Design system et bibliothèques de composants",
+          content: `L'UI/Design définit l'apparence et l'expérience utilisateur du dashboard.
+                <ul>
+                    <li><strong>Cohérence visuelle</strong> : Style uniforme sur toute l'application</li>
+                    <li><strong>Accessibilité</strong> : Respect des standards WCAG pour tous les utilisateurs</li>
+                    <li><strong>Responsive design</strong> : Adaptation aux mobiles, tablettes et desktops</li>
+                    <li><strong>Dark mode</strong> : Thème sombre pour réduire la fatigue oculaire</li>
+                </ul>`,
+        },
+        components: {
+          subtitle: "Bibliothèques de composants UI pré-construits",
+          content: `Gagner du temps avec des composants professionnels prêts à l'emploi.
+                <ul>
+                    <li><strong>Shadcn/ui</strong> : Composants modernes et personnalisables pour React</li>
+                    <li><strong>Ant Design</strong> : Suite complète avec 50+ composants enterprise-ready</li>
+                    <li><strong>Chakra UI</strong> : Design system accessible avec thématisation simple</li>
+                    <li><strong>Headless UI</strong> : Composants non-stylés pour contrôle total du design</li>
+                </ul>`,
+        },
+        tailwind: {
+          subtitle: "Framework CSS utility-first",
+          content: `Tailwind permet de styliser rapidement sans quitter le HTML.
+                <ul>
+                    <li><strong>Utility classes</strong> : Classes atomiques (p-4, flex, text-center) combinables</li>
+                    <li><strong>Personnalisation</strong> : Configuration complète des couleurs, espacements, breakpoints</li>
+                    <li><strong>JIT compiler</strong> : Génère uniquement les classes utilisées pour un CSS minimal</li>
+                    <li><strong>Plugins</strong> : Forms, typography, aspect-ratio pour étendre les fonctionnalités</li>
+                </ul>`,
+        },
+        material: {
+          subtitle: "Design system de Google pour React",
+          content: `Material UI implémente les principes du Material Design.
+                <ul>
+                    <li><strong>Composants riches</strong> : DataGrid, DatePicker, Autocomplete sophistiqués</li>
+                    <li><strong>Thématisation</strong> : Personnalisation complète des couleurs et typographies</li>
+                    <li><strong>Responsive</strong> : Grid system et breakpoints pour tous les écrans</li>
+                    <li><strong>Accessibilité</strong> : Respect des normes ARIA intégré</li>
+                </ul>`,
+        },
+        charts: {
+          subtitle: "Bibliothèques de visualisation de données",
+          content: `Transformez vos données en graphiques interactifs et attractifs.
+                <ul>
+                    <li><strong>Recharts</strong> : Composants React pour graphiques avec D3.js sous le capot</li>
+                    <li><strong>Chart.js</strong> : Bibliothèque simple et flexible pour tous types de charts</li>
+                    <li><strong>Apache ECharts</strong> : Graphiques complexes avec interactions avancées</li>
+                    <li><strong>Victory</strong> : Composants React modulaires pour data visualization</li>
+                </ul>`,
+        },
+        data: {
+          subtitle: "Communication avec le backend et gestion d'état",
+          content: `La gestion des données est cruciale pour un dashboard performant et réactif.
+                <ul>
+                    <li><strong>Fetching</strong> : Récupération des données depuis des APIs externes</li>
+                    <li><strong>État global</strong> : Partage de données entre composants sans prop drilling</li>
+                    <li><strong>Synchronisation</strong> : Mise à jour automatique lors de changements backend</li>
+                    <li><strong>Optimisation</strong> : Cache, pagination, infinite scroll pour grandes quantités</li>
+                </ul>`,
+        },
+        api: {
+          subtitle: "Communication avec les services backend",
+          content: `Les APIs REST permettent de récupérer et modifier les données.
+                <ul>
+                    <li><strong>Fetch/Axios</strong> : Clients HTTP pour requêtes GET, POST, PUT, DELETE</li>
+                    <li><strong>React Query</strong> : Gestion automatique du cache, retry, et invalidation</li>
+                    <li><strong>SWR</strong> : Stratégie stale-while-revalidate pour données fraîches</li>
+                    <li><strong>Error handling</strong> : Gestion élégante des erreurs réseau et serveur</li>
+                </ul>`,
+        },
+        state: {
+          subtitle: "Gestion de l'état global de l'application",
+          content: `Le state management organise et partage les données entre composants.
+                <ul>
+                    <li><strong>Redux Toolkit</strong> : Solution robuste avec reducers, actions, middleware</li>
+                    <li><strong>Zustand</strong> : Store simple et léger sans boilerplate</li>
+                    <li><strong>Context API</strong> : Solution native React pour état partagé simple</li>
+                    <li><strong>Jotai/Recoil</strong> : Gestion atomique de l'état pour granularité fine</li>
+                </ul>`,
+        },
+        cache: {
+          subtitle: "Mise en cache des données pour performance",
+          content: `Le cache réduit les requêtes réseau et améliore la réactivité.
+                <ul>
+                    <li><strong>In-memory cache</strong> : Stockage temporaire en mémoire JavaScript</li>
+                    <li><strong>IndexedDB</strong> : Base de données navigateur pour persistance locale</li>
+                    <li><strong>Service Workers</strong> : Cache réseau pour fonctionnement offline</li>
+                    <li><strong>Stratégies</strong> : Cache-first, network-first selon les besoins</li>
+                </ul>`,
+        },
+        websocket: {
+          subtitle: "Communication bidirectionnelle en temps réel",
+          content: `WebSocket maintient une connexion permanente pour des updates instantanées.
+                <ul>
+                    <li><strong>Socket.io</strong> : Bibliothèque robuste avec fallback et reconnexion auto</li>
+                    <li><strong>Native WebSocket</strong> : API navigateur pour connexions légères</li>
+                    <li><strong>Server-Sent Events</strong> : Alternative simple pour flux unidirectionnel</li>
+                    <li><strong>Real-time dashboards</strong> : Notifications, chat, monitoring live</li>
+                </ul>`,
+        },
+        features: {
+          subtitle: "Fonctionnalités essentielles d'un dashboard",
+          content: `Les features clés qui rendent un dashboard fonctionnel et utile.
+                <ul>
+                    <li><strong>Navigation</strong> : Menu, sidebar, breadcrumbs pour se repérer</li>
+                    <li><strong>Authentification</strong> : Sécurisation de l'accès aux données</li>
+                    <li><strong>CRUD operations</strong> : Création, lecture, modification, suppression</li>
+                    <li><strong>Recherche & filtres</strong> : Trouver rapidement l'information pertinente</li>
+                </ul>`,
+        },
+        auth: {
+          subtitle: "Authentification et autorisation des utilisateurs",
+          content: `Sécurisez l'accès au dashboard et gérez les permissions.
+                <ul>
+                    <li><strong>JWT</strong> : Tokens sécurisés pour authentification stateless</li>
+                    <li><strong>OAuth 2.0</strong> : Connexion via Google, GitHub, Microsoft</li>
+                    <li><strong>Auth0/Clerk</strong> : Services tiers gérant auth complètement</li>
+                    <li><strong>RBAC</strong> : Contrôle d'accès basé sur les rôles (admin, user, guest)</li>
+                </ul>`,
+        },
+        tables: {
+          subtitle: "Affichage et manipulation de données tabulaires",
+          content: `Les tables sont au cœur de nombreux dashboards pour visualiser des listes.
+                <ul>
+                    <li><strong>TanStack Table</strong> : Bibliothèque headless puissante avec tri, filtres, pagination</li>
+                    <li><strong>AG Grid</strong> : Grid enterprise avec édition inline, export Excel/CSV</li>
+                    <li><strong>React Data Grid</strong> : Performances optimales pour millions de lignes</li>
+                    <li><strong>Features</strong> : Column resizing, row selection, virtual scrolling</li>
+                </ul>`,
+        },
+        forms: {
+          subtitle: "Création et validation de formulaires",
+          content: `Les formulaires permettent la saisie et modification des données.
+                <ul>
+                    <li><strong>React Hook Form</strong> : Performance et validation avec minimal re-renders</li>
+                    <li><strong>Formik</strong> : Gestion complète de l'état des formulaires complexes</li>
+                    <li><strong>Zod/Yup</strong> : Schémas de validation TypeScript-first</li>
+                    <li><strong>Inputs avancés</strong> : Date pickers, file upload, autocomplete, rich text editors</li>
+                </ul>`,
+        },
+        routing: {
+          subtitle: "Navigation entre les pages du dashboard",
+          content: `Le routing gère les différentes vues et URLs de l'application.
+                <ul>
+                    <li><strong>React Router</strong> : Solution standard avec nested routes et loaders</li>
+                    <li><strong>TanStack Router</strong> : Type-safe routing avec cache intégré</li>
+                    <li><strong>Dynamic routes</strong> : Paramètres d'URL pour pages détails (/users/:id)</li>
+                    <li><strong>Protected routes</strong> : Redirection automatique si non authentifié</li>
+                </ul>`,
+        },
+        tools: {
+          subtitle: "Outils de développement et build",
+          content: `Les outils modernes accélèrent le développement et optimisent le build.
+                <ul>
+                    <li><strong>Build rapide</strong> : Hot Module Replacement (HMR) pour voir les changements instantanément</li>
+                    <li><strong>Type safety</strong> : Détection d'erreurs à la compilation</li>
+                    <li><strong>Linting</strong> : ESLint et Prettier pour code propre et cohérent</li>
+                    <li><strong>Testing</strong> : Vitest, Jest, Testing Library pour tests unitaires</li>
+                </ul>`,
+        },
+        vite: {
+          subtitle: "Build tool ultra-rapide",
+          content: `Vite révolutionne le développement frontend avec sa vitesse.
+                <ul>
+                    <li><strong>Démarrage instant</strong> : Serveur dev qui démarre en millisecondes</li>
+                    <li><strong>HMR ultra-rapide</strong> : Mise à jour à chaud sans perdre l'état</li>
+                    <li><strong>ESM natif</strong> : Utilise les modules ES natifs du navigateur</li>
+                    <li><strong>Optimisations</strong> : Tree-shaking, code splitting, minification automatiques</li>
+                </ul>`,
+        },
+        typescript: {
+          subtitle: "JavaScript typé pour robustesse",
+          content: `TypeScript ajoute le typage statique pour réduire les bugs.
+                <ul>
+                    <li><strong>Autocomplete</strong> : IntelliSense dans l'IDE pour productivité accrue</li>
+                    <li><strong>Refactoring</strong> : Renommage sécurisé et détection d'erreurs</li>
+                    <li><strong>Documentation</strong> : Types servent de documentation auto-générée</li>
+                    <li><strong>Interfaces</strong> : Définition claire des contrats entre composants</li>
+                </ul>`,
+        },
+        deploy: {
+          subtitle: "Mise en production de l'application",
+          content: `Le déploiement rend votre dashboard accessible en ligne.
+                <ul>
+                    <li><strong>CI/CD</strong> : Intégration et déploiement continus automatisés</li>
+                    <li><strong>Edge network</strong> : CDN global pour latence minimale</li>
+                    <li><strong>Preview deploys</strong> : URL unique pour chaque PR/branche</li>
+                    <li><strong>Analytics</strong> : Monitoring des performances et erreurs en production</li>
+                </ul>`,
+        },
+        vercel: {
+          subtitle: "Plateforme de déploiement pour frontend",
+          content: `Vercel offre déploiement zero-config et performances optimales.
+                <ul>
+                    <li><strong>Git integration</strong> : Deploy automatique à chaque push</li>
+                    <li><strong>Edge Functions</strong> : Serverless functions au plus proche des users</li>
+                    <li><strong>Next.js optimized</strong> : Plateforme des créateurs de Next.js</li>
+                    <li><strong>Analytics</strong> : Web Vitals et Core Web Metrics intégrés</li>
+                </ul>`,
+        },
+        netlify: {
+          subtitle: "Plateforme JAMstack tout-en-un",
+          content: `Netlify simplifie le déploiement avec fonctionnalités intégrées.
+                <ul>
+                    <li><strong>Forms handling</strong> : Gestion de formulaires sans backend</li>
+                    <li><strong>Functions</strong> : AWS Lambda serverless functions</li>
+                    <li><strong>Split testing</strong> : A/B testing natif sur branches Git</li>
+                    <li><strong>Domain management</strong> : DNS, SSL certificates automatiques</li>
+                </ul>`,
+        },
+      };
+
+      let currentZoom = 1;
+      let currentX = 0;
+      let currentY = 0;
+      let selectedNode = null;
+
+      function updateTransform() {
+        const mindmap = document.getElementById("mindmap");
+        mindmap.style.transform = `translate(${currentX}px, ${currentY}px) scale(${currentZoom})`;
+      }
+
+      function zoomMap(direction) {
+        if (direction === "in") {
+          currentZoom = Math.min(currentZoom + 0.1, 2);
+        } else {
+          currentZoom = Math.max(currentZoom - 0.1, 0.3);
+        }
+        updateTransform();
+      }
+
+      function moveMap(direction) {
+        const step = 50;
+        switch (direction) {
+          case "up":
+            currentY += step;
+            break;
+          case "down":
+            currentY -= step;
+            break;
+          case "left":
+            currentX += step;
+            break;
+          case "right":
+            currentX -= step;
+            break;
+        }
+        updateTransform();
+      }
+
+      function resetView() {
+        currentZoom = 1;
+        currentX = 0;
+        currentY = 0;
+        updateTransform();
+      }
+
+      function drawConnections() {
+        const svg = document.getElementById("svg");
+
+        let maxX = 0,
+          maxY = 0;
+        nodes.forEach((node) => {
+          maxX = Math.max(maxX, node.x + 200);
+          maxY = Math.max(maxY, node.y + 200);
+        });
+
+        svg.setAttribute("width", maxX);
+        svg.setAttribute("height", maxY);
+
+        connections.forEach((conn) => {
+          const fromNode = nodes.find((n) => n.id === conn.from);
+          const toNode = nodes.find((n) => n.id === conn.to);
+          const line = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "line"
+          );
+          line.setAttribute("x1", fromNode.x);
+          line.setAttribute("y1", fromNode.y);
+          line.setAttribute("x2", toNode.x);
+          line.setAttribute("y2", toNode.y);
+          line.setAttribute("stroke", "#cbd5e1");
+          line.setAttribute("stroke-width", "2");
+          line.setAttribute("opacity", "0.6");
+          svg.appendChild(line);
+        });
+      }
+
+      function createNodes() {
+        const container = document.getElementById("nodes");
+        nodes.forEach((node) => {
+          const div = document.createElement("div");
+          div.className = `node ${node.size} ${node.color}`;
+          div.textContent = node.label;
+          div.setAttribute("data-id", node.id);
+
+          const sizes = { large: 80, medium: 65, small: 55 };
+          const size = sizes[node.size];
+
+          div.style.left = node.x - size + "px";
+          div.style.top = node.y - size + "px";
+
+          div.onclick = () => showDescription(node.id);
+          container.appendChild(div);
+        });
+      }
+
+      function showDescription(nodeId) {
+        document
+          .querySelectorAll(".node")
+          .forEach((n) => n.classList.remove("selected"));
+
+        selectedNode = nodeId;
+        const nodeElement = document.querySelector(`[data-id="${nodeId}"]`);
+        if (nodeElement) {
+          nodeElement.classList.add("selected");
+        }
+
+        const desc = descriptions[nodeId];
+        document.getElementById("descTitle").textContent = nodes.find(
+          (n) => n.id === nodeId
+        ).label;
+        document.getElementById("descSubtitle").textContent = desc.subtitle;
+        document.getElementById("descText").innerHTML = desc.content;
+        document.getElementById("descriptionBox").classList.add("active");
+      }
+
+      function closeDescription() {
+        document.getElementById("descriptionBox").classList.remove("active");
+        if (selectedNode) {
+          document
+            .querySelector(`[data-id="${selectedNode}"]`)
+            ?.classList.remove("selected");
+          selectedNode = null;
+        }
+      }
+
+      drawConnections();
+      createNodes();
+    </script>
+  </body>
+</html>
