@@ -1,13 +1,17 @@
 // Supabase client partagé pour tout le dashboard
 // ⚠️ Remplace SUPABASE_URL et SUPABASE_ANON_KEY par les valeurs de ton projet
 
-const SUPABASE_URL = "https://YOUR-PROJECT-ID.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+const SUPABASE_URL = "https://lrggcxdzihpwikttgkls.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxyZ2djeGR6aWhwd2lrdHRna2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjUwNDEsImV4cCI6MjA4ODkwMTA0MX0.OXfBWGvW-wUshdIl_RBuGBpOkAaCam1oBc-i1yq-Rjk";
 
 let supabaseClient = null;
 
 async function initSupabase() {
-  if (supabaseClient || !window.supabase) return null;
+  if (!window.supabase) return null;
+
+  if (supabaseClient) {
+    return supabaseClient;
+  }
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL.includes("YOUR-PROJECT-ID")) {
     console.warn("[Supabase] URL / clé non configurées, fallback localStorage.");
