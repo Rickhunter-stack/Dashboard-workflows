@@ -142,6 +142,37 @@ async function upsertKanbanBoard(board) {
   return true;
 }
 
+// ——— Gestion de projet ———
+async function fetchProjectRoadmap() {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const { data, error } = await client
+    .from("project_roadmap")
+    .select("*")
+    .eq("id", "default")
+    .maybeSingle();
+
+  if (error) {
+    console.error("[Supabase] fetchProjectRoadmap error", error);
+    return null;
+  }
+  return data ? (data.payload || null) : null;
+}
+
+async function upsertProjectRoadmap(roadmap) {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const row = { id: "default", payload: roadmap };
+  const { error } = await client.from("project_roadmap").upsert(row);
+  if (error) {
+    console.error("[Supabase] upsertProjectRoadmap error", error);
+    return null;
+  }
+  return true;
+}
+
 window.supabaseShared = {
   initSupabase,
   fetchWorkflows,
@@ -152,6 +183,8 @@ window.supabaseShared = {
   deleteRappel,
   fetchKanbanBoard,
   upsertKanbanBoard,
+  fetchProjectRoadmap,
+  upsertProjectRoadmap,
 };
 
 

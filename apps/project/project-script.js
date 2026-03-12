@@ -86,9 +86,27 @@ function loadState() {
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    if (window.supabaseShared) {
+      window.supabaseShared.upsertProjectRoadmap(state);
+    }
   } catch (error) {
     console.error("Erreur lors de la sauvegarde:", error);
   }
+}
+
+async function loadRoadmapState() {
+  if (window.supabaseShared) {
+    try {
+      const roadmap = await window.supabaseShared.fetchProjectRoadmap();
+      if (roadmap && roadmap.phases && Array.isArray(roadmap.phases) && roadmap.projects) {
+        state = roadmap;
+        return;
+      }
+    } catch (e) {
+      console.warn("[Projet] Supabase load failed, fallback localStorage", e);
+    }
+  }
+  loadState();
 }
 
 // ===========================
@@ -508,20 +526,12 @@ function render() {
 // ===========================
 // INITIALISATION
 // ===========================
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("Initialisation de l'application...");
-  
-  // Charger l'état
-  loadState();
-  console.log("État chargé:", state);
-  
-  // Forcer un reset si l'état est vide ou invalide
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadRoadmapState();
   if (!state.projects || state.projects.length === 0) {
-    console.log("Aucun projet trouvé, création d'un projet par défaut...");
     state = initState();
     saveState();
   }
-  
   render();
   console.log("Rendu initial effectué");
 
