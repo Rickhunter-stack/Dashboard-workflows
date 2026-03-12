@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../shared/theme.css" />
+    <link rel="stylesheet" href="notes-styles.css" />
+  </head>
+  <body>
+    <div class="notes-container">
+      <header class="notes-header">
+        <h1>Notes</h1>
+        <div class="header-actions">
+          <div class="filter-container">
+            <input
+              type="text"
+              id="filter-input"
+              class="filter-input"
+              placeholder="Filtrer les notes..."
+              aria-label="Filtrer les notes"
+            />
+          </div>
+          <button class="btn-new-note" id="btn-new-note" aria-label="Nouvelle note">
+            Nouvelle note
+          </button>
+        </div>
+      </header>
+
+      <div class="info-section">
+        <button class="info-toggle" id="info-toggle" aria-expanded="false">
+          Comment utiliser
+        </button>
+        <div id="info-content" class="info-content">
+          <p>
+            <strong>Fonctionnalités :</strong><br />
+            • <strong>Nouvelle note :</strong> Cliquez sur "Nouvelle note"<br />
+            • <strong>Éditer :</strong> Cliquez sur une note pour l'ouvrir et modifier<br />
+            • <strong>Bloc code :</strong> Ajoutez du code dans le champ dédié ; il sera copiable en un clic<br />
+            • <strong>Couleur :</strong> Choisissez une couleur pour organiser visuellement vos notes<br />
+            • <strong>Supprimer :</strong> Bouton dans le modal d'édition
+          </p>
+        </div>
+      </div>
+
+      <main class="notes-grid" id="notes-grid" role="list">
+        <!-- Les cartes seront générées par JavaScript -->
+      </main>
+    </div>
+
+    <!-- Modal création/édition -->
+    <div class="modal-overlay" id="note-modal">
+      <div class="modal-card" role="dialog">
+        <div class="modal-header">
+          <input
+            type="text"
+            id="modal-title"
+            class="modal-title-input"
+            placeholder="Titre"
+            aria-label="Titre de la note"
+          />
+          <div class="modal-header-actions">
+            <div class="color-picker" id="color-picker"></div>
+            <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+          </div>
+        </div>
+        <div class="modal-body">
+          <textarea
+            id="modal-content"
+            class="modal-content-input"
+            placeholder="Contenu de la note..."
+            aria-label="Contenu"
+          ></textarea>
+          <div class="modal-code-section">
+            <label class="modal-label">Bloc code (optionnel)</label>
+            <textarea
+              id="modal-code"
+              class="modal-code-input"
+              placeholder="Collez vos lignes de code ici..."
+              spellcheck="false"
+            ></textarea>
+            <button type="button" class="btn-copy-code" id="btn-copy-code">Copier le code</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="modal-btn modal-btn-danger" id="modal-delete">
+            Supprimer
+          </button>
+          <button type="button" class="modal-btn modal-btn-primary" id="modal-save">
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="notes-script.js"></script>
+  </body>
+</html>
