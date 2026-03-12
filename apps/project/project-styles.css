@@ -279,6 +279,15 @@ body {
   transform: translateX(0);
 }
 
+.project-row-dragging {
+  opacity: 0.6;
+}
+
+.project-row-drag-over {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
 /* ===========================
    CELLULE NOM DU PROJET
    =========================== */
@@ -286,6 +295,24 @@ body {
   display: flex;
   align-items: center;
   padding: 12px;
+  gap: 10px;
+}
+
+.project-row-drag-handle {
+  cursor: grab;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 4px 2px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.project-row-drag-handle:hover {
+  color: var(--accent);
+}
+
+.project-row-drag-handle:active {
+  cursor: grabbing;
 }
 
 .project-name-input {

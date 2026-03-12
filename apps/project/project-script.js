@@ -288,7 +288,71 @@ function projectMatchesFilter(project) {
 }
 
 // ===========================
-// DRAG & DROP HORIZONTAL
+// DRAG & DROP LIGNES (ordre des projets)
+// ===========================
+let draggedProjectRowId = null;
+
+function handleProjectRowDragStart(event) {
+  const row = event.target.closest(".project-row");
+  if (!row) return;
+  draggedProjectRowId = row.dataset.projectId;
+  row.classList.add("project-row-dragging");
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("text/plain", "project-row");
+}
+
+function handleProjectRowDragEnd(event) {
+  const row = event.target.closest(".project-row");
+  if (row) row.classList.remove("project-row-dragging");
+  document.querySelectorAll(".project-row.project-row-drag-over").forEach((el) => {
+    el.classList.remove("project-row-drag-over");
+  });
+  draggedProjectRowId = null;
+}
+
+function handleProjectRowDragOver(event) {
+  if (!draggedProjectRowId) return;
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "move";
+  const row = event.target.closest(".project-row");
+  if (row && row.dataset.projectId !== draggedProjectRowId) {
+    row.classList.add("project-row-drag-over");
+  }
+}
+
+function handleProjectRowDragLeave(event) {
+  const row = event.target.closest(".project-row");
+  if (row) {
+    const rect = row.getBoundingClientRect();
+    const { clientX: x, clientY: y } = event;
+    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+      row.classList.remove("project-row-drag-over");
+    }
+  }
+}
+
+function handleProjectRowDrop(event) {
+  event.preventDefault();
+  const targetRow = event.target.closest(".project-row");
+  if (!targetRow || !draggedProjectRowId) return;
+
+  targetRow.classList.remove("project-row-drag-over");
+  const targetProjectId = targetRow.dataset.projectId;
+  if (targetProjectId === draggedProjectRowId) return;
+
+  const fromIndex = state.projects.findIndex((p) => p.id === draggedProjectRowId);
+  const toIndex = state.projects.findIndex((p) => p.id === targetProjectId);
+  if (fromIndex === -1 || toIndex === -1) return;
+
+  const [moved] = state.projects.splice(fromIndex, 1);
+  state.projects.splice(toIndex, 0, moved);
+
+  saveState();
+  render();
+}
+
+// ===========================
+// DRAG & DROP HORIZONTAL (tâches)
 // ===========================
 let draggedTask = null;
 let draggedFromProject = null;
@@ -405,8 +469,21 @@ function render() {
 
   // Générer les lignes de projets
   const projectsHTML = filteredProjects.map(project => `
-    <div class="project-row" data-project-id="${project.id}">
+    <div
+      class="project-row"
+      data-project-id="${project.id}"
+      ondragover="handleProjectRowDragOver(event)"
+      ondragleave="handleProjectRowDragLeave(event)"
+      ondrop="handleProjectRowDrop(event)"
+    >
       <div class="project-name-cell">
+        <span
+          class="project-row-drag-handle"
+          draggable="true"
+          ondragstart="handleProjectRowDragStart(event)"
+          ondragend="handleProjectRowDragEnd(event)"
+          title="Glisser pour réordonner"
+        >⋮⋮</span>
         <input
           type="text"
           class="project-name-input"
