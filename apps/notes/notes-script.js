@@ -41,9 +41,29 @@ function saveState() {
       notes: state.notes,
       filter: state.filter,
     }));
+    if (window.supabaseShared) {
+      state.notes.forEach((n) => window.supabaseShared.upsertNote(n));
+    }
   } catch (e) {
     console.error("Erreur sauvegarde notes:", e);
   }
+}
+
+async function loadNotesState() {
+  if (window.supabaseShared) {
+    try {
+      const rows = await window.supabaseShared.fetchNotes();
+      if (rows && Array.isArray(rows) && rows.length > 0) {
+        state.notes = rows.map((r) => r.payload || r);
+        render();
+        return;
+      }
+    } catch (e) {
+      console.warn("[Notes] Supabase load failed, fallback localStorage", e);
+    }
+  }
+  loadState();
+  render();
 }
 
 // ===========================
@@ -194,8 +214,12 @@ function saveNote() {
 
 function deleteNote() {
   if (!currentNoteId || !confirm("Supprimer cette note ?")) return;
-  state.notes = state.notes.filter(n => n.id !== currentNoteId);
+  const id = currentNoteId;
+  state.notes = state.notes.filter(n => n.id !== id);
   saveState();
+  if (window.supabaseShared) {
+    window.supabaseShared.deleteNoteSupabase(id);
+  }
   render();
   closeModal();
 }
@@ -215,9 +239,8 @@ document.getElementById("btn-copy-code")?.addEventListener("click", () => {
 // ===========================
 // INIT
 // ===========================
-document.addEventListener("DOMContentLoaded", () => {
-  loadState();
-  render();
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadNotesState();
 
   document.getElementById("btn-new-note")?.addEventListener("click", () => openModal());
   document.getElementById("modal-close")?.addEventListener("click", closeModal);

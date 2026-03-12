@@ -173,6 +173,48 @@ async function upsertProjectRoadmap(roadmap) {
   return true;
 }
 
+// ——— Notes ———
+async function fetchNotes() {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const { data, error } = await client
+    .from("notes")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[Supabase] fetchNotes error", error);
+    return null;
+  }
+  return data || [];
+}
+
+async function upsertNote(note) {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const row = { id: note.id, payload: note };
+  const { error } = await client.from("notes").upsert(row);
+  if (error) {
+    console.error("[Supabase] upsertNote error", error);
+    return null;
+  }
+  return true;
+}
+
+async function deleteNoteSupabase(id) {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const { error } = await client.from("notes").delete().eq("id", id);
+  if (error) {
+    console.error("[Supabase] deleteNote error", error);
+    return null;
+  }
+  return true;
+}
+
 window.supabaseShared = {
   initSupabase,
   fetchWorkflows,
@@ -185,6 +227,9 @@ window.supabaseShared = {
   upsertKanbanBoard,
   fetchProjectRoadmap,
   upsertProjectRoadmap,
+  fetchNotes,
+  upsertNote,
+  deleteNoteSupabase,
 };
 
 
