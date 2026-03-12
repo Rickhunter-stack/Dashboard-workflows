@@ -73,9 +73,28 @@ function loadState() {
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    if (window.supabaseShared) {
+      window.supabaseShared.upsertKanbanBoard(state);
+    }
   } catch (error) {
     console.error("Erreur lors de la sauvegarde:", error);
   }
+}
+
+async function loadBoardState() {
+  if (window.supabaseShared) {
+    try {
+      const board = await window.supabaseShared.fetchKanbanBoard();
+      if (board && board.lists && Array.isArray(board.lists)) {
+        state = board;
+        if (board.filter !== undefined) state.filter = board.filter;
+        return;
+      }
+    } catch (e) {
+      console.warn("[Kanban] Supabase load failed, fallback localStorage", e);
+    }
+  }
+  loadState();
 }
 
 // ===========================
@@ -545,9 +564,8 @@ function setupKeyboardHandlers() {
 // ===========================
 // INITIALISATION
 // ===========================
-document.addEventListener("DOMContentLoaded", () => {
-  // Charger l'état
-  loadState();
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadBoardState();
   render();
 
   // Toggle info section

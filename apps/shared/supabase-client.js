@@ -111,6 +111,37 @@ async function deleteRappel(id) {
   return true;
 }
 
+// ——— Kanban ———
+async function fetchKanbanBoard() {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const { data, error } = await client
+    .from("kanban_boards")
+    .select("*")
+    .eq("id", "default")
+    .maybeSingle();
+
+  if (error) {
+    console.error("[Supabase] fetchKanbanBoard error", error);
+    return null;
+  }
+  return data ? (data.payload || null) : null;
+}
+
+async function upsertKanbanBoard(board) {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const row = { id: "default", payload: board };
+  const { error } = await client.from("kanban_boards").upsert(row);
+  if (error) {
+    console.error("[Supabase] upsertKanbanBoard error", error);
+    return null;
+  }
+  return true;
+}
+
 window.supabaseShared = {
   initSupabase,
   fetchWorkflows,
@@ -119,6 +150,8 @@ window.supabaseShared = {
   fetchRappels,
   upsertRappel,
   deleteRappel,
+  fetchKanbanBoard,
+  upsertKanbanBoard,
 };
 
 
