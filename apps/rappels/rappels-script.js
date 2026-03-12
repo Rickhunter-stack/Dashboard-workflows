@@ -71,7 +71,9 @@ function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      state = JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      if (parsed.reminders) state.reminders = parsed.reminders;
+      if (parsed.filter !== undefined) state.filter = parsed.filter;
     }
   } catch (error) {
     console.error("Erreur lors du chargement:", error);
@@ -81,9 +83,31 @@ function loadState() {
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    if (window.supabaseShared) {
+      state.reminders.forEach((r) => {
+        window.supabaseShared.upsertRappel(r);
+      });
+    }
   } catch (error) {
     console.error("Erreur lors de la sauvegarde:", error);
   }
+}
+
+async function initState() {
+  if (window.supabaseShared) {
+    try {
+      const rows = await window.supabaseShared.fetchRappels();
+      if (rows && Array.isArray(rows) && rows.length > 0) {
+        state.reminders = rows.map((row) => row.payload || row);
+        render();
+        return;
+      }
+    } catch (e) {
+      console.warn("[Rappels] Supabase load failed, fallback localStorage", e);
+    }
+  }
+  loadState();
+  render();
 }
 
 // ===========================
@@ -138,6 +162,9 @@ function deleteReminder(reminderId) {
     if (confirm("Êtes-vous sûr de vouloir supprimer ce rappel ?")) {
       state.reminders.splice(index, 1);
       saveState();
+      if (window.supabaseShared) {
+        window.supabaseShared.deleteRappel(reminderId);
+      }
       render();
     }
   }
@@ -440,10 +467,9 @@ function getAlertLabel(alertBefore) {
 // ===========================
 // INITIALISATION
 // ===========================
-document.addEventListener("DOMContentLoaded", () => {
-  // Charger l'état
-  loadState();
-  render();
+document.addEventListener("DOMContentLoaded", async () => {
+  // Charger l'état (Supabase si configuré, sinon localStorage)
+  await initState();
 
   // Vérifier les alertes au démarrage
   checkAlerts();

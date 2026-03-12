@@ -66,10 +66,58 @@ async function deleteWorkflow(id) {
   return true;
 }
 
+// ——— Rappels ———
+async function fetchRappels() {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const { data, error } = await client
+    .from("rappels")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[Supabase] fetchRappels error", error);
+    return null;
+  }
+  return data || [];
+}
+
+async function upsertRappel(reminder) {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const row = {
+    id: reminder.id,
+    payload: reminder,
+  };
+  const { data, error } = await client.from("rappels").upsert(row).select().single();
+  if (error) {
+    console.error("[Supabase] upsertRappel error", error);
+    return null;
+  }
+  return data;
+}
+
+async function deleteRappel(id) {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const { error } = await client.from("rappels").delete().eq("id", id);
+  if (error) {
+    console.error("[Supabase] deleteRappel error", error);
+    return null;
+  }
+  return true;
+}
+
 window.supabaseShared = {
   initSupabase,
   fetchWorkflows,
   upsertWorkflow,
   deleteWorkflow,
+  fetchRappels,
+  upsertRappel,
+  deleteRappel,
 };
 
