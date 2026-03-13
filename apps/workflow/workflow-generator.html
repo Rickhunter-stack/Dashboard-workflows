@@ -478,39 +478,40 @@ body {
 .save-btn {
   font-family: "Inter", sans-serif;
   font-weight: 600;
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  background: var(--accent-gradient);
   color: #ffffff;
   border: none;
   padding: 10px 20px;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(74, 222, 128, 0.3);
+  box-shadow: 0 8px 22px rgba(79, 140, 255, 0.28);
   white-space: nowrap;
 }
 
 .save-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+  box-shadow: 0 12px 32px rgba(79, 140, 255, 0.34);
 }
 
 .export-btn {
   font-family: "Inter", sans-serif;
   font-weight: 600;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: #ffffff;
-  border: none;
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--border-0);
   padding: 10px 20px;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  box-shadow: none;
   white-space: nowrap;
 }
 
 .export-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  background: var(--surface-2);
+  border-color: var(--border-1);
 }
 
 .delete-btn {
@@ -719,8 +720,8 @@ body {
 }
 
 .diagram-subprocess-badge {
-  background: rgba(102, 126, 234, 0.3);
-  color: #667eea;
+  background: var(--accent-soft);
+  color: var(--accent);
   border-radius: 12px;
   padding: 4px 12px;
   font-size: 11px;
@@ -818,12 +819,12 @@ body {
 }
 
 .breadcrumb-item:not(.active):hover {
-  background: rgba(102, 126, 234, 0.15);
-  color: #667eea;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .breadcrumb-item.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent-gradient);
   color: #ffffff;
   font-weight: 600;
 }
@@ -872,13 +873,13 @@ body {
 
 /* Types de cartes */
 .process-card.input-card {
-  border-color: #4ade80;
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(74, 222, 128, 0.02) 100%);
+  border-color: var(--accent);
+  background: rgba(79, 140, 255, 0.08);
 }
 
 .process-card.output-card {
-  border-color: #f87171;
-  background: linear-gradient(135deg, rgba(248, 113, 113, 0.1) 0%, rgba(248, 113, 113, 0.02) 100%);
+  border-color: rgba(248, 113, 113, 0.8);
+  background: rgba(248, 113, 113, 0.08);
 }
 
 /* Contenu de la carte */
