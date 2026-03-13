@@ -152,12 +152,74 @@
         flex: 1;
         padding: 24px 28px;
         max-width: calc(100vw - 240px);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .main-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .view-toggle-group {
+        display: inline-flex;
+        background: rgba(15, 23, 42, 0.9);
+        border-radius: 999px;
+        padding: 4px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+      }
+
+      .view-toggle-btn {
+        font-family: "DM Sans", system-ui, sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .view-toggle-btn.view-active {
+        background: rgba(148, 163, 184, 0.25);
+        color: var(--text);
+        box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.6);
+      }
+
+      .view-toggle-btn:not(.view-active):hover {
+        color: var(--text);
+      }
+
+      .single-frame {
+        flex: 1;
       }
 
       .app-frame {
         width: 100%;
         border: none;
-        min-height: 100vh;
+        min-height: 100%;
+        border-radius: 18px;
+        box-shadow: var(--shadow-md);
+        background: transparent;
+      }
+
+      .multi-frame {
+        flex: 1;
+        display: none;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .multi-frame iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
         border-radius: 18px;
         box-shadow: var(--shadow-md);
         background: transparent;
@@ -260,11 +322,37 @@
       </aside>
 
       <main class="main-shell">
-        <iframe
-          id="app-frame"
-          class="app-frame"
-          src="apps/project/project.html"
-        ></iframe>
+        <div class="main-toolbar">
+          <div class="view-toggle-group">
+            <button
+              id="btn-single-view"
+              class="view-toggle-btn view-active"
+              type="button"
+            >
+              Vue unique
+            </button>
+            <button
+              id="btn-multi-view"
+              class="view-toggle-btn"
+              type="button"
+            >
+              Multivues
+            </button>
+          </div>
+        </div>
+        <div class="single-frame" id="single-frame">
+          <iframe
+            id="app-frame"
+            class="app-frame"
+            src="apps/project/project.html"
+          ></iframe>
+        </div>
+        <div class="multi-frame" id="multi-frame">
+          <iframe src="apps/workflow/workflow-generator.html"></iframe>
+          <iframe src="apps/notes/notes.html"></iframe>
+          <iframe src="apps/rappels/rappels.html"></iframe>
+          <iframe src="apps/kanban-lite/kanban.html"></iframe>
+        </div>
       </main>
     </div>
 
@@ -284,6 +372,11 @@
         prompt: "apps/prompt/prompt.html",
       };
 
+      const singleFrame = document.getElementById("single-frame");
+      const multiFrame = document.getElementById("multi-frame");
+      const btnSingleView = document.getElementById("btn-single-view");
+      const btnMultiView = document.getElementById("btn-multi-view");
+
       function setActive(appName) {
         buttons.forEach((btn) => {
           btn.classList.toggle("active", btn.dataset.app === appName);
@@ -294,7 +387,23 @@
         }
       }
 
+      function showSingleView() {
+        singleFrame.style.display = "block";
+        multiFrame.style.display = "none";
+        btnSingleView.classList.add("view-active");
+        btnMultiView.classList.remove("view-active");
+      }
+
+      function showMultiView() {
+        singleFrame.style.display = "none";
+        multiFrame.style.display = "grid";
+        btnSingleView.classList.remove("view-active");
+        btnMultiView.classList.add("view-active");
+      }
+
+      // Initialisation de la vue
       setActive(app);
+      showSingleView();
 
       buttons.forEach((btn) => {
         btn.addEventListener("click", (e) => {
@@ -302,17 +411,24 @@
           const appName = btn.dataset.app;
           window.history.pushState({}, "", "?app=" + appName);
           setActive(appName);
+          showSingleView();
         });
+      });
+
+      btnSingleView.addEventListener("click", () => {
+        showSingleView();
+      });
+
+      btnMultiView.addEventListener("click", () => {
+        showMultiView();
       });
 
       window.addEventListener("popstate", () => {
         const urlParams = new URLSearchParams(window.location.search);
         const app = urlParams.get("app") || "project";
         setActive(app);
+        showSingleView();
       });
-
-      // La barre de navigation est maintenant toujours visible en haut de l'écran,
-      // plus besoin de zone de trigger ou de comportements de hover complexes.
     </script>
   </body>
 </html>
