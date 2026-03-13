@@ -551,6 +551,10 @@ body {
   min-height: 500px;
 }
 
+.diagram-canvas {
+  border-bottom: 3px solid rgba(148, 163, 184, 0.4);
+}
+
 .diagram-connections {
   position: absolute;
   top: 0;
@@ -581,8 +585,8 @@ body {
 
 /* Badge de mois/étape */
 .month-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: rgba(148, 163, 184, 0.25);
+  color: #e5e7eb;
   padding: 8px 20px;
   border-radius: 20px;
   font-size: 14px;
@@ -604,8 +608,8 @@ body {
   width: 120px;
   height: 138px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
-  border: 3px solid rgba(102, 126, 234, 0.5);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border: 2px solid rgba(148, 163, 184, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -615,19 +619,19 @@ body {
 }
 
 .diagram-node-styled:hover .node-hexagon {
-  border-color: rgba(102, 126, 234, 0.9);
+  border-color: rgba(148, 163, 184, 0.9);
   transform: scale(1.1);
   box-shadow: 0 12px 48px rgba(102, 126, 234, 0.4);
 }
 
 .diagram-node-styled.input-node .node-hexagon {
-  border-color: #4ade80;
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.3) 0%, rgba(74, 222, 128, 0.1) 100%);
+  border-color: rgba(148, 163, 184, 0.9);
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(17, 24, 39, 0.9) 100%);
 }
 
 .diagram-node-styled.output-node .node-hexagon {
-  border-color: #f87171;
-  background: linear-gradient(135deg, rgba(248, 113, 113, 0.3) 0%, rgba(248, 113, 113, 0.1) 100%);
+  border-color: rgba(248, 113, 113, 0.8);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.9) 100%);
 }
 
 /* Détails du nœud */
@@ -781,10 +785,10 @@ body {
 }
 
 .size-btn.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ffffff;
-  border-color: transparent;
-  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.35);
+  background: rgba(148, 163, 184, 0.35);
+  color: #e5e7eb;
+  border-color: rgba(148, 163, 184, 0.8);
+  box-shadow: none;
 }
 
 /* Fil d'Ariane */
@@ -897,8 +901,8 @@ body {
 .card-order {
   font-size: 12px;
   font-weight: 600;
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.2);
+  color: var(--muted);
+  background: rgba(15, 23, 42, 0.85);
   padding: 4px 8px;
   border-radius: 6px;
   margin-left: auto;
@@ -968,9 +972,10 @@ body {
 }
 
 .btn-subprocess {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ffffff;
-  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.3);
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--border-0);
+  box-shadow: none;
 }
 
 .btn-subprocess:hover {
@@ -979,9 +984,9 @@ body {
 }
 
 .btn-code {
-  background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--border-0);
 }
 
 .btn-code:hover {
