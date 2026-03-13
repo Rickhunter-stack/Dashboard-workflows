@@ -18,39 +18,56 @@
         <p class="calc-subtitle">
           Une petite calculette pratique pour les opérations du quotidien.
         </p>
+        <button type="button" class="calc-mode-toggle" id="calc-mode-toggle" aria-pressed="false">
+          Mode scientifique
+        </button>
       </header>
 
       <main class="calc-main">
-        <div class="calc-card">
+        <div class="calc-card" id="calc-card">
           <div class="calc-display" aria-label="Affichage de la calculette">
             <div class="calc-expression" id="calc-expression"></div>
             <div class="calc-result" id="calc-result">0</div>
           </div>
 
-          <div class="calc-keypad" aria-label="Touches de la calculette">
-            <button class="key key-func" data-action="clear">C</button>
-            <button class="key key-func" data-action="backspace">⌫</button>
-            <button class="key key-func" data-value="%" data-type="op">%</button>
-            <button class="key key-op" data-value="/" data-type="op">÷</button>
+          <div class="calc-scientific keypad-grid" id="calc-scientific" aria-label="Touches scientifiques" hidden>
+            <button type="button" class="key key-sci" data-type="scientific" data-value="(">(</button>
+            <button type="button" class="key key-sci" data-type="scientific" data-value=")">)</button>
+            <button type="button" class="key key-sci" data-type="scientific" data-value="pi">π</button>
+            <button type="button" class="key key-sci" data-type="scientific" data-value="sqrt">√</button>
+            <button type="button" class="key key-sci" data-type="scientific" data-value="sq">x²</button>
+            <button type="button" class="key key-sci" data-type="scientific" data-value="inv">1/x</button>
+            <button type="button" class="key key-sci" data-type="scientific" data-value="sin">sin</button>
+            <button type="button" class="key key-sci" data-type="scientific" data-value="cos">cos</button>
+            <button type="button" class="key key-sci" data-type="scientific" data-value="tan">tan</button>
+          </div>
 
-            <button class="key" data-value="7">7</button>
-            <button class="key" data-value="8">8</button>
-            <button class="key" data-value="9">9</button>
-            <button class="key key-op" data-value="*" data-type="op">×</button>
+          <div class="calc-keypad keypad-grid" aria-label="Touches de la calculette">
+            <button type="button" class="key key-func" data-action="clear">C</button>
+            <button type="button" class="key key-func" data-action="backspace">⌫</button>
+            <button type="button" class="key key-func" data-value="%" data-type="op">%</button>
+            <button type="button" class="key key-op" data-value="/" data-type="op">÷</button>
 
-            <button class="key" data-value="4">4</button>
-            <button class="key" data-value="5">5</button>
-            <button class="key" data-value="6">6</button>
-            <button class="key key-op" data-value="-" data-type="op">−</button>
+            <button type="button" class="key" data-value="7">7</button>
+            <button type="button" class="key" data-value="8">8</button>
+            <button type="button" class="key" data-value="9">9</button>
+            <button type="button" class="key key-op" data-value="*" data-type="op">×</button>
 
-            <button class="key" data-value="1">1</button>
-            <button class="key" data-value="2">2</button>
-            <button class="key" data-value="3">3</button>
-            <button class="key key-op" data-value="+" data-type="op">+</button>
+            <button type="button" class="key" data-value="4">4</button>
+            <button type="button" class="key" data-value="5">5</button>
+            <button type="button" class="key" data-value="6">6</button>
+            <button type="button" class="key key-op" data-value="-" data-type="op">−</button>
 
-            <button class="key key-wide" data-value="0">0</button>
-            <button class="key" data-value=".">,</button>
-            <button class="key key-equal" data-action="equal">=</button>
+            <button type="button" class="key" data-value="1">1</button>
+            <button type="button" class="key" data-value="2">2</button>
+            <button type="button" class="key" data-value="3">3</button>
+            <button type="button" class="key key-op" data-value="+" data-type="op">+</button>
+
+            <button type="button" class="key" data-value="0">0</button>
+            <button type="button" class="key" data-value="00">00</button>
+            <button type="button" class="key" data-value="000">000</button>
+            <button type="button" class="key" data-value=".">,</button>
+            <button type="button" class="key key-equal" data-action="equal">=</button>
           </div>
         </div>
 
@@ -59,7 +76,8 @@
           <ul>
             <li><strong>Entrée</strong> : calculer</li>
             <li><strong>Backspace</strong> : effacer le dernier caractère</li>
-            <li><strong>Échap</strong> : remettre à zéro</li>
+            <li><strong>Suppr</strong> : remettre à zéro</li>
+            <li><strong>Mode scientifique</strong> : ( ), π, √, x², 1/x, sin, cos, tan (angles en radians)</li>
           </ul>
         </section>
       </main>
