@@ -1361,8 +1361,17 @@ body {
           <button class="export-btn" onclick="exportWorkflowJSON()">
             📥 Export JSON
           </button>
+          <div class="card-size-selector">
+            <span class="card-size-label">Sous-processus</span>
+            <button class="size-btn" data-size="4" onclick="setCardCount(4)">4</button>
+            <button class="size-btn" data-size="6" onclick="setCardCount(6)">6</button>
+            <button class="size-btn" data-size="9" onclick="setCardCount(9)">9</button>
+            <button class="size-btn active" data-size="12" onclick="setCardCount(12)">12</button>
+            <button class="size-btn" data-size="16" onclick="setCardCount(16)">16</button>
+            <button class="size-btn" data-size="20" onclick="setCardCount(20)">20</button>
+          </div>
           <button class="view-toggle-btn" onclick="toggleDiagramOrientation()" id="orientationBtn">
-            ↔️ Horizontal
+            ⬇️ Vertical
           </button>
           <button class="delete-btn" onclick="deleteCurrentWorkflow()">
             🗑️ Supprimer
@@ -1438,7 +1447,7 @@ let navigationPath = []; // Chemin pour la navigation dans les sous-processus
 let currentCardCount = 12;
 let draggedCard = null;
 let currentEditingCardId = null;
-let diagramOrientation = 'vertical'; // 'vertical' ou 'horizontal'
+let diagramOrientation = 'horizontal'; // 'vertical' ou 'horizontal'
 
 // ============================================================================
 // INITIALISATION
@@ -1677,7 +1686,11 @@ function openDiagramView(workflowId) {
   document.getElementById('cards-view').style.display = 'none';
   
   document.getElementById('workflow-title-diagram').value = currentWorkflow.title;
-  
+  updateCardCountButtons();
+  const orientationBtn = document.getElementById('orientationBtn');
+  if (orientationBtn) {
+    orientationBtn.textContent = diagramOrientation === 'vertical' ? '↔️ Horizontal' : '⬇️ Vertical';
+  }
   renderDiagram();
 }
 
@@ -1934,6 +1947,7 @@ function createSubProcess(cardId) {
 
 function backToDiagram() {
   navigationPath = [];
+  updateCardCountButtons();
   renderDiagram();
   
   currentView = 'diagram';
@@ -2042,7 +2056,11 @@ function setCardCount(count) {
 
   updateCardCountButtons();
   saveWorkflows();
-  renderCardsCanvas();
+  if (currentView === 'cards') {
+    renderCardsCanvas();
+  } else if (currentView === 'diagram') {
+    renderDiagram();
+  }
   showNotification(`✅ ${count} cartes configurées`);
 }
 
