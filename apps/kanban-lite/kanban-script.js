@@ -149,12 +149,8 @@ function updateCardNote(cardId, newNote) {
     const card = list.cards.find((c) => c.id === cardId);
     if (card) {
       card.note = newNote;
-      const lines = newNote
-        .split("\n")
-        .map((l) => l.trim())
-        .filter((l) => l.length > 0);
-      card.checklist = lines;
       saveState();
+      render();
       return;
     }
   }
@@ -229,14 +225,18 @@ function toggleChecklistItem(cardId, index) {
   if (!card.checklist || !card.checklist[index]) return;
   const removed = card.checklist[index];
   card.checklist.splice(index, 1);
-  if (typeof card.note === "string" && removed) {
-    const lines = card.note.split("\n");
-    const idx = lines.findIndex((l) => l.trim() === removed);
-    if (idx !== -1) {
-      lines.splice(idx, 1);
-      card.note = lines.join("\n");
-    }
-  }
+  saveState();
+  render();
+}
+
+function addChecklistItemValue(cardId, label) {
+  const found = findCard(cardId);
+  if (!found) return;
+  const { card } = found;
+  const clean = String(label || "").trim();
+  if (!clean) return;
+  if (!card.checklist) card.checklist = [];
+  card.checklist.push(clean);
   saveState();
   render();
 }
@@ -584,19 +584,29 @@ function render() {
                       ? card.checklist
                           .map(
                             (item, idx) => `
-                    <label class="checklist-item">
-                      <input
-                        type="checkbox"
-                        onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${idx})"
-                        aria-label="Terminer la sous-tâche"
-                      />
-                      <span>${escapeHtml(item)}</span>
-                    </label>
+                    <button
+                      type="button"
+                      class="checklist-row"
+                      onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${idx})"
+                      aria-label="Terminer la sous-tâche"
+                      title="Terminer"
+                    >
+                      <span class="checklist-box" aria-hidden="true"></span>
+                      <span class="checklist-text">${escapeHtml(item)}</span>
+                    </button>
                   `
                           )
                           .join("")
                       : ""
                   }
+                  <input
+                    type="text"
+                    class="checklist-input"
+                    data-card-id="${card.id}"
+                    placeholder="+ Sous-tâche (Entrée)"
+                    onclick="event.stopPropagation()"
+                    aria-label="Ajouter une sous-tâche"
+                  />
                 </div>
               </div>
             `
@@ -641,19 +651,15 @@ function setupKeyboardHandlers() {
     });
   });
 
-  // Gestion de Enter dans les notes pour créer immédiatement une sous-tâche
-  document.querySelectorAll(".card-note").forEach((textarea) => {
-    textarea.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const cardEl = textarea.closest(".card");
-        if (!cardEl) return;
-        const cardId = cardEl.dataset.cardId;
-        const current = textarea.value.replace(/\r\n/g, "\n");
-        const nextValue = current.endsWith("\n") ? current : `${current}\n`;
-        textarea.value = nextValue;
-        updateCardNote(cardId, nextValue);
-      }
+  // Ajout de sous-tâches via input (Entrée)
+  document.querySelectorAll(".checklist-input").forEach((input) => {
+    input.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      const cardId = input.dataset.cardId;
+      const value = input.value;
+      input.value = "";
+      addChecklistItemValue(cardId, value);
     });
   });
 }
