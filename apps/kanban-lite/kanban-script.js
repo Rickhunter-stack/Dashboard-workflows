@@ -4,6 +4,7 @@
 let state = {
   lists: [],
   filter: "",
+  archived: [],
 };
 
 // Initialiser l'état par défaut
@@ -19,6 +20,7 @@ function initState() {
             title: "Exemple de carte",
             note: "Vous pouvez ajouter des notes ici pour décrire cette tâche plus en détail.",
             priority: null,
+            checklist: [],
           },
         ],
       },
@@ -34,6 +36,7 @@ function initState() {
       },
     ],
     filter: "",
+    archived: [],
   };
 }
 
@@ -60,6 +63,7 @@ function loadState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       state = JSON.parse(saved);
+      if (!state.archived) state.archived = [];
     } else {
       state = initState();
       saveState();
@@ -109,6 +113,7 @@ function addCard(listId) {
     title: "Nouvelle carte",
     note: "",
     priority: null,
+    checklist: [],
   };
 
   list.cards.push(newCard);
@@ -166,7 +171,13 @@ function deleteCard(cardId) {
   for (const list of state.lists) {
     const index = list.cards.findIndex((c) => c.id === cardId);
     if (index !== -1) {
-      list.cards.splice(index, 1);
+      const [removed] = list.cards.splice(index, 1);
+      if (!state.archived) state.archived = [];
+      state.archived.unshift({
+        ...removed,
+        _fromListId: list.id,
+        _archivedAt: new Date().toISOString(),
+      });
       saveState();
       render();
       return;
@@ -180,6 +191,52 @@ function findCard(cardId) {
     if (card) return { card, list };
   }
   return null;
+}
+
+function toggleCardDone(cardId) {
+  const found = findCard(cardId);
+  if (!found) return;
+  const { card, list } = found;
+  const confirmed = window.confirm(
+    "Marquer cette carte comme terminée ? Elle sera retirée du Kanban mais conservée dans l'historique."
+  );
+  if (!confirmed) return;
+
+  const index = list.cards.findIndex((c) => c.id === cardId);
+  if (index === -1) return;
+
+  const [removed] = list.cards.splice(index, 1);
+  if (!state.archived) state.archived = [];
+  state.archived.unshift({
+    ...removed,
+    _fromListId: list.id,
+    _archivedAt: new Date().toISOString(),
+    _done: true,
+  });
+  saveState();
+  render();
+}
+
+function addChecklistItem(cardId) {
+  const found = findCard(cardId);
+  if (!found) return;
+  const { card } = found;
+  const label = window.prompt("Nouvelle sous-tâche :");
+  if (!label) return;
+  if (!card.checklist) card.checklist = [];
+  card.checklist.push(label);
+  saveState();
+  render();
+}
+
+function toggleChecklistItem(cardId, index) {
+  const found = findCard(cardId);
+  if (!found) return;
+  const { card } = found;
+  if (!card.checklist || !card.checklist[index]) return;
+  card.checklist.splice(index, 1);
+  saveState();
+  render();
 }
 
 // ===========================
@@ -481,14 +538,23 @@ function render() {
                 aria-label="Carte: ${escapeHtml(card.title)}"
               >
                 <div class="card-header">
-                  <input
-                    type="text"
-                    class="card-title"
-                    value="${escapeHtml(card.title)}"
-                    onchange="updateCardTitle('${card.id}', this.value)"
-                    onclick="event.stopPropagation()"
-                    aria-label="Titre de la carte"
-                  />
+                  <div class="card-header-main">
+                    <button
+                      class="card-done-toggle"
+                      onclick="event.stopPropagation(); toggleCardDone('${card.id}')"
+                      aria-label="Marquer la carte comme terminée"
+                    >
+                      ✓
+                    </button>
+                    <input
+                      type="text"
+                      class="card-title"
+                      value="${escapeHtml(card.title)}"
+                      onchange="updateCardTitle('${card.id}', this.value)"
+                      onclick="event.stopPropagation()"
+                      aria-label="Titre de la carte"
+                    />
+                  </div>
                   <div class="card-actions">
                     <div class="priority-badges">
                       <button class="priority-badge-mini priority-red ${card.priority === 'red' ? 'active' : ''}" 
@@ -501,13 +567,6 @@ function render() {
                               onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'green')" 
                               aria-label="Priorité basse" title="Priorité basse">●</button>
                     </div>
-                    <button 
-                      class="btn-delete-card" 
-                      onclick="event.stopPropagation(); deleteCard('${card.id}')"
-                      aria-label="Supprimer la carte"
-                    >
-                      🗑️
-                    </button>
                   </div>
                 </div>
                 <textarea
@@ -517,6 +576,33 @@ function render() {
                   onclick="event.stopPropagation()"
                   aria-label="Note de la carte"
                 >${escapeHtml(card.note)}</textarea>
+                <div class="card-checklist">
+                  ${
+                    card.checklist && card.checklist.length
+                      ? card.checklist
+                          .map(
+                            (item, idx) => `
+                    <label class="checklist-item">
+                      <input
+                        type="checkbox"
+                        onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${idx})"
+                        aria-label="Terminer la sous-tâche"
+                      />
+                      <span>${escapeHtml(item)}</span>
+                    </label>
+                  `
+                          )
+                          .join("")
+                      : ""
+                  }
+                  <button
+                    class="btn-add-subtask"
+                    onclick="event.stopPropagation(); addChecklistItem('${card.id}')"
+                    aria-label="Ajouter une sous-tâche"
+                  >
+                    + Sous-tâche
+                  </button>
+                </div>
               </div>
             `
                   )

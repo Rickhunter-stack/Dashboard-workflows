@@ -354,6 +354,13 @@ body {
   gap: 8px;
 }
 
+.card-header-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
 .card-actions {
   display: flex;
   align-items: center;
@@ -375,6 +382,29 @@ body {
   transition: all 0.15s ease;
   cursor: text;
   min-width: 0;
+}
+
+.card-done-toggle {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid var(--border-0);
+  background: rgba(15, 23, 42, 0.95);
+  color: var(--muted);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.card-done-toggle:hover {
+  background: rgba(22, 163, 74, 0.25);
+  border-color: rgba(22, 163, 74, 0.7);
+  color: #bbf7d0;
+  transform: translateY(-1px);
 }
 
 .card-title:hover {
@@ -449,6 +479,49 @@ body {
 .btn-delete-card:hover {
   background: rgba(239, 68, 68, 0.25);
   transform: scale(1.05);
+}
+
+.card-checklist {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
+.checklist-item input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+}
+
+.btn-add-subtask {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-0);
+  background: rgba(15, 23, 42, 0.95);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-add-subtask:hover {
+  background: rgba(148, 163, 184, 0.16);
+  color: var(--text);
+  border-color: rgba(148, 163, 184, 0.7);
 }
 
 .card-note {
