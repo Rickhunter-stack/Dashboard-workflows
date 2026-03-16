@@ -1,7 +1,7 @@
 /* Shared glassmorphic theme tokens (app-wide) */
 :root {
-  /* Palette inspirée du dashboard finances (Bioxa) */
-  --bg: #05060f;
+  /* Palette sombre neutre, style IDE */
+  --bg: #050505;
   --surface: rgba(255, 255, 255, 0.04);
   --surface-hover: rgba(255, 255, 255, 0.07);
   --border: rgba(255, 255, 255, 0.08);
@@ -21,10 +21,12 @@
   --amber: #fbbf24;
 
   /* Compat layer pour les anciens tokens du dashboard workflows */
-  --bg-0: #05060f;
-  --bg-1: #05060f;
-  --bg-2: #05060f;
-  --bg-gradient: linear-gradient(135deg, #050816 0%, #020617 45%, #020617 100%);
+  --bg-0: #050505;
+  --bg-1: #050505;
+  --bg-2: #050505;
+  --bg-gradient: radial-gradient(circle at 10% 0%, #111827 0%, transparent 55%),
+    radial-gradient(circle at 90% 100%, #020617 0%, transparent 55%),
+    #050505;
 
   --surface-0: rgba(255, 255, 255, 0.032);
   --surface-1: var(--surface);
