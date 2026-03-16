@@ -10,9 +10,9 @@
   --muted: rgba(232, 234, 240, 0.45);
   --muted-2: rgba(232, 234, 240, 0.70);
 
-  --accent: #6c8fff;
-  --accent-2: #a78bfa;
-  --accent-gradient: linear-gradient(135deg, var(--accent), var(--accent-2));
+  --accent: #4f46e5;
+  --accent-2: #1e293b;
+  --accent-gradient: linear-gradient(135deg, #1e293b, #020617);
   --accent-soft: rgba(108, 143, 255, 0.18);
   --accent-soft-2: rgba(167, 139, 250, 0.16);
 
