@@ -35,7 +35,7 @@ body {
   margin-bottom: 24px;
 }
 
-body.compact .rappels-header,
+body.compact .header-actions,
 body.compact .info-section {
   display: none;
 }

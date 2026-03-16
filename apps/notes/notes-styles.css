@@ -32,7 +32,7 @@ body {
   margin-bottom: 24px;
 }
 
-body.compact .notes-header,
+body.compact .header-actions,
 body.compact .info-section {
   display: none;
 }
