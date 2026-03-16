@@ -357,6 +357,9 @@ function render() {
   const remindersList = document.getElementById("reminders-list");
   if (!remindersList) return;
 
+  // Supprimer visuellement les rappels dépassés
+  state.reminders = state.reminders.filter((r) => !isOverdue(r.dateTime));
+
   const filteredReminders = state.reminders.filter(reminderMatchesFilter);
 
   if (filteredReminders.length === 0) {
@@ -377,12 +380,14 @@ function render() {
   remindersList.innerHTML = filteredReminders
     .map((reminder) => {
       const overdue = isOverdue(reminder.dateTime);
+      const soon = shouldShowAlert(reminder);
       const priorityClass = reminder.priority ? `priority-${reminder.priority}` : '';
       const overdueClass = overdue ? 'overdue' : '';
+      const soonClass = !overdue && soon ? 'soon' : '';
 
       return `
         <div 
-          class="reminder-item ${priorityClass} ${overdueClass}" 
+          class="reminder-item ${priorityClass} ${overdueClass} ${soonClass}" 
           data-reminder-id="${reminder.id}"
           role="listitem"
         >

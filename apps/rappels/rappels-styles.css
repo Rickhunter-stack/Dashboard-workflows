@@ -235,6 +235,11 @@ body.compact .info-section {
   background: rgba(239, 68, 68, 0.08);
 }
 
+.reminder-item.soon {
+  border-color: #f97316;
+  background: rgba(249, 115, 22, 0.08);
+}
+
 .reminder-item.overdue:hover {
   border-color: #dc2626;
   box-shadow: 0 4px 16px rgba(220, 38, 38, 0.5);
