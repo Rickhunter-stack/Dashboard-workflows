@@ -640,6 +640,22 @@ function setupKeyboardHandlers() {
       }
     });
   });
+
+  // Gestion de Enter dans les notes pour créer immédiatement une sous-tâche
+  document.querySelectorAll(".card-note").forEach((textarea) => {
+    textarea.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const cardEl = textarea.closest(".card");
+        if (!cardEl) return;
+        const cardId = cardEl.dataset.cardId;
+        const current = textarea.value.replace(/\r\n/g, "\n");
+        const nextValue = current.endsWith("\n") ? current : `${current}\n`;
+        textarea.value = nextValue;
+        updateCardNote(cardId, nextValue);
+      }
+    });
+  });
 }
 
 // ===========================
