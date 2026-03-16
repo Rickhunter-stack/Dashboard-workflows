@@ -468,6 +468,11 @@ function getAlertLabel(alertBefore) {
 // INITIALISATION
 // ===========================
 document.addEventListener("DOMContentLoaded", async () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("compact") === "1") {
+    document.body.classList.add("compact");
+  }
+
   // Charger l'état (Supabase si configuré, sinon localStorage)
   await initState();
 

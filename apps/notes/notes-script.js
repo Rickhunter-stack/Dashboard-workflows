@@ -240,6 +240,11 @@ document.getElementById("btn-copy-code")?.addEventListener("click", () => {
 // INIT
 // ===========================
 document.addEventListener("DOMContentLoaded", async () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("compact") === "1") {
+    document.body.classList.add("compact");
+  }
+
   await loadNotesState();
 
   document.getElementById("btn-new-note")?.addEventListener("click", () => openModal());

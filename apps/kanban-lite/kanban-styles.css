@@ -35,6 +35,11 @@ body {
   margin-bottom: 24px;
 }
 
+body.compact .kanban-header,
+body.compact .info-section {
+  display: none;
+}
+
 .kanban-header h1 {
   text-align: center;
   color: var(--text);

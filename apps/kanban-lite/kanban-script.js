@@ -648,6 +648,11 @@ function setupKeyboardHandlers() {
 // INITIALISATION
 // ===========================
 document.addEventListener("DOMContentLoaded", async () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("compact") === "1") {
+    document.body.classList.add("compact");
+  }
+
   await loadBoardState();
   render();
 

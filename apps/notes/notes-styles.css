@@ -32,6 +32,11 @@ body {
   margin-bottom: 24px;
 }
 
+body.compact .notes-header,
+body.compact .info-section {
+  display: none;
+}
+
 .notes-header h1 {
   text-align: center;
   color: var(--text);
