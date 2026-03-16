@@ -173,21 +173,22 @@ body {
 }
 
 .reminder-item {
-  background: var(--surface-1);
-  padding: 16px 20px;
-  border-radius: 12px;
-  border: 2px solid var(--border-0);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.15s ease;
+  background: var(--surface-0);
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border-0);
+  box-shadow: none;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    transform 0.15s ease;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .reminder-item:hover {
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border-1));
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 25%, var(--border-1));
+  background: var(--surface-1);
+  transform: translateY(-1px);
 }
 
 .reminder-item:focus-within {
@@ -197,39 +198,36 @@ body {
 
 /* États de priorité */
 .reminder-item.priority-red {
-  border-color: #ef4444;
-  box-shadow: 0 2px 12px rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.7);
 }
 
 .reminder-item.priority-red:hover {
   border-color: #ef4444;
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.4);
 }
 
 .reminder-item.priority-orange {
-  border-color: #f97316;
-  box-shadow: 0 2px 12px rgba(249, 115, 22, 0.3);
+  border-color: rgba(249, 115, 22, 0.7);
 }
 
 .reminder-item.priority-orange:hover {
   border-color: #f97316;
-  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4);
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.4);
 }
 
 .reminder-item.priority-green {
-  border-color: #22c55e;
-  box-shadow: 0 2px 12px rgba(34, 197, 94, 0.3);
+  border-color: rgba(34, 197, 94, 0.7);
 }
 
 .reminder-item.priority-green:hover {
   border-color: #22c55e;
-  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.4);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.4);
 }
 
 /* Rappel passé */
 .reminder-item.overdue {
   border-color: #dc2626;
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.08);
 }
 
 .reminder-item.overdue:hover {
