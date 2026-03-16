@@ -149,6 +149,11 @@ function updateCardNote(cardId, newNote) {
     const card = list.cards.find((c) => c.id === cardId);
     if (card) {
       card.note = newNote;
+      const lines = newNote
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0);
+      card.checklist = lines;
       saveState();
       return;
     }
@@ -217,24 +222,21 @@ function toggleCardDone(cardId) {
   render();
 }
 
-function addChecklistItem(cardId) {
-  const found = findCard(cardId);
-  if (!found) return;
-  const { card } = found;
-  const label = window.prompt("Nouvelle sous-tâche :");
-  if (!label) return;
-  if (!card.checklist) card.checklist = [];
-  card.checklist.push(label);
-  saveState();
-  render();
-}
-
 function toggleChecklistItem(cardId, index) {
   const found = findCard(cardId);
   if (!found) return;
   const { card } = found;
   if (!card.checklist || !card.checklist[index]) return;
+  const removed = card.checklist[index];
   card.checklist.splice(index, 1);
+  if (typeof card.note === "string" && removed) {
+    const lines = card.note.split("\n");
+    const idx = lines.findIndex((l) => l.trim() === removed);
+    if (idx !== -1) {
+      lines.splice(idx, 1);
+      card.note = lines.join("\n");
+    }
+  }
   saveState();
   render();
 }
@@ -595,13 +597,6 @@ function render() {
                           .join("")
                       : ""
                   }
-                  <button
-                    class="btn-add-subtask"
-                    onclick="event.stopPropagation(); addChecklistItem('${card.id}')"
-                    aria-label="Ajouter une sous-tâche"
-                  >
-                    + Sous-tâche
-                  </button>
                 </div>
               </div>
             `
