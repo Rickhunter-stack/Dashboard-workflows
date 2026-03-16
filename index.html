@@ -217,11 +217,16 @@
         font-size: 0.8rem;
         color: rgba(255, 255, 255, 0.88);
         cursor: pointer;
-        transition: background 0.12s ease, color 0.12s ease;
+        transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+        background: rgba(15, 23, 42, 0.98);
+        border: 1px solid rgba(15, 23, 42, 1);
+        appearance: none;
+        -webkit-appearance: none;
       }
 
       .admin-item:hover {
-        background: rgba(15, 23, 42, 0.96);
+        background: rgba(15, 23, 42, 1);
+        border-color: rgba(148, 163, 184, 0.4);
       }
 
       .admin-item.danger {
