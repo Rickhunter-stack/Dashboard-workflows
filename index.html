@@ -826,6 +826,13 @@
             </a>
           `
         ).join("");
+
+        // Fermer le tiroir dès qu'on clique sur un lien (tout en ouvrant dans un nouvel onglet)
+        quicklinksBody.querySelectorAll(".quicklink-item").forEach((item) => {
+          item.addEventListener("click", () => {
+            closeQuickLinks();
+          });
+        });
       }
 
       function openQuickLinks() {
