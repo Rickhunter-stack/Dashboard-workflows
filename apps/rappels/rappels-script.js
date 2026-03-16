@@ -360,7 +360,14 @@ function render() {
   // Supprimer visuellement les rappels dépassés
   state.reminders = state.reminders.filter((r) => !isOverdue(r.dateTime));
 
-  const filteredReminders = state.reminders.filter(reminderMatchesFilter);
+  // Trier les rappels restants par date croissante (les plus proches en premier)
+  const sortedReminders = [...state.reminders].sort((a, b) => {
+    const da = a.dateTime ? new Date(a.dateTime).getTime() : Infinity;
+    const db = b.dateTime ? new Date(b.dateTime).getTime() : Infinity;
+    return da - db;
+  });
+
+  const filteredReminders = sortedReminders.filter(reminderMatchesFilter);
 
   if (filteredReminders.length === 0) {
     remindersList.innerHTML = `
