@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agenda</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../shared/theme.css" />
+    <link rel="stylesheet" href="agenda-styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="../shared/supabase-client.js"></script>
+  </head>
+  <body>
+    <div class="agenda-container">
+      <header class="agenda-header">
+        <div class="agenda-header-main">
+          <h1>Agenda</h1>
+          <div class="agenda-period">
+            <button class="btn-ghost" id="btn-prev-period" aria-label="Période précédente">
+              ◀
+            </button>
+            <div class="agenda-current-label" id="agenda-current-label"></div>
+            <button class="btn-ghost" id="btn-next-period" aria-label="Période suivante">
+              ▶
+            </button>
+            <button class="btn-outline" id="btn-today">Aujourd'hui</button>
+          </div>
+        </div>
+        <div class="agenda-header-actions">
+          <select id="agenda-view-select" class="agenda-view-select" aria-label="Type de vue">
+            <option value="week">Semaine</option>
+            <option value="month">Mois</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="agenda-main">
+        <aside class="agenda-sidebar">
+          <section class="mini-month">
+            <div class="mini-month-header">
+              <span id="mini-month-label"></span>
+            </div>
+            <div class="mini-month-grid" id="mini-month-grid"></div>
+          </section>
+
+          <section class="agenda-legend">
+            <h2>Légende</h2>
+            <ul>
+              <li><span class="dot dot-reminder"></span> Rappels</li>
+              <li><span class="dot dot-project"></span> Tâches projet</li>
+            </ul>
+          </section>
+        </aside>
+
+        <section class="agenda-board">
+          <div class="agenda-week" id="agenda-week"></div>
+          <div class="agenda-month" id="agenda-month" hidden></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="agenda-script.js"></script>
+  </body>
+</html>
+
