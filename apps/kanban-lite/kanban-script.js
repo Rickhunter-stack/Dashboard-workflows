@@ -111,7 +111,6 @@ function addCard(listId) {
   const newCard = {
     id: generateId(),
     title: "Nouvelle carte",
-    note: "",
     priority: null,
     checklist: [],
   };
@@ -139,18 +138,6 @@ function updateCardTitle(cardId, newTitle) {
     if (card) {
       card.title = newTitle;
       saveState();
-      return;
-    }
-  }
-}
-
-function updateCardNote(cardId, newNote) {
-  for (const list of state.lists) {
-    const card = list.cards.find((c) => c.id === cardId);
-    if (card) {
-      card.note = newNote;
-      saveState();
-      render();
       return;
     }
   }
@@ -571,13 +558,6 @@ function render() {
                     </div>
                   </div>
                 </div>
-                <textarea
-                  class="card-note"
-                  placeholder="Ajouter une note..."
-                  onchange="updateCardNote('${card.id}', this.value)"
-                  onclick="event.stopPropagation()"
-                  aria-label="Note de la carte"
-                >${escapeHtml(card.note)}</textarea>
                 <div class="card-checklist">
                   ${
                     card.checklist && card.checklist.length
