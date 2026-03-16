@@ -89,28 +89,7 @@ body.compact .info-section {
 }
 
 .btn-new-card {
-  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  background: var(--accent-gradient);
-  color: #ffffff;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 26px rgba(79, 140, 255, 0.22);
   white-space: nowrap;
-}
-
-.btn-new-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
-}
-
-.btn-new-card:active {
-  transform: translateY(0);
 }
 
 /* ===========================
