@@ -32,8 +32,7 @@ body {
   margin-bottom: 24px;
 }
 
-body.compact .header-actions,
-body.compact .info-section {
+body.compact .header-actions {
   display: none;
 }
 
@@ -90,52 +89,6 @@ body.compact .info-section {
 }
 
 /* ===========================
-   SECTION INFO
-   =========================== */
-.info-section {
-  background: var(--surface-0);
-  padding: 16px;
-  margin-bottom: 24px;
-  border-radius: 16px;
-  border: 1px solid var(--border-0);
-  backdrop-filter: blur(var(--blur));
-}
-
-.info-toggle {
-  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  background: var(--surface-1);
-  color: var(--text);
-  border: 1px solid var(--border-0);
-  padding: 14px 24px;
-  border-radius: 12px;
-  cursor: pointer;
-  display: block;
-  width: 100%;
-  transition: all 0.15s ease;
-  text-align: center;
-}
-
-.info-toggle:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
-}
-
-.info-content {
-  display: none;
-  margin-top: 20px;
-  color: var(--muted);
-  line-height: 1.8;
-}
-
-.info-content strong {
-  color: var(--text);
-}
-
-/* ===========================
    GRILLE DE NOTES (style Keep)
    =========================== */
 .notes-grid {
@@ -187,6 +140,7 @@ body.compact .info-section {
   line-height: 1.5;
   flex: 1;
   display: -webkit-box;
+  line-clamp: 4;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;

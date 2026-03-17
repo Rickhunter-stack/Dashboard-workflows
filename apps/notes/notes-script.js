@@ -262,15 +262,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  document.getElementById("info-toggle")?.addEventListener("click", () => {
-    const content = document.getElementById("info-content");
-    const btn = document.getElementById("info-toggle");
-    const open = content.style.display === "block";
-    content.style.display = open ? "none" : "block";
-    btn.textContent = open ? "Comment utiliser" : "Comment utiliser ▲";
-    btn.setAttribute("aria-expanded", !open);
-  });
-
   document.getElementById("note-modal")?.addEventListener("click", e => {
     if (e.target.id === "note-modal") closeModal();
   });
