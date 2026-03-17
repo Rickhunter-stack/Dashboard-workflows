@@ -55,7 +55,7 @@ body {
 /* ========================================== */
 
 #summary-view {
-  padding-top: 64px;
+  padding-top: 0;
 }
 
 body.compact #summary-view {
@@ -179,16 +179,13 @@ body.compact .action-buttons {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: color-mix(in srgb, var(--bg-1) 70%, transparent);
-  padding: 12px 20px;
-  z-index: 100;
+  margin: 0 auto 14px;
+  padding: 12px 14px;
+  background: var(--surface-0);
+  border: 1px solid var(--border-0);
+  border-radius: 16px;
   backdrop-filter: blur(var(--blur));
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-sm);
 }
 
 .filter-input {
@@ -1340,7 +1337,6 @@ body.compact .action-buttons {
     <!-- ========================================== -->
     <div id="summary-view" class="view-container">
       <h1>Workflows</h1>
-      <p class="subtitle">Créez et organisez vos processus facilement</p>
 
       <div class="action-buttons">
         <input
@@ -1390,14 +1386,6 @@ body.compact .action-buttons {
             </div>
           </div>
         </div>
-
-        <button
-          class="btn-reset"
-          onclick="if(confirm('Voulez-vous réinitialiser tous les workflows ?')) { localStorage.removeItem('workflows'); location.reload(); }"
-          title="Réinitialiser tous les workflows"
-        >
-          🔄
-        </button>
 
         <label for="import-workflow" class="import-workflow-btn">
           📤 Importer
