@@ -647,6 +647,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
+  // "Voir plus" dans l'aide
+  const helpMoreBtn = document.getElementById("help-more");
+  const helpMoreContent = document.getElementById("help-more-content");
+  if (helpMoreBtn && helpMoreContent) {
+    helpMoreBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const willOpen = helpMoreContent.hidden;
+      helpMoreContent.hidden = !willOpen;
+      helpMoreBtn.setAttribute("aria-expanded", String(willOpen));
+      helpMoreBtn.textContent = willOpen ? "Voir moins" : "Voir plus";
+    });
+  }
+
   // Bouton "Nouveau Projet"
   const btnNewTask = document.getElementById("btn-new-task");
   if (btnNewTask) {

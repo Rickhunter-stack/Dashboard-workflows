@@ -64,47 +64,27 @@
             <div id="help-popover" class="help-popover" hidden>
               <div class="help-title">Comment utiliser</div>
               <div class="help-body">
-                <p>
-                  <strong>🎯 Fonctionnalités:</strong><br />
-                  • <strong>Ajouter des projets:</strong> Bouton "Nouveau Projet"<br />
-                  • <strong>Ajouter des tâches:</strong> Bouton + dans une cellule vide<br />
-                  • <strong>Éditer:</strong> Cliquez sur le texte d'un projet ou d'une tâche<br />
-                  • <strong>Déplacer:</strong> Drag & drop horizontal dans les phases
+                <p class="help-compact">
+                  • Ajouter un projet : <strong>Nouveau Projet</strong><br />
+                  • Ajouter une tâche : bouton <strong>+</strong> dans une case<br />
+                  • Déplacer : <strong>drag & drop</strong> horizontal
                 </p>
-                <p>
-                  <strong>📅 Dates:</strong> Définissez les dates début/fin dans chaque tâche.<br />
-                  <strong>🔎 Filtrer:</strong> Utilisez la barre de recherche.
-                </p>
+
+                <button class="help-more" id="help-more" type="button" aria-expanded="false">
+                  Voir plus
+                </button>
+
+                <div id="help-more-content" class="help-more-content" hidden>
+                  <p>
+                    <strong>Éditer</strong> : cliquez sur le texte d’un projet ou d’une tâche.<br />
+                    <strong>Priorités</strong> : points rouge/orange/vert.<br />
+                    <strong>Dates</strong> : définissez début/fin dans chaque tâche.<br />
+                    <strong>Filtrer</strong> : utilisez la barre de recherche.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-
-          <button
-            class="btn-reset"
-            id="btn-reset"
-            onclick="if(confirm('Voulez-vous réinitialiser toutes les données ?')) { localStorage.removeItem('projectRoadmapData'); location.reload(); }"
-            title="Réinitialiser toutes les données"
-            aria-label="Réinitialiser toutes les données"
-            type="button"
-          >
-            <svg class="icon-refresh" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M20 12a8 8 0 1 1-2.34-5.66"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-              <path
-                d="M20 4v6h-6"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </button>
         </div>
       </header>
 
