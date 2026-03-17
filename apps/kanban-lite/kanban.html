@@ -58,31 +58,39 @@
           <button class="btn-new-card btn-primary-accent" id="btn-new-card" aria-label="Ajouter une nouvelle carte">
             ➕ Nouvelle carte
           </button>
+
+          <div class="help-wrap">
+            <button
+              class="help-btn"
+              id="help-toggle"
+              type="button"
+              aria-label="Aide"
+              aria-haspopup="dialog"
+              aria-expanded="false"
+              title="Aide"
+            >
+              ?
+            </button>
+            <div id="help-popover" class="help-popover" hidden>
+              <div class="help-title">Comment utiliser</div>
+              <div class="help-body">
+                <p>
+                  <strong>🎯 Fonctionnalités:</strong><br />
+                  • <strong>Ajouter des cartes:</strong> Bouton "Nouvelle carte" ou + dans une colonne<br />
+                  • <strong>Éditer:</strong> Cliquez sur le titre d'une carte ou colonne<br />
+                  • <strong>Réorganiser:</strong> Glissez-déposez les cartes entre les colonnes<br />
+                  • <strong>Filtrer:</strong> Utilisez la barre de recherche pour filtrer par titre ou note
+                </p>
+                <p>
+                  <strong>⌨️ Raccourcis:</strong><br />
+                  • <kbd>Enter</kbd>: Valider l'édition d'un titre<br />
+                  • <kbd>Esc</kbd>: Annuler l'édition
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
-
-      <div class="info-section">
-        <button class="info-toggle" id="info-toggle" aria-expanded="false">
-          Comment utiliser ▼
-        </button>
-        <div id="info-content" class="info-content">
-          <p>
-            <strong>🎯 Fonctionnalités:</strong><br />
-            • <strong>Ajouter des cartes:</strong> Cliquez sur "Nouvelle carte" ou le bouton + dans une colonne<br />
-            • <strong>Éditer:</strong> Cliquez sur le titre d'une carte ou colonne pour le modifier<br />
-            • <strong>Notes:</strong> Ajoutez des détails dans la zone de texte de chaque carte<br />
-            • <strong>Réorganiser:</strong> Glissez-déposez les cartes entre les colonnes<br />
-            • <strong>Filtrer:</strong> Utilisez la barre de recherche pour filtrer par titre ou note<br />
-            • <strong>Supprimer:</strong> Cliquez sur l'icône 🗑️ pour supprimer une carte
-          </p>
-          <p>
-            <strong>⌨️ Raccourcis clavier:</strong><br />
-            • <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd>: Naviguer entre les éléments<br />
-            • <kbd>Enter</kbd>: Commencer/valider l'édition d'un titre<br />
-            • <kbd>Esc</kbd>: Annuler l'édition en cours
-          </p>
-        </div>
-      </div>
 
       <main class="board" id="board" role="list" aria-label="Tableau Kanban">
         <!-- Les colonnes seront générées ici par JavaScript -->

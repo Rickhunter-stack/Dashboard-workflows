@@ -8,7 +8,7 @@ body {
   font-weight: 400;
   max-width: 1600px;
   margin: 0 auto;
-  padding: 24px 20px;
+  padding: 16px 20px;
   background: var(--bg-gradient);
   color: var(--text);
   line-height: 1.6;
@@ -32,11 +32,11 @@ body {
    HEADER
    =========================== */
 .kanban-header {
-  margin-bottom: 24px;
+  margin-bottom: 14px;
 }
 
 body.compact .header-actions,
-body.compact .info-section {
+body.compact .help-wrap {
   display: none;
 }
 
@@ -46,7 +46,7 @@ body.compact .info-section {
   font-size: 26px;
   font-weight: 600;
   letter-spacing: -0.02em;
-  margin-bottom: 20px;
+  margin: 0 0 10px 0;
 }
 
 .header-actions {
@@ -93,66 +93,82 @@ body.compact .info-section {
 }
 
 /* ===========================
-   SECTION INFO
+   AIDE (petit bouton + popover)
    =========================== */
-.info-section {
-  background: var(--surface-0);
-  padding: 16px;
-  margin-bottom: 24px;
-  border-radius: 16px;
-  border: 1px solid var(--border-0);
-  backdrop-filter: blur(var(--blur));
+.help-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 
-.info-toggle {
-  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  background: var(--surface-1);
-  color: var(--text);
+.help-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
   border: 1px solid var(--border-0);
-  padding: 14px 24px;
-  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.92);
+  color: rgba(232, 234, 240, 0.88);
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-weight: 700;
   cursor: pointer;
-  display: block;
-  width: 100%;
-  transition: all 0.15s ease;
-  text-align: center;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
 }
 
-.info-toggle:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+.help-btn:hover {
   transform: translateY(-1px);
+  background: rgba(15, 23, 42, 0.98);
+  border-color: rgba(148, 163, 184, 0.55);
 }
 
-.info-content {
-  display: none;
-  margin-top: 20px;
-  color: var(--muted);
-  line-height: 1.8;
+.help-popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: min(420px, calc(100vw - 32px));
+  background: rgba(2, 6, 23, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(18px);
+  padding: 12px 14px;
+  z-index: 50;
 }
 
-.info-content p {
-  margin-bottom: 16px;
+.help-title {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: rgba(232, 234, 240, 0.92);
+  margin-bottom: 8px;
 }
 
-.info-content p:last-child {
+.help-body {
+  color: rgba(232, 234, 240, 0.74);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.help-body p {
+  margin: 0 0 10px 0;
+}
+
+.help-body p:last-child {
   margin-bottom: 0;
 }
 
-.info-content strong {
-  color: #e8eaf6;
+.help-body strong {
+  color: rgba(232, 234, 240, 0.9);
 }
 
-.info-content kbd {
+.help-body kbd {
   display: inline-block;
   padding: 2px 6px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  font-family: monospace;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  font-family: "DM Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   font-size: 12px;
   margin: 0 2px;
 }
@@ -164,7 +180,7 @@ body.compact .info-section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  margin-top: 24px;
+  margin-top: 14px;
 }
 
 /* ===========================
