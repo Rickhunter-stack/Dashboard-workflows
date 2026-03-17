@@ -612,23 +612,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   render();
   console.log("Rendu initial effectué");
 
-  // Toggle info section
-  const infoToggle = document.getElementById("info-toggle");
-  const infoContent = document.getElementById("info-content");
+  // Toggle aide popover (petit bouton ?)
+  const helpToggle = document.getElementById("help-toggle");
+  const helpPopover = document.getElementById("help-popover");
 
-  if (infoToggle && infoContent) {
-    infoToggle.addEventListener("click", () => {
-      const isExpanded = infoContent.style.display === "block";
+  const closeHelp = () => {
+    if (!helpToggle || !helpPopover) return;
+    helpPopover.hidden = true;
+    helpToggle.setAttribute("aria-expanded", "false");
+  };
 
-      if (isExpanded) {
-        infoContent.style.display = "none";
-        infoToggle.textContent = "Comment utiliser ▼";
-        infoToggle.setAttribute("aria-expanded", "false");
-      } else {
-        infoContent.style.display = "block";
-        infoToggle.textContent = "Comment utiliser ▲";
-        infoToggle.setAttribute("aria-expanded", "true");
-      }
+  const toggleHelp = () => {
+    if (!helpToggle || !helpPopover) return;
+    const willOpen = helpPopover.hidden;
+    helpPopover.hidden = !willOpen;
+    helpToggle.setAttribute("aria-expanded", String(willOpen));
+  };
+
+  if (helpToggle && helpPopover) {
+    helpToggle.addEventListener("click", (e) => {
+      e.preventDefault();
+      toggleHelp();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (helpPopover.hidden) return;
+      const wrap = helpToggle.closest(".help-wrap");
+      if (!wrap) return closeHelp();
+      if (!wrap.contains(e.target)) closeHelp();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeHelp();
     });
   }
 

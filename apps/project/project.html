@@ -48,45 +48,65 @@
           >
             ➕ Nouvelle tâche
           </button>
-          
+
+          <div class="help-wrap">
+            <button
+              class="help-btn"
+              id="help-toggle"
+              type="button"
+              aria-label="Aide"
+              aria-haspopup="dialog"
+              aria-expanded="false"
+              title="Aide"
+            >
+              ?
+            </button>
+            <div id="help-popover" class="help-popover" hidden>
+              <div class="help-title">Comment utiliser</div>
+              <div class="help-body">
+                <p>
+                  <strong>🎯 Fonctionnalités:</strong><br />
+                  • <strong>Ajouter des projets:</strong> Bouton "Nouveau Projet"<br />
+                  • <strong>Ajouter des tâches:</strong> Bouton + dans une cellule vide<br />
+                  • <strong>Éditer:</strong> Cliquez sur le texte d'un projet ou d'une tâche<br />
+                  • <strong>Déplacer:</strong> Drag & drop horizontal dans les phases
+                </p>
+                <p>
+                  <strong>📅 Dates:</strong> Définissez les dates début/fin dans chaque tâche.<br />
+                  <strong>🔎 Filtrer:</strong> Utilisez la barre de recherche.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <button
             class="btn-reset"
             id="btn-reset"
             onclick="if(confirm('Voulez-vous réinitialiser toutes les données ?')) { localStorage.removeItem('projectRoadmapData'); location.reload(); }"
             title="Réinitialiser toutes les données"
+            aria-label="Réinitialiser toutes les données"
+            type="button"
           >
-            🔄
+            <svg class="icon-refresh" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M20 12a8 8 0 1 1-2.34-5.66"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M20 4v6h-6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </button>
         </div>
       </header>
-
-      <div class="info-section">
-        <button class="info-toggle" id="info-toggle" aria-expanded="false">
-          Comment utiliser ▼
-        </button>
-        <div id="info-content" class="info-content">
-          <p>
-            <strong>🎯 Fonctionnalités:</strong><br />
-            • <strong>Ajouter des projets:</strong> Cliquez sur "Nouveau Projet"<br />
-            • <strong>Ajouter des tâches:</strong> Cliquez sur le bouton + dans une cellule vide<br />
-            • <strong>Éditer:</strong> Cliquez sur le texte d'un projet ou d'une tâche pour le modifier<br />
-            • <strong>Déplacer horizontalement:</strong> Glissez-déposez les tâches entre les phases (sur la même ligne)<br />
-            • <strong>Priorités:</strong> 3 boutons de couleur (rouge = urgent, orange = important, vert = normal)<br />
-            • <strong>Dates:</strong> Définissez des dates de début et fin pour chaque tâche<br />
-            • <strong>Filtrer:</strong> Utilisez la barre de recherche pour filtrer par nom<br />
-            • <strong>Supprimer:</strong> Cliquez sur l'icône 🗑️ pour supprimer une tâche ou un projet
-          </p>
-          <p>
-            <strong>📅 Organisation:</strong><br />
-            Les projets sont organisés en lignes horizontales.<br />
-            Chaque projet peut avoir une tâche dans chaque phase.<br />
-            Les tâches peuvent se déplacer horizontalement entre les phases mais restent sur leur ligne de projet.
-          </p>
-          <p class="scroll-hint" style="display: none;">
-            <strong>💡 Astuce:</strong> Sur mobile et tablette, faites défiler horizontalement pour voir toutes les phases.
-          </p>
-        </div>
-      </div>
 
       <main
         class="roadmap-board"
