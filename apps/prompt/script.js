@@ -2206,18 +2206,6 @@ function resetAppForm() {
   document.getElementById("result-app").textContent = "";
 }
 
-function toggleInfo() {
-  const infoContent = document.getElementById("infoContent");
-  const toggleButton = document.querySelector(".info-toggle");
-  if (infoContent.style.display === "block") {
-    infoContent.style.display = "none";
-    toggleButton.textContent = "Informations sur le générateur ▼";
-  } else {
-    infoContent.style.display = "block";
-    toggleButton.textContent = "Informations sur le générateur ▲";
-  }
-}
-
 // Fonctions de copie dans le presse-papier
 function copyToClipboard() {
   const resultText = document.getElementById("result").textContent;
