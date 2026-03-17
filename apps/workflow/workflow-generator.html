@@ -28,7 +28,7 @@ body {
   font-weight: 400;
   max-width: 1800px;
   margin: 0 auto;
-  padding: 24px 20px;
+  padding: 16px 20px;
   background: var(--bg-gradient);
   color: var(--text);
   line-height: 1.6;
@@ -55,7 +55,7 @@ body {
 /* ========================================== */
 
 #summary-view {
-  padding-top: 80px;
+  padding-top: 64px;
 }
 
 body.compact #summary-view {
@@ -68,7 +68,7 @@ body.compact #summary-view {
   font-size: 26px;
   font-weight: 600;
   letter-spacing: -0.02em;
-  margin: 16px 0 12px 0;
+  margin: 10px 0 8px 0;
 }
 
 .subtitle {
@@ -81,52 +81,95 @@ body.compact #summary-view {
 }
 
 body.compact .subtitle,
-body.compact .info-section,
 body.compact .action-buttons {
   display: none;
 }
 
-/* Section Info */
-.info-section {
-  background: var(--surface-0);
-  padding: 16px;
-  margin-bottom: 20px;
-  border-radius: 16px;
-  border: 1px solid var(--border-0);
-  backdrop-filter: blur(var(--blur));
+/* Aide (petit bouton + popover) */
+.help-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 
-.info-toggle {
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  background: var(--surface-1);
-  color: var(--text);
-  border: 1px solid var(--border-0);
-  padding: 14px 24px;
+.help-btn {
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
+  border: 1px solid var(--border-0);
+  background: rgba(15, 23, 42, 0.92);
+  color: rgba(232, 234, 240, 0.88);
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-weight: 800;
   cursor: pointer;
-  display: block;
-  width: 100%;
-  transition: all 0.3s ease;
-  text-align: center;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
 }
 
-.info-toggle:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+.help-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(15, 23, 42, 0.98);
+  border-color: rgba(148, 163, 184, 0.55);
+}
+
+.help-popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: min(340px, calc(100vw - 32px));
+  background: rgba(2, 6, 23, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(18px);
+  padding: 12px 14px;
+  z-index: 150;
+}
+
+.help-title {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: rgba(232, 234, 240, 0.92);
+  margin-bottom: 8px;
+}
+
+.help-body {
+  color: rgba(232, 234, 240, 0.74);
+  font-size: 13px;
+  line-height: 1.55;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.help-compact {
+  margin: 0 0 10px 0;
+}
+
+.help-more {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.75);
+  color: rgba(232, 234, 240, 0.86);
+  cursor: pointer;
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.help-more:hover {
+  background: rgba(15, 23, 42, 0.92);
+  border-color: rgba(148, 163, 184, 0.38);
   transform: translateY(-1px);
 }
 
-.info-content {
-  display: none;
-  margin-top: 20px;
-  color: var(--muted);
-  line-height: 1.8;
-}
-
-.info-content p {
-  margin-bottom: 16px;
+.help-more-content {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.28);
 }
 
 /* Boutons d'action */
@@ -142,7 +185,7 @@ body.compact .action-buttons {
   left: 0;
   right: 0;
   background: color-mix(in srgb, var(--bg-1) 70%, transparent);
-  padding: 16px 20px;
+  padding: 12px 20px;
   z-index: 100;
   backdrop-filter: blur(var(--blur));
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
@@ -1299,27 +1342,6 @@ body.compact .action-buttons {
       <h1>Workflows</h1>
       <p class="subtitle">Créez et organisez vos processus facilement</p>
 
-      <div class="info-section">
-        <button class="info-toggle" onclick="toggleInfo()">
-          Informations sur le générateur ▼
-        </button>
-        <div id="infoContent" class="info-content">
-          <p>
-            <strong>Comment ça marche ?</strong><br />
-            Ce générateur vous aide à décomposer et visualiser vos workflows en
-            sous-processus logiques hiérarchiques. Créez un nouveau workflow,
-            définissez vos entrées et sorties, puis organisez les étapes
-            intermédiaires.
-          </p>
-          <p>
-            <strong>Navigation en 3 niveaux :</strong><br />
-            • <strong>Niveau 1 - Résumé</strong> : Vue d'ensemble de tous vos workflows sous forme de pastilles hexagonales<br />
-            • <strong>Niveau 2 - Diagramme</strong> : Vue détaillée du workflow avec tous les processus et sous-processus<br />
-            • <strong>Niveau 3 - Cartes</strong> : Édition détaillée des cartes de chaque sous-processus
-          </p>
-        </div>
-      </div>
-
       <div class="action-buttons">
         <input
           type="text"
@@ -1332,6 +1354,42 @@ body.compact .action-buttons {
         <button class="create-workflow-btn" onclick="createNewWorkflow()">
           ✨ Nouveau Workflow
         </button>
+
+        <div class="help-wrap">
+          <button
+            class="help-btn"
+            id="help-toggle"
+            type="button"
+            aria-label="Aide"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            title="Aide"
+          >
+            ?
+          </button>
+          <div id="help-popover" class="help-popover" hidden>
+            <div class="help-title">Aide</div>
+            <div class="help-body">
+              <p class="help-compact">
+                • Créer : <strong>Nouveau Workflow</strong><br />
+                • Ouvrir : cliquez une pastille<br />
+                • Éditer : diagramme puis cartes
+              </p>
+
+              <button class="help-more" id="help-more" type="button" aria-expanded="false">
+                Voir plus
+              </button>
+
+              <div id="help-more-content" class="help-more-content" hidden>
+                <p>
+                  <strong>3 niveaux</strong> : Résumé → Diagramme → Cartes.<br />
+                  <strong>Sous-processus</strong> : cliquez une étape pour créer/ouvrir.<br />
+                  <strong>Import/Export</strong> : utilisez les boutons en haut.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <button
           class="btn-reset"
@@ -1473,6 +1531,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const compact = params.get("compact") === "1";
 
   loadWorkflows();
+  setupHelpPopover();
 
   if (compact) {
     document.body.classList.add("compact");
@@ -2428,16 +2487,49 @@ function showNotification(message) {
   }, 2000);
 }
 
-function toggleInfo() {
-  const infoContent = document.getElementById("infoContent");
-  const infoToggle = document.querySelector(".info-toggle");
+function setupHelpPopover() {
+  const helpToggle = document.getElementById("help-toggle");
+  const helpPopover = document.getElementById("help-popover");
+  const helpMoreBtn = document.getElementById("help-more");
+  const helpMoreContent = document.getElementById("help-more-content");
 
-  if (infoContent.style.display === "none" || infoContent.style.display === "") {
-    infoContent.style.display = "block";
-    infoToggle.textContent = "Informations sur le générateur ▲";
-  } else {
-    infoContent.style.display = "none";
-    infoToggle.textContent = "Informations sur le générateur ▼";
+  if (!helpToggle || !helpPopover) return;
+
+  const closeHelp = () => {
+    helpPopover.hidden = true;
+    helpToggle.setAttribute("aria-expanded", "false");
+  };
+
+  const toggleHelp = () => {
+    const willOpen = helpPopover.hidden;
+    helpPopover.hidden = !willOpen;
+    helpToggle.setAttribute("aria-expanded", String(willOpen));
+  };
+
+  helpToggle.addEventListener("click", (e) => {
+    e.preventDefault();
+    toggleHelp();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (helpPopover.hidden) return;
+    const wrap = helpToggle.closest(".help-wrap");
+    if (!wrap) return closeHelp();
+    if (!wrap.contains(e.target)) closeHelp();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeHelp();
+  });
+
+  if (helpMoreBtn && helpMoreContent) {
+    helpMoreBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const willOpen = helpMoreContent.hidden;
+      helpMoreContent.hidden = !willOpen;
+      helpMoreBtn.setAttribute("aria-expanded", String(willOpen));
+      helpMoreBtn.textContent = willOpen ? "Voir moins" : "Voir plus";
+    });
   }
 }
 
