@@ -494,26 +494,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Vérifier les alertes toutes les 5 minutes
   setInterval(checkAlerts, 5 * 60 * 1000);
 
-  // Toggle info section
-  const infoToggle = document.getElementById("info-toggle");
-  const infoContent = document.getElementById("info-content");
-
-  if (infoToggle && infoContent) {
-    infoToggle.addEventListener("click", () => {
-      const isExpanded = infoContent.style.display === "block";
-
-      if (isExpanded) {
-        infoContent.style.display = "none";
-        infoToggle.textContent = "Comment utiliser ▼";
-        infoToggle.setAttribute("aria-expanded", "false");
-      } else {
-        infoContent.style.display = "block";
-        infoToggle.textContent = "Comment utiliser ▲";
-        infoToggle.setAttribute("aria-expanded", "true");
-      }
-    });
-  }
-
   // Bouton "Nouveau rappel"
   const btnNewReminder = document.getElementById("btn-new-reminder");
   if (btnNewReminder) {
