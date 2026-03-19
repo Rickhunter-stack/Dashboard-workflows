@@ -5,6 +5,7 @@ let state = {
   lists: [],
   filter: "",
   archived: [],
+  viewMode: "todo", // 'todo' | 'done'
 };
 
 // Initialiser l'état par défaut
@@ -37,6 +38,7 @@ function initState() {
     ],
     filter: "",
     archived: [],
+    viewMode: "todo",
   };
 }
 
@@ -64,6 +66,7 @@ function loadState() {
     if (saved) {
       state = JSON.parse(saved);
       if (!state.archived) state.archived = [];
+      if (!state.viewMode) state.viewMode = "todo";
     } else {
       state = initState();
       saveState();
@@ -254,6 +257,25 @@ function cardMatchesFilter(card) {
     card.title.toLowerCase().includes(searchText) ||
     card.note.toLowerCase().includes(searchText)
   );
+}
+
+function setViewMode(mode) {
+  state.viewMode = mode === "done" ? "done" : "todo";
+  saveState();
+  syncViewToggleUI();
+  render();
+}
+
+function syncViewToggleUI() {
+  const btnTodo = document.getElementById("view-todo");
+  const btnDone = document.getElementById("view-done");
+  if (!btnTodo || !btnDone) return;
+
+  const isDone = state.viewMode === "done";
+  btnTodo.classList.toggle("active", !isDone);
+  btnDone.classList.toggle("active", isDone);
+  btnTodo.setAttribute("aria-selected", String(!isDone));
+  btnDone.setAttribute("aria-selected", String(isDone));
 }
 
 // ===========================
@@ -469,133 +491,122 @@ function render() {
   const board = document.getElementById("board");
   if (!board) return;
 
-  board.innerHTML = state.lists
-    .map((list) => {
-      const filteredCards = list.cards.filter(cardMatchesFilter);
-      const visibleCount = filteredCards.length;
-      const totalCount = list.cards.length;
+  // Nouvelle présentation : grille de "boards/cards" filtrées par vue
+  const listTodo = state.lists.find((l) => l.id === "todo");
+  const listDoing = state.lists.find((l) => l.id === "doing");
+  const listDone = state.lists.find((l) => l.id === "done");
 
+  const cardsTodo = []
+    .concat(listTodo?.cards || [], listDoing?.cards || [])
+    .filter(cardMatchesFilter);
+  const cardsDone = (listDone?.cards || []).filter(cardMatchesFilter);
+
+  const cards = state.viewMode === "done" ? cardsDone : cardsTodo;
+
+  board.classList.add("board-cards");
+
+  if (!cards.length) {
+    board.innerHTML = `
+      <div class="empty">
+        ${state.filter ? "Aucune carte ne correspond au filtre" : "Aucune carte — ajoutez-en une !"}
+      </div>
+    `;
+    setupKeyboardHandlers();
+    return;
+  }
+
+  board.innerHTML = cards
+    .map((card) => {
+      const subtasks = card.checklist?.length || 0;
+      const listLabel = state.viewMode === "done" ? "Fait" : "À faire";
       return `
-      <div 
-        class="column" 
-        data-list-id="${list.id}"
-        role="listitem"
-        ondragover="handleDragOver(event)"
-        ondragleave="handleDragLeave(event)"
-        ondrop="handleDrop(event)"
-      >
-        <div class="column-header">
-          <input
-            type="text"
-            class="column-title"
-            value="${escapeHtml(list.title)}"
-            onchange="updateListTitle('${list.id}', this.value)"
-            aria-label="Titre de la colonne"
-          />
-          <span class="column-count" aria-label="${totalCount} carte(s)">${totalCount}</span>
-          <button 
-            class="btn-add-card" 
-            onclick="addCard('${list.id}')"
-            aria-label="Ajouter une carte à ${escapeHtml(list.title)}"
-          >
-            + Ajouter
-          </button>
-        </div>
-        
-        <div class="cards-container" role="list">
-          ${
-            filteredCards.length === 0
-              ? `<div class="empty">
-                  ${
-                    state.filter
-                      ? "Aucune carte ne correspond au filtre"
-                      : "Aucune carte — ajoutez-en une !"
-                  }
-                </div>`
-              : filteredCards
-                  .map(
-                    (card) => `
-              <div 
-                class="card ${card.priority ? 'priority-' + card.priority : ''}" 
-                data-card-id="${card.id}"
-                draggable="true"
-                ondragstart="handleDragStart(event)"
-                ondragend="handleDragEnd(event)"
-                onclick="openCardModal('${card.id}')"
-                role="listitem"
-                tabindex="0"
-                aria-label="Carte: ${escapeHtml(card.title)}"
-              >
-                <div class="card-header">
-                  <div class="card-header-main">
-                    <button
+        <section class="board-card ${card.priority ? "priority-" + card.priority : ""}" data-card-id="${card.id}">
+          <div class="board-card-header">
+            <div class="board-card-title">
+              ${
+                state.viewMode === "done"
+                  ? ""
+                  : `<button
                       class="card-done-toggle"
                       onclick="event.stopPropagation(); toggleCardDone('${card.id}')"
                       aria-label="Marquer la carte comme terminée"
-                    >
-                      ✓
-                    </button>
-                    <input
-                      type="text"
-                      class="card-title"
-                      value="${escapeHtml(card.title)}"
-                      onchange="updateCardTitle('${card.id}', this.value)"
-                      onclick="event.stopPropagation()"
-                      aria-label="Titre de la carte"
-                    />
-                  </div>
-                  <div class="card-actions">
-                    <div class="priority-badges">
-                      <button class="priority-badge-mini priority-red ${card.priority === 'red' ? 'active' : ''}" 
-                              onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'red')" 
-                              aria-label="Priorité haute" title="Priorité haute">●</button>
-                      <button class="priority-badge-mini priority-orange ${card.priority === 'orange' ? 'active' : ''}" 
-                              onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'orange')" 
-                              aria-label="Priorité moyenne" title="Priorité moyenne">●</button>
-                      <button class="priority-badge-mini priority-green ${card.priority === 'green' ? 'active' : ''}" 
-                              onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'green')" 
-                              aria-label="Priorité basse" title="Priorité basse">●</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="card-checklist">
-                  ${
-                    card.checklist && card.checklist.length
-                      ? card.checklist
-                          .map(
-                            (item, idx) => `
-                    <button
-                      type="button"
-                      class="checklist-row"
-                      onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${idx})"
-                      aria-label="Terminer la sous-tâche"
                       title="Terminer"
-                    >
-                      <span class="checklist-box" aria-hidden="true"></span>
-                      <span class="checklist-text">${escapeHtml(item)}</span>
-                    </button>
-                  `
-                          )
-                          .join("")
-                      : ""
-                  }
+                    >✓</button>`
+              }
+              <input
+                type="text"
+                value="${escapeHtml(card.title)}"
+                onchange="updateCardTitle('${card.id}', this.value)"
+                onclick="event.stopPropagation()"
+                aria-label="Titre de la carte"
+              />
+            </div>
+            <div class="priority-badges">
+              <button class="priority-badge-mini priority-red ${card.priority === "red" ? "active" : ""}"
+                      onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'red')"
+                      aria-label="Priorité haute" title="Priorité haute">●</button>
+              <button class="priority-badge-mini priority-orange ${card.priority === "orange" ? "active" : ""}"
+                      onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'orange')"
+                      aria-label="Priorité moyenne" title="Priorité moyenne">●</button>
+              <button class="priority-badge-mini priority-green ${card.priority === "green" ? "active" : ""}"
+                      onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'green')"
+                      aria-label="Priorité basse" title="Priorité basse">●</button>
+            </div>
+          </div>
+
+          <div class="board-card-sub">
+            <span class="pill">${listLabel}</span>
+            <span class="pill"><strong>${subtasks}</strong> sous-tâche(s)</span>
+          </div>
+
+          <div class="card-checklist">
+            ${
+              card.checklist && card.checklist.length
+                ? card.checklist
+                    .map(
+                      (item, idx) => `
+              <button
+                type="button"
+                class="checklist-row"
+                onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${idx})"
+                aria-label="Terminer la sous-tâche"
+                title="Terminer"
+              >
+                <span class="checklist-box" aria-hidden="true"></span>
+                <span class="checklist-text">${escapeHtml(item)}</span>
+              </button>
+            `
+                    )
+                    .join("")
+                : ""
+            }
+          </div>
+
+          ${
+            state.viewMode === "done"
+              ? ""
+              : `<div class="board-card-footer">
                   <input
                     type="text"
-                    class="checklist-input"
+                    class="board-card-input checklist-input"
                     data-card-id="${card.id}"
-                    placeholder="+ Sous-tâche (Entrée)"
+                    placeholder="+ Nouvelle action… (Entrée)"
                     onclick="event.stopPropagation()"
                     aria-label="Ajouter une sous-tâche"
                   />
-                </div>
-              </div>
-            `
-                  )
-                  .join("")
+                  <button
+                    type="button"
+                    class="board-card-add"
+                    onclick="event.stopPropagation(); addChecklistItemValue('${card.id}', this.previousElementSibling.value); this.previousElementSibling.value='';"
+                    aria-label="Ajouter"
+                    title="Ajouter"
+                  >
+                    +
+                  </button>
+                </div>`
           }
-        </div>
-      </div>
-    `;
+        </section>
+      `;
     })
     .join("");
 
@@ -654,7 +665,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   await loadBoardState();
+  if (!state.viewMode) state.viewMode = "todo";
   render();
+  syncViewToggleUI();
 
   // Toggle aide popover (petit bouton ?)
   const helpToggle = document.getElementById("help-toggle");
@@ -701,6 +714,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
+
+  // Switch vue
+  document.getElementById("view-todo")?.addEventListener("click", () => setViewMode("todo"));
+  document.getElementById("view-done")?.addEventListener("click", () => setViewMode("done"));
 
   // Filtre
   const filterInput = document.getElementById("filter-input");
