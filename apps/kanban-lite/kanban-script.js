@@ -21,6 +21,8 @@ function initState() {
             title: "Exemple de carte",
             note: "Vous pouvez ajouter des notes ici pour décrire cette tâche plus en détail.",
             priority: null,
+            startDate: null,
+            dueDate: null,
             checklist: [],
           },
         ],
@@ -114,7 +116,10 @@ function addCard(listId) {
   const newCard = {
     id: generateId(),
     title: "Nouvelle carte",
+    note: "",
     priority: null,
+    startDate: null,
+    dueDate: null,
     checklist: [],
   };
 
@@ -255,7 +260,7 @@ function cardMatchesFilter(card) {
   const searchText = state.filter;
   return (
     card.title.toLowerCase().includes(searchText) ||
-    card.note.toLowerCase().includes(searchText)
+    (card.note || "").toLowerCase().includes(searchText)
   );
 }
 
@@ -282,6 +287,127 @@ function syncViewToggleUI() {
 // MODAL D'AGRANDISSEMENT
 // ===========================
 let currentModalCardId = null;
+
+// ===========================
+// MODAL "GESTION PROJET"
+// (dates + échéance, liée à une carte Kanban)
+// ===========================
+let currentProjectModalCardId = null;
+
+function normalizeDateForInput(dateValue) {
+  if (!dateValue) return "";
+  if (typeof dateValue !== "string") return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return dateValue;
+  const d = new Date(dateValue);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toISOString().slice(0, 10);
+}
+
+function openProjectMetaModal(cardId) {
+  currentProjectModalCardId = cardId;
+  const found = findCard(cardId);
+  if (!found) return;
+
+  const { card } = found;
+  const startValue = normalizeDateForInput(card.startDate);
+  const dueValue = normalizeDateForInput(card.dueDate);
+
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay";
+  modal.innerHTML = `
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="project-meta-title">
+      <div class="modal-header">
+        <input
+          type="text"
+          id="project-meta-title"
+          class="modal-title-input"
+          value="${escapeHtml(card.title)}"
+          aria-label="Titre du projet"
+          disabled
+        />
+        <button class="modal-close" aria-label="Fermer" onclick="closeProjectMetaModal()">
+          ✕
+        </button>
+      </div>
+
+      <div class="project-meta-grid">
+        <label class="project-meta-field">
+          <span class="project-meta-label">Date de démarrage</span>
+          <input
+            type="date"
+            id="project-meta-start"
+            class="project-date-input"
+            value="${escapeHtml(startValue)}"
+          />
+        </label>
+
+        <label class="project-meta-field">
+          <span class="project-meta-label">Échéance</span>
+          <input
+            type="date"
+            id="project-meta-due"
+            class="project-date-input project-date-due"
+            value="${escapeHtml(dueValue)}"
+          />
+        </label>
+      </div>
+
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-close" onclick="closeProjectMetaModal()">Fermer</button>
+        <button class="modal-btn modal-btn-delete" id="project-meta-save">Enregistrer</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const saveBtn = modal.querySelector("#project-meta-save");
+  const startInput = modal.querySelector("#project-meta-start");
+  const dueInput = modal.querySelector("#project-meta-due");
+
+  saveBtn?.addEventListener("click", () => {
+    const foundNow = findCard(cardId);
+    if (!foundNow) return;
+    const { card: cardNow } = foundNow;
+
+    const start = startInput?.value ? startInput.value : "";
+    const due = dueInput?.value ? dueInput.value : "";
+
+    cardNow.startDate = start || null;
+    cardNow.dueDate = due || null;
+
+    saveState();
+    closeProjectMetaModal();
+  });
+
+  const handleEscape = (e) => {
+    if (e.key === "Escape") {
+      closeProjectMetaModal();
+      document.removeEventListener("keydown", handleEscape);
+    }
+  };
+  document.addEventListener("keydown", handleEscape);
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeProjectMetaModal();
+  });
+
+  // Stopper la fermeture si clic dans le contenu
+  modal.querySelector(".modal-card")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+}
+
+function closeProjectMetaModal() {
+  const overlays = document.querySelectorAll(".modal-overlay");
+  overlays.forEach((o) => {
+    // On ne peut pas distinguer facilement les overlays, on supprime celui de "gestion projet"
+    const title = o.querySelector("#project-meta-title");
+    if (title) o.remove();
+  });
+  currentProjectModalCardId = null;
+  render();
+}
 
 function openCardModal(cardId) {
   currentModalCardId = cardId;
@@ -517,8 +643,6 @@ function render() {
 
   board.innerHTML = cards
     .map((card) => {
-      const subtasks = card.checklist?.length || 0;
-      const listLabel = state.viewMode === "done" ? "Fait" : "À faire";
       return `
         <section class="board-card ${card.priority ? "priority-" + card.priority : ""}" data-card-id="${card.id}">
           <div class="board-card-header">
@@ -533,6 +657,13 @@ function render() {
                       title="Terminer"
                     >✓</button>`
               }
+              <button
+                type="button"
+                class="project-meta-btn"
+                onclick="event.stopPropagation(); openProjectMetaModal('${card.id}')"
+                aria-label="Gérer ce projet (dates et échéance)"
+                title="Dates & échéance"
+              >⏳</button>
               <input
                 type="text"
                 value="${escapeHtml(card.title)}"
@@ -552,11 +683,6 @@ function render() {
                       onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'green')"
                       aria-label="Priorité basse" title="Priorité basse">●</button>
             </div>
-          </div>
-
-          <div class="board-card-sub">
-            <span class="pill">${listLabel}</span>
-            <span class="pill"><strong>${subtasks}</strong> sous-tâche(s)</span>
           </div>
 
           <div class="card-checklist">

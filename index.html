@@ -630,17 +630,6 @@
 
         <nav class="sidebar-nav">
           <span class="nav-section">Navigation</span>
-          <a href="#" class="nav-item" id="btn-project" data-app="project">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="3" y="4" width="7" height="6" rx="1" />
-              <rect x="14" y="4" width="7" height="6" rx="1" />
-              <rect x="3" y="14" width="7" height="6" rx="1" />
-              <rect x="14" y="14" width="7" height="6" rx="1" />
-            </svg>
-            <span class="label">Projets</span>
-          </a>
           <a href="#" class="nav-item" id="btn-kanban" data-app="kanban">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -649,7 +638,7 @@
               <rect x="10" y="8" width="5" height="12" rx="1" />
               <rect x="17" y="11" width="5" height="9" rx="1" />
             </svg>
-            <span class="label">Kanban</span>
+            <span class="label">Projets</span>
           </a>
           <a href="#" class="nav-item" id="btn-workflow" data-app="workflow">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
@@ -821,7 +810,7 @@
           <iframe
             id="app-frame"
             class="app-frame"
-            src="apps/project/project.html"
+            src="apps/kanban-lite/kanban.html"
           ></iframe>
         </div>
         <div class="multi-frame" id="multi-frame">
@@ -847,7 +836,7 @@
 
     <script>
       const urlParams = new URLSearchParams(window.location.search);
-      const app = urlParams.get("app") || "project";
+      const app = urlParams.get("app") || "kanban";
 
       const buttons = document.querySelectorAll(".nav-item");
       const frame = document.getElementById("app-frame");
@@ -1043,7 +1032,7 @@
 
       window.addEventListener("popstate", () => {
         const urlParams = new URLSearchParams(window.location.search);
-        const app = urlParams.get("app") || "project";
+        const app = urlParams.get("app") || "kanban";
         setActive(app);
         showSingleView();
       });

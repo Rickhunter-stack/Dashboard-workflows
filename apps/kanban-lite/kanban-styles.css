@@ -316,6 +316,35 @@ body.compact .help-wrap {
   box-shadow: 0 0 0 2px var(--accent-soft);
 }
 
+/* Bouton "sablier" pour ouvrir la gestion dates/échéance */
+.project-meta-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.82);
+  color: rgba(232, 234, 240, 0.88);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, background 0.15s ease,
+    border-color 0.15s ease, color 0.15s ease;
+  font-size: 14px;
+}
+
+.project-meta-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(15, 23, 42, 0.98);
+  border-color: rgba(148, 163, 184, 0.4);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.project-meta-btn:active {
+  transform: translateY(1px);
+}
+
 .board-card-sub {
   color: var(--muted);
   font-size: 12px;
@@ -1086,6 +1115,43 @@ textarea:focus-visible {
   font-size: 16px;
 }
 
+/* Styles pour la fenêtre "Gestion projet" (dates/échéance) */
+.project-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.project-meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.project-meta-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #b8c5d6;
+}
+
+.project-date-input {
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-size: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.72);
+  color: rgba(232, 234, 240, 0.9);
+  outline: none;
+}
+
+.project-date-input:focus {
+  border-color: rgba(102, 126, 234, 0.55);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+  background: rgba(15, 23, 42, 0.88);
+}
+
 /* ===========================
    INDICATEUR D'AGRANDISSEMENT
    =========================== */
@@ -1125,6 +1191,10 @@ textarea:focus-visible {
 @media (max-width: 768px) {
   body {
     padding: 20px 16px;
+  }
+
+  .project-meta-grid {
+    grid-template-columns: 1fr;
   }
 
   .board {
