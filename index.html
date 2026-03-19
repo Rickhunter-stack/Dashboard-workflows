@@ -503,6 +503,10 @@
         flex-shrink: 0;
       }
 
+      .mobile-bottom-nav {
+        display: none;
+      }
+
       @media (max-width: 900px) {
         .sidebar {
           width: 72px;
@@ -524,6 +528,10 @@
 
       /* Mobile (smartphone): sidebar off-canvas */
       @media (max-width: 640px) {
+        body {
+          padding-bottom: 84px;
+        }
+
         .sidebar {
           position: fixed;
           top: 0;
@@ -611,6 +619,56 @@
 
         .app-frame {
           border-radius: 16px;
+        }
+
+        .mobile-bottom-nav {
+          position: fixed;
+          left: 10px;
+          right: 10px;
+          bottom: 10px;
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 6px;
+          padding: 8px;
+          border-radius: 16px;
+          background: rgba(2, 6, 23, 0.94);
+          border: 1px solid rgba(148, 163, 184, 0.2);
+          box-shadow: 0 16px 42px rgba(0, 0, 0, 0.6);
+          z-index: 2100;
+          backdrop-filter: blur(14px);
+        }
+
+        .mobile-tab {
+          display: inline-flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          min-height: 52px;
+          border-radius: 12px;
+          border: 1px solid transparent;
+          background: transparent;
+          color: rgba(203, 213, 225, 0.78);
+          cursor: pointer;
+          font-size: 9px;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .mobile-tab .mobile-tab-icon {
+          width: 15px;
+          height: 15px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .mobile-tab.active {
+          background: rgba(79, 70, 229, 0.18);
+          border-color: rgba(129, 140, 248, 0.42);
+          color: #eef2ff;
+          box-shadow: inset 0 0 16px rgba(79, 70, 229, 0.2);
         }
       }
     </style>
@@ -822,6 +880,29 @@
       </main>
     </div>
 
+    <div class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Navigation mobile">
+      <button type="button" class="mobile-tab" data-app="kanban">
+        <span class="mobile-tab-icon">📁</span>
+        <span>Projets</span>
+      </button>
+      <button type="button" class="mobile-tab" data-app="notes">
+        <span class="mobile-tab-icon">📝</span>
+        <span>Notes</span>
+      </button>
+      <button type="button" class="mobile-tab" data-app="workflow">
+        <span class="mobile-tab-icon">🧩</span>
+        <span>Workflows</span>
+      </button>
+      <button type="button" class="mobile-tab" data-app="rappels">
+        <span class="mobile-tab-icon">🔔</span>
+        <span>Rappels</span>
+      </button>
+      <button type="button" class="mobile-tab" data-app="agenda">
+        <span class="mobile-tab-icon">📅</span>
+        <span>Agenda</span>
+      </button>
+    </div>
+
     <div class="quicklinks-overlay" id="quicklinks-overlay" aria-hidden="true">
       <div class="quicklinks-drawer" role="dialog" aria-label="Liens rapides">
         <div class="quicklinks-header">
@@ -868,6 +949,7 @@
       const adminSettings = document.getElementById("admin-settings");
       const mobileMenuBtn = document.getElementById("mobile-menu-btn");
       const mobileOverlay = document.getElementById("mobile-overlay");
+      const mobileTabs = document.querySelectorAll(".mobile-tab");
 
       function closeMobileNav() {
         document.body.classList.remove("nav-open");
@@ -888,6 +970,9 @@
 
       function setActive(appName) {
         buttons.forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.app === appName);
+        });
+        mobileTabs.forEach((btn) => {
           btn.classList.toggle("active", btn.dataset.app === appName);
         });
 
@@ -972,6 +1057,18 @@
             }
             return;
           }
+          closeQuickLinks();
+          window.history.pushState({}, "", "?app=" + appName);
+          setActive(appName);
+          showSingleView();
+          closeMobileNav();
+        });
+      });
+
+      mobileTabs.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const appName = btn.dataset.app;
+          if (!appName) return;
           closeQuickLinks();
           window.history.pushState({}, "", "?app=" + appName);
           setActive(appName);

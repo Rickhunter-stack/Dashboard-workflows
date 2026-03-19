@@ -1190,7 +1190,7 @@ textarea:focus-visible {
 
 @media (max-width: 768px) {
   body {
-    padding: 20px 16px;
+    padding: 14px 12px 88px;
   }
 
   .project-meta-grid {
@@ -1202,7 +1202,23 @@ textarea:focus-visible {
   }
 
   .kanban-header h1 {
-    font-size: 28px;
+    font-size: 20px;
+    text-align: left;
+    margin-bottom: 8px;
+  }
+
+  .header-actions {
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .filter-container {
+    min-width: 0;
+  }
+
+  .filter-input {
+    border-radius: 12px;
+    padding: 11px 12px;
   }
 
   .column {
@@ -1213,10 +1229,32 @@ textarea:focus-visible {
     flex-wrap: wrap;
   }
 
-  .btn-add-card {
-    width: 100%;
-    margin-left: 0;
-    margin-top: 8px;
+  .btn-new-card {
+    position: fixed;
+    right: 18px;
+    bottom: 102px;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    font-size: 0;
+    z-index: 1200;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 16px 34px rgba(79, 70, 229, 0.38);
+    padding: 0;
+  }
+
+  .btn-new-card::before {
+    content: "+";
+    font-size: 30px;
+    line-height: 1;
+    color: #fff;
+    margin-top: -1px;
+  }
+
+  .view-toggle {
+    align-self: flex-start;
   }
 
   .modal-card {
