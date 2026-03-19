@@ -1202,8 +1202,8 @@ textarea:focus-visible {
   }
 
   .kanban-header h1 {
-    font-size: 20px;
-    text-align: left;
+    font-size: 28px;
+    text-align: center;
     margin-bottom: 8px;
   }
 
@@ -1230,31 +1230,21 @@ textarea:focus-visible {
   }
 
   .btn-new-card {
-    position: fixed;
-    right: 18px;
-    bottom: 102px;
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    font-size: 0;
-    z-index: 1200;
+    position: static;
+    width: auto;
+    height: auto;
+    border-radius: 999px;
+    font-size: 16px;
+    z-index: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 16px 34px rgba(79, 70, 229, 0.38);
-    padding: 0;
-  }
-
-  .btn-new-card::before {
-    content: "+";
-    font-size: 30px;
-    line-height: 1;
-    color: #fff;
-    margin-top: -1px;
+    box-shadow: 0 10px 26px rgba(79, 140, 255, 0.26);
+    padding: 11px 18px;
   }
 
   .view-toggle {
-    align-self: flex-start;
+    align-self: center;
   }
 
   .modal-card {
