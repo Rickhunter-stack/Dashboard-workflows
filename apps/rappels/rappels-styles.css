@@ -112,6 +112,43 @@ body.compact .header-actions {
   display: flex;
   align-items: center;
   gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.reminder-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(79, 140, 255, 0.95),
+    rgba(79, 70, 229, 0.85)
+  );
+  opacity: 0.9;
+}
+
+.reminder-item.priority-red::before {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.95), rgba(239, 68, 68, 0.55));
+}
+
+.reminder-item.priority-orange::before {
+  background: linear-gradient(90deg, rgba(249, 115, 22, 0.95), rgba(249, 115, 22, 0.55));
+}
+
+.reminder-item.priority-green::before {
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.95), rgba(34, 197, 94, 0.55));
+}
+
+.reminder-item.soon::before {
+  background: linear-gradient(90deg, rgba(249, 115, 22, 0.95), rgba(249, 115, 22, 0.55));
+}
+
+.reminder-item.overdue::before {
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.95), rgba(220, 38, 38, 0.55));
 }
 
 .reminder-item:hover {

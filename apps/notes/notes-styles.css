@@ -110,7 +110,30 @@ body.compact .header-actions {
   flex-direction: column;
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(var(--blur));
+  position: relative;
+  overflow: hidden;
 }
+
+.note-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(79, 140, 255, 0.95),
+    rgba(79, 70, 229, 0.85)
+  );
+  opacity: 0.9;
+}
+
+.note-card.note-color-yellow::before { background: linear-gradient(90deg, rgba(251, 191, 36, 0.95), rgba(251, 191, 36, 0.55)); }
+.note-card.note-color-green::before { background: linear-gradient(90deg, rgba(52, 211, 153, 0.95), rgba(52, 211, 153, 0.55)); }
+.note-card.note-color-blue::before { background: linear-gradient(90deg, rgba(96, 165, 250, 0.95), rgba(96, 165, 250, 0.55)); }
+.note-card.note-color-pink::before { background: linear-gradient(90deg, rgba(244, 114, 182, 0.95), rgba(244, 114, 182, 0.55)); }
+.note-card.note-color-purple::before { background: linear-gradient(90deg, rgba(167, 139, 250, 0.95), rgba(167, 139, 250, 0.55)); }
 
 .note-card:hover {
   border-color: color-mix(in srgb, var(--accent) 25%, var(--border-1));

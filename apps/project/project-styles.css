@@ -273,6 +273,23 @@ body {
   flex-direction: column;
   gap: 10px;
   min-height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(79, 140, 255, 0.95),
+    rgba(79, 70, 229, 0.85)
+  );
+  opacity: 0.9;
 }
 
 .project-card:hover {
