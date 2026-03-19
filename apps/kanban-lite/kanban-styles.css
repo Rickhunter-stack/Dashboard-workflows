@@ -242,6 +242,34 @@ body.compact .help-wrap {
   min-height: 160px;
   transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
   position: relative;
+  overflow: hidden;
+}
+
+.board-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(79, 140, 255, 0.95),
+    rgba(79, 70, 229, 0.85)
+  );
+  opacity: 0.9;
+}
+
+.board-card.priority-red::before {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.95), rgba(239, 68, 68, 0.55));
+}
+
+.board-card.priority-orange::before {
+  background: linear-gradient(90deg, rgba(249, 115, 22, 0.95), rgba(249, 115, 22, 0.55));
+}
+
+.board-card.priority-green::before {
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.95), rgba(34, 197, 94, 0.55));
 }
 
 .board-card:hover {
