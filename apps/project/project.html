@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gestion de Projet - Roadmap</title>
+    <title>Projets</title>
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
       rel="stylesheet"
@@ -28,16 +28,19 @@
 
     <div class="project-container">
       <header class="project-header">
-        <h1>Gestion de projet</h1>
+        <h1>Projets</h1>
 
         <div class="header-actions">
+          <button class="btn-back" id="btn-back" type="button" hidden>
+            ← Retour
+          </button>
           <div class="filter-container">
             <input
               type="text"
               id="filter-input"
               class="filter-input"
-              placeholder="🔍 Filtrer les tâches..."
-              aria-label="Filtrer les tâches"
+              placeholder="🔍 Filtrer les projets..."
+              aria-label="Filtrer les projets"
             />
           </div>
 
@@ -92,7 +95,7 @@
         class="roadmap-board"
         id="roadmap-board"
         role="list"
-        aria-label="Roadmap du projet"
+        aria-label="Projets"
       >
         <!-- Les phases seront générées ici par JavaScript -->
       </main>

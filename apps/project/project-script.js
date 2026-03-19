@@ -6,6 +6,8 @@ let state = {
   phaseNames: {},
   projects: [],
   filter: "",
+  view: "list", // 'list' | 'detail'
+  currentProjectId: null,
 };
 
 // ===========================
@@ -50,7 +52,49 @@ function initState() {
       },
     ],
     filter: "",
+    view: "list",
+    currentProjectId: null,
   };
+}
+
+function openProject(projectId) {
+  state.view = "detail";
+  state.currentProjectId = projectId;
+  saveState();
+  syncHeaderForView();
+  render();
+}
+
+function backToProjects() {
+  state.view = "list";
+  state.currentProjectId = null;
+  saveState();
+  syncHeaderForView();
+  render();
+}
+
+function getCurrentProject() {
+  if (!state.currentProjectId) return null;
+  return state.projects.find((p) => p.id === state.currentProjectId) || null;
+}
+
+function syncHeaderForView() {
+  const btnBack = document.getElementById("btn-back");
+  const btnNew = document.getElementById("btn-new-task");
+  const filterInput = document.getElementById("filter-input");
+
+  if (btnBack) btnBack.hidden = state.view !== "detail";
+  if (btnNew) {
+    btnNew.textContent = state.view === "detail" ? "➕ Nouvelle tâche" : "➕ Nouveau Projet";
+  }
+  if (filterInput) {
+    filterInput.placeholder =
+      state.view === "detail" ? "🔍 Filtrer les tâches..." : "🔍 Filtrer les projets...";
+    filterInput.setAttribute(
+      "aria-label",
+      state.view === "detail" ? "Filtrer les tâches" : "Filtrer les projets"
+    );
+  }
 }
 
 // ===========================
@@ -139,6 +183,15 @@ function addProject() {
       }
     }
   }, 100);
+}
+
+function countTasksForProject(project) {
+  let n = 0;
+  if (!project || !project.tasks) return 0;
+  for (const phaseId of state.phases) {
+    if (project.tasks[phaseId]) n += 1;
+  }
+  return n;
 }
 
 function updateProjectName(projectId, newName) {
@@ -452,23 +505,77 @@ function render() {
   const board = document.getElementById("roadmap-board");
   if (!board) return;
 
-  const filteredProjects = state.projects.filter(projectMatchesFilter);
+  if (state.view === "list") {
+    const filteredProjects = state.projects.filter(projectMatchesFilter);
 
-  // Générer l'en-tête avec les noms de phases
+    if (filteredProjects.length === 0) {
+      board.innerHTML = `
+        <div class="empty-state">
+          ${
+            state.filter
+              ? "Aucun projet ne correspond au filtre"
+              : "Aucun projet — cliquez sur 'Nouveau Projet' pour commencer !"
+          }
+        </div>
+      `;
+      return;
+    }
+
+    board.innerHTML = `
+      <div class="projects-grid" role="list">
+        ${filteredProjects
+          .map((project) => {
+            const taskCount = countTasksForProject(project);
+            return `
+              <article class="project-card" data-project-id="${project.id}" role="listitem" tabindex="0">
+                <div class="project-card-title">${escapeHtml(project.name || "Sans titre")}</div>
+                <div class="project-card-meta">
+                  <span class="project-pill"><strong>${taskCount}</strong> tâche(s)</span>
+                  <span class="project-pill">4 phases</span>
+                </div>
+              </article>
+            `;
+          })
+          .join("")}
+      </div>
+    `;
+
+    board.querySelectorAll(".project-card").forEach((card) => {
+      card.addEventListener("click", () => openProject(card.dataset.projectId));
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") openProject(card.dataset.projectId);
+      });
+    });
+
+    return;
+  }
+
+  const project = getCurrentProject();
+  if (!project) {
+    backToProjects();
+    return;
+  }
+
   const headerHTML = `
     <div class="roadmap-header">
-      <div class="project-name-header">Projets</div>
-      ${state.phases.map(phaseId => `
+      <div class="project-name-header">Projet</div>
+      ${state.phases
+        .map(
+          (phaseId) => `
         <div class="phase-header-cell">
           ${state.phaseNames[phaseId]}
         </div>
-      `).join('')}
+      `
+        )
+        .join("")}
       <div class="actions-header"></div>
     </div>
   `;
 
-  // Générer les lignes de projets
-  const projectsHTML = filteredProjects.map(project => `
+  const projectsHTML = [project]
+    .filter(projectMatchesFilter)
+    .map(
+      (project) => `
     <div
       class="project-row"
       data-project-id="${project.id}"
@@ -493,20 +600,23 @@ function render() {
         />
       </div>
       
-      ${state.phases.map(phaseId => {
-        const task = project.tasks[phaseId];
-        return `
+      ${state.phases
+        .map((phaseId) => {
+          const task = project.tasks[phaseId];
+          return `
           <div 
-            class="task-cell ${task ? 'has-task' : 'empty-cell'}"
+            class="task-cell ${task ? "has-task" : "empty-cell"}"
             data-project-id="${project.id}"
             data-phase="${phaseId}"
             ondragover="handleDragOver(event)"
             ondragleave="handleDragLeave(event)"
             ondrop="handleDrop(event)"
           >
-            ${task ? `
+            ${
+              task
+                ? `
               <div 
-                class="task ${task.priority ? 'priority-' + task.priority : ''}" 
+                class="task ${task.priority ? "priority-" + task.priority : ""}" 
                 data-task-id="${task.id}"
                 draggable="true"
                 ondragstart="handleDragStart(event)"
@@ -522,14 +632,26 @@ function render() {
                   />
                   <div class="task-actions">
                     <div class="priority-buttons">
-                      <button class="priority-btn priority-red ${task.priority === 'red' ? 'active' : ''}" 
-                              onclick="event.stopPropagation(); updateTaskPriority('${task.id}', 'red')" 
+                      <button class="priority-btn priority-red ${
+                        task.priority === "red" ? "active" : ""
+                      }" 
+                              onclick="event.stopPropagation(); updateTaskPriority('${
+                                task.id
+                              }', 'red')" 
                               title="Priorité haute">●</button>
-                      <button class="priority-btn priority-orange ${task.priority === 'orange' ? 'active' : ''}" 
-                              onclick="event.stopPropagation(); updateTaskPriority('${task.id}', 'orange')" 
+                      <button class="priority-btn priority-orange ${
+                        task.priority === "orange" ? "active" : ""
+                      }" 
+                              onclick="event.stopPropagation(); updateTaskPriority('${
+                                task.id
+                              }', 'orange')" 
                               title="Priorité moyenne">●</button>
-                      <button class="priority-btn priority-green ${task.priority === 'green' ? 'active' : ''}" 
-                              onclick="event.stopPropagation(); updateTaskPriority('${task.id}', 'green')" 
+                      <button class="priority-btn priority-green ${
+                        task.priority === "green" ? "active" : ""
+                      }" 
+                              onclick="event.stopPropagation(); updateTaskPriority('${
+                                task.id
+                              }', 'green')" 
                               title="Priorité basse">●</button>
                     </div>
                     <button 
@@ -564,7 +686,8 @@ function render() {
                   </div>
                 </div>
               </div>
-            ` : `
+            `
+                : `
               <button 
                 class="btn-add-task-cell" 
                 onclick="addTask('${project.id}', '${phaseId}')"
@@ -572,10 +695,12 @@ function render() {
               >
                 +
               </button>
-            `}
+            `
+            }
           </div>
         `;
-      }).join('')}
+        })
+        .join("")}
       
       <div class="project-actions-cell">
         <button 
@@ -587,15 +712,18 @@ function render() {
         </button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join("");
 
-  const emptyState = filteredProjects.length === 0 ? `
+  const emptyState =
+    projectsHTML.trim().length === 0
+      ? `
     <div class="empty-state">
-      ${state.filter 
-        ? "Aucun projet ne correspond au filtre" 
-        : "Aucun projet — cliquez sur 'Nouveau Projet' pour commencer !"}
+      ${state.filter ? "Aucune tâche ne correspond au filtre" : "Aucune tâche dans ce projet."}
     </div>
-  ` : '';
+  `
+      : "";
 
   board.innerHTML = headerHTML + projectsHTML + emptyState;
 }
@@ -609,6 +737,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     state = initState();
     saveState();
   }
+  if (!state.view) state.view = "list";
+  syncHeaderForView();
   render();
   console.log("Rendu initial effectué");
 
@@ -663,17 +793,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Bouton "Nouveau Projet"
   const btnNewTask = document.getElementById("btn-new-task");
   if (btnNewTask) {
-    btnNewTask.textContent = "➕ Nouveau Projet";
     btnNewTask.addEventListener("click", () => {
-      console.log("Ajout d'un nouveau projet");
+      if (state.view === "detail") {
+        const project = getCurrentProject();
+        if (!project) return;
+        addTask(project.id, state.phases[0]);
+        return;
+      }
       addProject();
     });
   }
 
+  // Bouton retour
+  document.getElementById("btn-back")?.addEventListener("click", backToProjects);
+
   // Filtre
   const filterInput = document.getElementById("filter-input");
   if (filterInput) {
-    filterInput.placeholder = "🔍 Filtrer les projets...";
     filterInput.addEventListener("input", (e) => {
       updateFilter(e.target.value);
     });
