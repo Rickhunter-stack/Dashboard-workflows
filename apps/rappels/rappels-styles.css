@@ -125,8 +125,8 @@ body.compact .header-actions {
   height: 2px;
   background: linear-gradient(
     90deg,
-    rgba(79, 140, 255, 0.95),
-    rgba(79, 70, 229, 0.85)
+    rgba(128, 131, 255, 0.95),
+    rgba(128, 131, 255, 0.55)
   );
   opacity: 0.9;
 }
@@ -566,12 +566,12 @@ body.compact .header-actions {
 .modal-btn-primary {
   background: var(--accent-gradient);
   color: #ffffff;
-  box-shadow: 0 10px 26px rgba(79, 140, 255, 0.22);
+  box-shadow: 0 16px 40px var(--accent-soft);
 }
 
 .modal-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
+  box-shadow: 0 22px 54px rgba(128, 131, 255, 0.28);
 }
 
 .modal-btn-secondary {

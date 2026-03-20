@@ -120,13 +120,13 @@ body {
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 26px rgba(79, 140, 255, 0.22);
+  box-shadow: 0 16px 40px var(--accent-soft);
   white-space: nowrap;
 }
 
 .btn-new-task:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
+  box-shadow: 0 22px 54px rgba(128, 131, 255, 0.28);
 }
 
 .header-actions {
@@ -286,8 +286,8 @@ body {
   height: 2px;
   background: linear-gradient(
     90deg,
-    rgba(79, 140, 255, 0.95),
-    rgba(79, 70, 229, 0.85)
+    rgba(128, 131, 255, 0.95),
+    rgba(128, 131, 255, 0.55)
   );
   opacity: 0.9;
 }

@@ -245,12 +245,12 @@ button {
   margin: 24px auto;
   transition: all 0.2s ease;
   min-height: 56px;
-  box-shadow: 0 10px 26px rgba(79, 140, 255, 0.22);
+  box-shadow: 0 16px 40px var(--accent-soft);
 }
 
 button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
+  box-shadow: 0 22px 54px rgba(128, 131, 255, 0.28);
 }
 
 button:active {

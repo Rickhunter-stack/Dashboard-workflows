@@ -1,47 +1,47 @@
 /* Shared glassmorphic theme tokens (app-wide) */
 :root {
-  /* Palette sombre neutre, style IDE */
-  --bg: #050505;
-  --surface: rgba(255, 255, 255, 0.04);
-  --surface-hover: rgba(255, 255, 255, 0.07);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(255, 255, 255, 0.18);
-  --text: #e8eaf0;
-  --muted: rgba(232, 234, 240, 0.45);
-  --muted-2: rgba(232, 234, 240, 0.70);
+  /* Palette alignée sur le design "stitch" (Lumina) */
+  --bg: #111317;
+  --surface: rgba(30, 32, 36, 0.4);
+  --surface-hover: rgba(55, 57, 62, 0.6);
+  --border: rgba(144, 143, 160, 0.22);
+  --border-active: rgba(192, 193, 255, 0.25);
+  --text: #e2e2e8;
+  --muted: rgba(226, 226, 232, 0.45);
+  --muted-2: rgba(226, 226, 232, 0.7);
 
-  --accent: #4f46e5;
-  --accent-2: #1e293b;
-  --accent-gradient: linear-gradient(135deg, #1e293b, #020617);
-  --accent-soft: rgba(108, 143, 255, 0.18);
-  --accent-soft-2: rgba(167, 139, 250, 0.16);
+  --accent: #8083ff; /* indigo primary-container */
+  --accent-2: #00bd85; /* emerald */
+  --accent-gradient: linear-gradient(135deg, #c0c1ff, #8083ff);
+  --accent-soft: rgba(128, 131, 255, 0.2);
+  --accent-soft-2: rgba(192, 193, 255, 0.16);
 
   --green: #34d399;
   --red: #f87171;
   --amber: #fbbf24;
 
   /* Compat layer pour les anciens tokens du dashboard workflows */
-  --bg-0: #050505;
-  --bg-1: #050505;
-  --bg-2: #050505;
-  --bg-gradient: radial-gradient(circle at 10% 0%, #111827 0%, transparent 55%),
-    radial-gradient(circle at 90% 100%, #020617 0%, transparent 55%),
-    #050505;
+  --bg-0: #111317;
+  --bg-1: #111317;
+  --bg-2: #111317;
+  --bg-gradient: radial-gradient(circle at 18% 0%, rgba(192, 193, 255, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 88% 100%, rgba(0, 189, 133, 0.08) 0%, transparent 55%),
+    #111317;
 
-  --surface-0: rgba(255, 255, 255, 0.032);
-  --surface-1: var(--surface);
-  --surface-2: var(--surface-hover);
-  --surface-3: rgba(255, 255, 255, 0.10);
+  --surface-0: rgba(30, 32, 36, 0.35);
+  --surface-1: rgba(30, 32, 36, 0.52);
+  --surface-2: rgba(55, 57, 62, 0.62);
+  --surface-3: rgba(226, 226, 232, 0.08);
 
   --border-0: var(--border);
-  --border-1: var(--border-active);
-  --border-2: rgba(255, 255, 255, 0.22);
+  --border-1: rgba(192, 193, 255, 0.35);
+  --border-2: rgba(144, 143, 160, 0.35);
 
   /* Elevation + blur */
   --blur: 20px;
   --blur-strong: 24px;
-  --shadow-sm: 0 4px 18px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 12px 34px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 16px 44px rgba(0, 0, 0, 0.48);
   --shadow-lg: 0 22px 70px rgba(0, 0, 0, 0.65);
 
   /* Radius */
@@ -89,16 +89,16 @@ body {
   color: #ffffff;
   border: none;
   padding: 12px 24px;
-  border-radius: 10px;
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 26px rgba(79, 140, 255, 0.22);
+  box-shadow: 0 16px 40px rgba(128, 131, 255, 0.22);
   white-space: nowrap;
 }
 
 .btn-primary-accent:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
+  box-shadow: 0 22px 54px rgba(128, 131, 255, 0.28);
 }
 
 /* Scrollbar */
@@ -113,12 +113,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(79, 140, 255, 0.55);
+  background: rgba(128, 131, 255, 0.55);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(79, 140, 255, 0.75);
+  background: rgba(128, 131, 255, 0.75);
 }
 
 @media (prefers-reduced-motion: reduce) {
