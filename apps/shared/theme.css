@@ -126,3 +126,62 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+:root {
+  /* Palette alignée sur le design "stitch" (Lumina) */
+  --bg: #111317;
+  --surface: rgba(30, 32, 36, 0.4);
+  --surface-hover: rgba(55, 57, 62, 0.6);
+  --border: rgba(144, 143, 160, 0.22);
+  --border-active: rgba(192, 193, 255, 0.25);
+  --text: #e2e2e8;
+  --muted: rgba(226, 226, 232, 0.45);
+  --muted-2: rgba(226, 226, 232, 0.7);
+
+  --accent: #8083ff; /* indigo primary-container */
+  --accent-2: #00bd85; /* emerald */
+  --accent-gradient: linear-gradient(135deg, #c0c1ff, #8083ff);
+  --accent-soft: rgba(128, 131, 255, 0.2);
+  --accent-soft-2: rgba(192, 193, 255, 0.16);
+
+  --green: #34d399;
+  --red: #f87171;
+  --amber: #fbbf24;
+
+  /* Compat layer pour les anciens tokens du dashboard workflows */
+  --bg-0: #111317;
+  --bg-1: #111317;
+  --bg-2: #111317;
+  --bg-gradient: radial-gradient(
+      circle at 18% 0%,
+      rgba(192, 193, 255, 0.12) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 88% 100%,
+      rgba(0, 189, 133, 0.08) 0%,
+      transparent 55%
+    ),
+    #111317;
+
+  --surface-0: rgba(30, 32, 36, 0.35);
+  --surface-1: rgba(30, 32, 36, 0.52);
+  --surface-2: rgba(55, 57, 62, 0.62);
+  --surface-3: rgba(226, 226, 232, 0.08);
+
+  --border-0: var(--border);
+  --border-1: rgba(192, 193, 255, 0.35);
+  --border-2: rgba(144, 143, 160, 0.35);
+
+  /* Elevation + blur */
+  --blur: 20px;
+  --blur-strong: 24px;
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 16px 44px rgba(0, 0, 0, 0.48);
+  --shadow-lg: 0 22px 70px rgba(0, 0, 0, 0.65);
+
+  /* Radius */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 16px;
+}
