@@ -1,67 +1,76 @@
-/* Shared glassmorphic theme tokens (app-wide) */
+/* Shared glassmorphic theme tokens (app-wide) — premium dark + glass */
 :root {
-  /* Palette alignée sur le design "stitch" (Lumina) */
-  --bg: #111317;
-  --surface: rgba(30, 32, 36, 0.4);
-  --surface-hover: rgba(55, 57, 62, 0.6);
-  --border: rgba(144, 143, 160, 0.22);
-  --border-active: rgba(192, 193, 255, 0.25);
-  --text: #e2e2e8;
-  --muted: rgba(226, 226, 232, 0.45);
-  --muted-2: rgba(226, 226, 232, 0.7);
+  /* Fond quasi noir, halos très discrets (style ref premium) */
+  --bg: #050508;
+  --text: #f0f0f5;
+  --muted: rgba(240, 240, 245, 0.42);
+  --muted-2: rgba(240, 240, 245, 0.72);
 
-  --accent: #8083ff; /* indigo primary-container */
-  --accent-2: #00bd85; /* emerald */
-  --accent-gradient: linear-gradient(135deg, #c0c1ff, #8083ff);
-  --accent-soft: rgba(128, 131, 255, 0.2);
-  --accent-soft-2: rgba(192, 193, 255, 0.16);
+  /* Glass : surfaces claires très transparentes sur fond sombre */
+  --surface: rgba(255, 255, 255, 0.055);
+  --surface-hover: rgba(255, 255, 255, 0.09);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-active: rgba(192, 193, 255, 0.32);
+  --glass-highlight: rgba(255, 255, 255, 0.06);
+
+  --accent: #8083ff;
+  --accent-2: #00bd85;
+  --accent-gradient: linear-gradient(135deg, #c0c1ff, #6b6ef0);
+  --accent-soft: rgba(128, 131, 255, 0.22);
+  --accent-soft-2: rgba(192, 193, 255, 0.12);
 
   --green: #34d399;
   --red: #f87171;
   --amber: #fbbf24;
 
-  /* Compat layer pour les anciens tokens du dashboard workflows */
-  --bg-0: #111317;
-  --bg-1: #111317;
-  --bg-2: #111317;
-  --bg-gradient: radial-gradient(circle at 18% 0%, rgba(192, 193, 255, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 88% 100%, rgba(0, 189, 133, 0.08) 0%, transparent 55%),
-    #111317;
+  /* Compat anciens tokens */
+  --bg-0: #050508;
+  --bg-1: #050508;
+  --bg-2: #050508;
+  --bg-gradient:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(128, 131, 255, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 60% at 100% 100%, rgba(0, 189, 133, 0.05) 0%, transparent 50%),
+    linear-gradient(180deg, #08080c 0%, #050508 45%, #030306 100%);
 
-  --surface-0: rgba(30, 32, 36, 0.35);
-  --surface-1: rgba(30, 32, 36, 0.52);
-  --surface-2: rgba(55, 57, 62, 0.62);
-  --surface-3: rgba(226, 226, 232, 0.08);
+  --surface-0: rgba(255, 255, 255, 0.045);
+  --surface-1: rgba(255, 255, 255, 0.065);
+  --surface-2: rgba(255, 255, 255, 0.095);
+  --surface-3: rgba(255, 255, 255, 0.06);
 
   --border-0: var(--border);
-  --border-1: rgba(192, 193, 255, 0.35);
-  --border-2: rgba(144, 143, 160, 0.35);
+  --border-1: rgba(255, 255, 255, 0.14);
+  --border-2: rgba(192, 193, 255, 0.22);
 
-  /* Elevation + blur */
-  --blur: 20px;
-  --blur-strong: 24px;
-  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 16px 44px rgba(0, 0, 0, 0.48);
-  --shadow-lg: 0 22px 70px rgba(0, 0, 0, 0.65);
+  /* Blur + ombres plus « premium » */
+  --blur: 28px;
+  --blur-strong: 40px;
+  --shadow-sm:
+    0 4px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  --shadow-md:
+    0 12px 40px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.65);
 
-  /* Radius */
   --r-sm: 10px;
   --r-md: 14px;
-  --r-lg: 16px;
+  --r-lg: 18px;
 }
 
 html,
 body {
   background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text);
 }
 
-/* Optional helpers (useful for future refactors) */
+/* Helpers glass */
 .glass {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  backdrop-filter: blur(var(--blur));
+  backdrop-filter: blur(var(--blur)) saturate(1.35);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.35);
   box-shadow: var(--shadow-sm);
 }
 
@@ -69,7 +78,8 @@ body {
   background: var(--surface-hover);
   border: 1px solid var(--border-active);
   border-radius: var(--r-lg);
-  backdrop-filter: blur(var(--blur-strong));
+  backdrop-filter: blur(var(--blur-strong)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--blur-strong)) saturate(1.4);
   box-shadow: var(--shadow-md);
 }
 
@@ -87,18 +97,22 @@ body {
   font-size: 14px;
   background: var(--accent-gradient);
   color: #ffffff;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 12px 24px;
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 16px 40px rgba(128, 131, 255, 0.22);
+  box-shadow:
+    0 16px 40px rgba(128, 131, 255, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
   white-space: nowrap;
 }
 
 .btn-primary-accent:hover {
   transform: translateY(-2px);
-  box-shadow: 0 22px 54px rgba(128, 131, 255, 0.28);
+  box-shadow:
+    0 22px 54px rgba(128, 131, 255, 0.32),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
 /* Scrollbar */
@@ -108,80 +122,23 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(128, 131, 255, 0.55);
+  background: rgba(128, 131, 255, 0.45);
   border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 131, 255, 0.75);
+  background: rgba(128, 131, 255, 0.65);
 }
 
 @media (prefers-reduced-motion: reduce) {
   * {
     scroll-behavior: auto !important;
   }
-}
-
-:root {
-  /* Palette alignée sur le design "stitch" (Lumina) */
-  --bg: #111317;
-  --surface: rgba(30, 32, 36, 0.4);
-  --surface-hover: rgba(55, 57, 62, 0.6);
-  --border: rgba(144, 143, 160, 0.22);
-  --border-active: rgba(192, 193, 255, 0.25);
-  --text: #e2e2e8;
-  --muted: rgba(226, 226, 232, 0.45);
-  --muted-2: rgba(226, 226, 232, 0.7);
-
-  --accent: #8083ff; /* indigo primary-container */
-  --accent-2: #00bd85; /* emerald */
-  --accent-gradient: linear-gradient(135deg, #c0c1ff, #8083ff);
-  --accent-soft: rgba(128, 131, 255, 0.2);
-  --accent-soft-2: rgba(192, 193, 255, 0.16);
-
-  --green: #34d399;
-  --red: #f87171;
-  --amber: #fbbf24;
-
-  /* Compat layer pour les anciens tokens du dashboard workflows */
-  --bg-0: #111317;
-  --bg-1: #111317;
-  --bg-2: #111317;
-  --bg-gradient: radial-gradient(
-      circle at 18% 0%,
-      rgba(192, 193, 255, 0.12) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      circle at 88% 100%,
-      rgba(0, 189, 133, 0.08) 0%,
-      transparent 55%
-    ),
-    #111317;
-
-  --surface-0: rgba(30, 32, 36, 0.35);
-  --surface-1: rgba(30, 32, 36, 0.52);
-  --surface-2: rgba(55, 57, 62, 0.62);
-  --surface-3: rgba(226, 226, 232, 0.08);
-
-  --border-0: var(--border);
-  --border-1: rgba(192, 193, 255, 0.35);
-  --border-2: rgba(144, 143, 160, 0.35);
-
-  /* Elevation + blur */
-  --blur: 20px;
-  --blur-strong: 24px;
-  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 16px 44px rgba(0, 0, 0, 0.48);
-  --shadow-lg: 0 22px 70px rgba(0, 0, 0, 0.65);
-
-  /* Radius */
-  --r-sm: 10px;
-  --r-md: 14px;
-  --r-lg: 16px;
 }
