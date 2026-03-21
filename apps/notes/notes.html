@@ -38,6 +38,37 @@
       </main>
     </div>
 
+    <!-- Vue lecture plein écran -->
+    <div class="read-view-overlay" id="read-view" aria-hidden="true">
+      <div class="read-view-panel" id="read-view-panel" role="document">
+        <header class="read-view-header">
+          <button
+            type="button"
+            class="read-view-back"
+            id="read-view-close"
+            aria-label="Retour à la liste"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        </header>
+        <div class="read-view-scroll">
+          <h2 class="read-view-title" id="read-view-title"></h2>
+          <div class="read-view-body" id="read-view-content"></div>
+          <div class="read-view-code-wrap" id="read-view-code-wrap" hidden>
+            <div class="read-view-code-label">Code</div>
+            <pre class="read-view-code"><code id="read-view-code"></code></pre>
+          </div>
+        </div>
+        <footer class="read-view-footer">
+          <button type="button" class="read-view-edit-btn btn-primary-accent" id="read-view-edit">
+            Modifier
+          </button>
+        </footer>
+      </div>
+    </div>
+
     <!-- Modal création/édition -->
     <div class="modal-overlay" id="note-modal">
       <div class="modal-card" role="dialog">

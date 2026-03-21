@@ -134,8 +134,66 @@ function render() {
   }).join("");
 
   grid.querySelectorAll(".note-card").forEach(card => {
-    card.addEventListener("click", () => openModal(card.dataset.noteId));
+    card.addEventListener("click", () => openReadView(card.dataset.noteId));
   });
+}
+
+// ===========================
+// VUE LECTURE (plein écran)
+// ===========================
+let readViewNoteId = null;
+
+function openReadView(noteId) {
+  if (!noteId) return;
+  const note = state.notes.find(n => n.id === noteId);
+  if (!note) return;
+
+  readViewNoteId = noteId;
+  const overlay = document.getElementById("read-view");
+  const panel = document.getElementById("read-view-panel");
+  const titleEl = document.getElementById("read-view-title");
+  const contentEl = document.getElementById("read-view-content");
+  const codeWrap = document.getElementById("read-view-code-wrap");
+  const codeEl = document.getElementById("read-view-code");
+
+  if (!overlay || !panel || !titleEl || !contentEl || !codeWrap || !codeEl) return;
+
+  panel.className = "read-view-panel";
+  const colorClass = note.color ? `note-color-${note.color}` : "";
+  if (colorClass) panel.classList.add(colorClass);
+
+  titleEl.textContent = note.title || "Sans titre";
+  const body = (note.content || "").trim();
+  if (body) {
+    contentEl.textContent = note.content || "";
+    contentEl.hidden = false;
+  } else {
+    contentEl.textContent = "";
+    contentEl.hidden = true;
+  }
+
+  const code = (note.code || "").trim();
+  if (code) {
+    codeEl.textContent = note.code || "";
+    codeWrap.hidden = false;
+  } else {
+    codeEl.textContent = "";
+    codeWrap.hidden = true;
+  }
+
+  overlay.classList.add("active");
+  overlay.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+function closeReadView() {
+  const overlay = document.getElementById("read-view");
+  if (overlay) {
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
+  }
+  readViewNoteId = null;
+  document.body.style.overflow = "";
 }
 
 // ===========================
@@ -266,7 +324,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.target.id === "note-modal") closeModal();
   });
 
+  document.getElementById("read-view")?.addEventListener("click", e => {
+    if (e.target === e.currentTarget) closeReadView();
+  });
+
+  document.getElementById("read-view-close")?.addEventListener("click", () => closeReadView());
+
+  document.getElementById("read-view-edit")?.addEventListener("click", () => {
+    const id = readViewNoteId;
+    closeReadView();
+    if (id) openModal(id);
+  });
+
   document.addEventListener("keydown", e => {
-    if (e.key === "Escape") closeModal();
+    if (e.key !== "Escape") return;
+    const readOpen = document.getElementById("read-view")?.classList.contains("active");
+    if (readOpen) {
+      closeReadView();
+      return;
+    }
+    if (document.getElementById("note-modal")?.classList.contains("active")) {
+      closeModal();
+    }
   });
 });
