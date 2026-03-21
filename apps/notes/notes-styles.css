@@ -165,7 +165,7 @@ body.compact .header-actions {
 
 .note-card-content {
   font-size: 14px;
-  color: var(--muted);
+  color: var(--text-subtitle);
   line-height: 1.5;
   flex: 1;
   display: -webkit-box;
