@@ -354,7 +354,7 @@ body.compact .help-wrap {
 }
 
 .board-card-sub {
-  color: var(--muted);
+  color: var(--text-subtitle);
   font-size: 12px;
   display: flex;
   gap: 8px;
