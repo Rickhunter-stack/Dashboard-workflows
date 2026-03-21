@@ -300,14 +300,16 @@ body {
 
 .project-card:hover {
   transform: translateY(-2px);
-  background: var(--surface-1);
-  border-color: color-mix(in srgb, var(--accent) 25%, var(--border-1));
+  background: var(--surface-card-hover);
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border-card-strong));
 }
 
 .project-card-title {
+  font-family: var(--font-heading);
   font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-title);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -317,7 +319,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  color: var(--muted);
+  color: var(--text-subtitle);
   font-size: 12px;
 }
 

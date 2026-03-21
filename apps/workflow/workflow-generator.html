@@ -63,19 +63,22 @@ body.compact #summary-view {
 }
 
 #summary-view > h1 {
+  font-family: var(--font-heading);
   text-align: center;
-  color: var(--text);
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  color: var(--text-title);
+  font-size: clamp(1.75rem, 4.5vw, 2rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
   margin: 10px 0 8px 0;
 }
 
 .subtitle {
   text-align: center;
+  font-family: var(--font-heading);
   font-size: 18px;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-subtitle);
   margin: 0 0 32px 0;
   letter-spacing: 0.01em;
 }
@@ -898,21 +901,25 @@ body.compact .action-buttons {
 
 /* Carte individuelle */
 .process-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 2px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 24px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--r-card);
+  padding: var(--card-padding);
   transition: all 0.3s ease;
   cursor: move;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(var(--blur-card)) saturate(1.25);
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.25);
+  box-shadow: var(--shadow-card);
   position: relative;
 }
 
 .process-card:hover {
-  border-color: rgba(102, 126, 234, 0.4);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-card-strong));
   transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: var(--surface-card-hover);
+  box-shadow:
+    0 14px 44px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
 }
 
 .process-card.dragging {
@@ -928,7 +935,7 @@ body.compact .action-buttons {
 /* Types de cartes */
 .process-card.input-card {
   border-color: var(--accent);
-  background: rgba(128, 131, 255, 0.08);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-card));
 }
 
 .process-card.output-card {
@@ -1215,7 +1222,7 @@ body.compact .action-buttons {
   }
 
   #summary-view > h1 {
-    font-size: 32px;
+    font-size: clamp(1.85rem, 5vw, 2.15rem);
   }
 
   .subtitle {

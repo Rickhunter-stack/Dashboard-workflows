@@ -714,21 +714,25 @@ body {
 
 /* Carte individuelle */
 .process-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 2px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 24px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--r-card);
+  padding: var(--card-padding);
   transition: all 0.3s ease;
   cursor: move;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(var(--blur-card)) saturate(1.25);
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.25);
+  box-shadow: var(--shadow-card);
   position: relative;
 }
 
 .process-card:hover {
-  border-color: rgba(102, 126, 234, 0.4);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-card-strong));
   transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: var(--surface-card-hover);
+  box-shadow:
+    0 14px 44px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
 }
 
 .process-card.dragging {
