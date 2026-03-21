@@ -101,6 +101,48 @@ body.readonly-mobile .action-buttons {
   justify-content: center;
 }
 
+/* FAB Nouveau Workflow (mobile/compact) */
+.fab-new-workflow {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 80%, #5a4a7a) 100%);
+  color: #fff;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(184, 168, 220, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+.fab-new-workflow:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 32px rgba(184, 168, 220, 0.5);
+}
+
+.fab-new-workflow:active {
+  transform: scale(0.96);
+}
+
+.fab-icon {
+  display: block;
+  margin-top: -2px;
+}
+
+body.compact .fab-new-workflow,
+body.readonly-mobile .fab-new-workflow {
+  display: flex;
+}
+
 /* Aide (petit bouton + popover) */
 .help-wrap {
   position: relative;
@@ -1681,6 +1723,18 @@ body.readonly-mobile .action-buttons {
 
       <!-- Liste des workflows en pastilles hexagonales -->
       <div id="workflows-list" class="workflows-hexagon-grid"></div>
+
+      <!-- FAB Nouveau Workflow (visible en mode mobile/compact) -->
+      <button
+        type="button"
+        class="fab-new-workflow"
+        id="fab-new-workflow"
+        onclick="createNewWorkflow()"
+        title="Nouveau Workflow"
+        aria-label="Créer un nouveau workflow"
+      >
+        <span class="fab-icon">+</span>
+      </button>
     </div>
 
     <!-- ========================================== -->
@@ -1989,7 +2043,7 @@ function createNewWorkflow() {
 
   workflows.push(newWorkflow);
   saveWorkflows();
-  openDiagramView(newWorkflow.id);
+  openWorkflowView(newWorkflow.id);
 }
 
 function initializeCards(count) {
