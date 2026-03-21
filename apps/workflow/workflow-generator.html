@@ -101,7 +101,7 @@ body.readonly-mobile .action-buttons {
   justify-content: center;
 }
 
-/* FAB Nouveau Workflow (mobile/compact) */
+/* FAB Nouveau Workflow (mobile/compact) — style classy : fond sombre + glow bleu */
 .fab-new-workflow {
   display: none;
   position: fixed;
@@ -110,14 +110,14 @@ body.readonly-mobile .action-buttons {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  border: none;
-  background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 80%, #5a4a7a) 100%);
-  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--btn-surface);
+  color: rgba(232, 234, 240, 0.95);
   font-size: 28px;
   font-weight: 300;
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(184, 168, 220, 0.4);
+  box-shadow: var(--btn-glow);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   z-index: 100;
   align-items: center;
@@ -126,7 +126,7 @@ body.readonly-mobile .action-buttons {
 
 .fab-new-workflow:hover {
   transform: scale(1.08);
-  box-shadow: 0 12px 32px rgba(184, 168, 220, 0.5);
+  box-shadow: var(--btn-glow-hover);
 }
 
 .fab-new-workflow:active {
@@ -270,20 +270,21 @@ body.readonly-mobile .fab-new-workflow {
   font-family: "Inter", sans-serif;
   font-weight: 600;
   font-size: 15px;
-  background: var(--accent-gradient);
-  color: #ffffff;
-  border: none;
+  background: var(--btn-surface);
+  color: rgba(232, 234, 240, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 12px 24px;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 16px 40px var(--accent-soft);
+  box-shadow: var(--btn-glow);
   white-space: nowrap;
 }
 
 .create-workflow-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 22px 54px rgba(128, 131, 255, 0.28);
+  background: var(--btn-surface-hover);
+  box-shadow: var(--btn-glow-hover);
 }
 
 .btn-reset,
@@ -338,20 +339,32 @@ body.readonly-mobile .fab-new-workflow {
   margin: 0 auto;
   position: relative;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  background: linear-gradient(135deg, var(--accent-soft) 0%, var(--accent-soft-2) 100%);
-  border: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, var(--surface-card) 8%, var(--surface-card) 100%);
+  border: 1px solid var(--border-card);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   padding: 30px 20px;
   backdrop-filter: blur(var(--blur));
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-card);
+}
+
+.hexagon-shape::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--card-accent-line);
+  border-radius: 2px 2px 0 0;
+  z-index: 1;
 }
 
 .hexagon-workflow:hover .hexagon-shape {
-  border-color: color-mix(in srgb, var(--accent) 75%, transparent);
-  box-shadow: 0 18px 52px var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-card));
+  box-shadow: var(--shadow-card), 0 0 24px rgba(59, 130, 246, 0.15);
 }
 
 .hexagon-title {

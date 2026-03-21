@@ -126,14 +126,9 @@ body.compact .header-actions {
   top: 0;
   left: 0;
   right: 0;
-  height: 5px;
+  height: 3px;
   border-radius: var(--r-card) var(--r-card) 0 0;
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--accent) 92%, white),
-    color-mix(in srgb, var(--accent) 48%, transparent)
-  );
-  opacity: 0.9;
+  background: var(--card-accent-line);
 }
 
 .reminder-item.priority-red::before {

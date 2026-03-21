@@ -82,6 +82,13 @@
   --r-sm: 10px;
   --r-md: 14px;
   --r-lg: 18px;
+
+  /* Style « classy » : glow bleu/indigo + accent gradient (boutons & cartes) */
+  --btn-surface: rgba(18, 22, 38, 0.95);
+  --btn-surface-hover: rgba(24, 30, 52, 0.98);
+  --btn-glow: 0 0 36px rgba(59, 130, 246, 0.28), 0 8px 24px rgba(0, 0, 0, 0.4);
+  --btn-glow-hover: 0 0 48px rgba(59, 130, 246, 0.38), 0 12px 32px rgba(0, 0, 0, 0.45);
+  --card-accent-line: linear-gradient(90deg, #3b82f6 0%, #7c6db8 50%, #b8a8dc 100%);
 }
 
 html,
@@ -149,27 +156,21 @@ body::before {
     sans-serif;
   font-weight: 600;
   font-size: 14px;
-  background: var(--accent-gradient);
-  color: var(--accent-label);
-  border: 1px solid rgba(88, 72, 128, 0.55);
+  background: var(--btn-surface);
+  color: rgba(232, 234, 240, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 12px 24px;
-  border-radius: 16px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
-    var(--accent-shadow),
-    0 0 0 1px rgba(212, 200, 240, 0.07) inset;
+  box-shadow: var(--btn-glow);
   white-space: nowrap;
 }
 
 .btn-primary-accent:hover {
   transform: translateY(-2px);
-  background: var(--accent-gradient-hover);
-  color: #e8e0fb;
-  border-color: rgba(120, 100, 168, 0.55);
-  box-shadow:
-    var(--accent-shadow-hover),
-    0 0 0 1px rgba(212, 200, 240, 0.12) inset;
+  background: var(--btn-surface-hover);
+  box-shadow: var(--btn-glow-hover);
 }
 
 /* Scrollbar */
