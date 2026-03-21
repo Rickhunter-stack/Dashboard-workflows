@@ -109,7 +109,8 @@ body.compact .header-actions {
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(var(--blur));
+  backdrop-filter: blur(var(--blur)) saturate(1.35);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.35);
   position: relative;
   overflow: hidden;
 }
@@ -198,7 +199,8 @@ body.compact .header-actions {
   right: 0;
   bottom: 0;
   background: color-mix(in srgb, var(--bg-0) 82%, transparent);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
   z-index: 2000;
   display: none;
   align-items: center;
@@ -220,7 +222,8 @@ body.compact .header-actions {
   max-height: 85vh;
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(var(--blur));
+  backdrop-filter: blur(var(--blur)) saturate(1.35);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.35);
 }
 
 .modal-header {
