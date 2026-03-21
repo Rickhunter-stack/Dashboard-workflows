@@ -71,7 +71,7 @@
           );
         box-shadow:
           0 0 18px rgba(0, 189, 133, 0.9),
-          0 0 40px rgba(128, 131, 255, 0.35);
+          0 0 40px rgba(184, 168, 220, 0.28);
       }
 
       .brand-text {
@@ -289,12 +289,12 @@
       }
 
       .nav-item.active {
-        background: rgba(128, 131, 255, 0.18);
-        color: #ffffff;
-        border-color: rgba(192, 193, 255, 0.38);
+        background: rgba(45, 38, 62, 0.85);
+        color: var(--accent-label);
+        border-color: rgba(95, 78, 138, 0.55);
         box-shadow:
-          inset 0 0 18px rgba(128, 131, 255, 0.12),
-          0 0 0 1px rgba(226, 226, 232, 0.05);
+          inset 0 0 20px rgba(184, 168, 220, 0.08),
+          0 0 0 1px rgba(212, 200, 240, 0.06);
       }
 
       .main-shell {
@@ -337,7 +337,7 @@
         border-radius: 999px;
         border: none;
         background: transparent;
-        color: var(--muted);
+        color: var(--accent-label-muted);
         cursor: pointer;
         transition: all 0.15s ease;
       }
@@ -347,13 +347,15 @@
       }
 
       .view-toggle-btn.view-active {
-        background: rgba(148, 163, 184, 0.25);
-        color: var(--text);
-        box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.6);
+        background: linear-gradient(180deg, rgba(52, 44, 72, 0.95), rgba(34, 28, 48, 0.98));
+        color: var(--accent-label);
+        box-shadow:
+          0 0 0 1px rgba(88, 72, 128, 0.55),
+          inset 0 1px 0 rgba(212, 200, 240, 0.06);
       }
 
       .view-toggle-btn:not(.view-active):hover {
-        color: var(--text);
+        color: var(--accent-label);
       }
 
       .single-frame {
@@ -680,12 +682,12 @@
         }
 
         .mobile-tab.active {
-          background: rgba(128, 131, 255, 0.16);
-          border-color: rgba(192, 193, 255, 0.38);
-          color: rgba(226, 226, 232, 0.98);
+          background: rgba(45, 38, 62, 0.88);
+          border-color: rgba(95, 78, 138, 0.5);
+          color: var(--accent-label);
           box-shadow:
-            inset 0 0 18px rgba(128, 131, 255, 0.18),
-            0 10px 26px rgba(128, 131, 255, 0.08);
+            inset 0 0 18px rgba(184, 168, 220, 0.1),
+            0 10px 26px rgba(24, 20, 38, 0.45);
         }
       }
     </style>

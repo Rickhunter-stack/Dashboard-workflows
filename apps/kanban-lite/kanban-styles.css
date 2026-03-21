@@ -109,7 +109,7 @@ body.compact .help-wrap {
 .view-btn {
   border: 1px solid transparent;
   background: transparent;
-  color: rgba(232, 234, 240, 0.75);
+  color: var(--accent-label-muted);
   padding: 8px 12px;
   border-radius: 999px;
   cursor: pointer;
@@ -121,15 +121,18 @@ body.compact .help-wrap {
 }
 
 .view-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--accent-label);
   transform: translateY(-1px);
 }
 
 .view-btn.active {
-  background: var(--accent-gradient);
-  color: #ffffff;
-  border-color: transparent;
-  box-shadow: 0 16px 40px var(--accent-soft);
+  background: linear-gradient(180deg, rgba(52, 44, 72, 0.95), rgba(34, 28, 48, 0.98));
+  color: var(--accent-label);
+  border-color: rgba(88, 72, 128, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(88, 72, 128, 0.45),
+    inset 0 1px 0 rgba(212, 200, 240, 0.06);
 }
 
 /* ===========================
@@ -255,8 +258,8 @@ body.compact .help-wrap {
   height: 2px;
   background: linear-gradient(
     90deg,
-    rgba(128, 131, 255, 0.95),
-    rgba(128, 131, 255, 0.55)
+    color-mix(in srgb, var(--accent) 92%, white),
+    color-mix(in srgb, var(--accent) 48%, transparent)
   );
   opacity: 0.9;
 }
@@ -421,7 +424,7 @@ body.compact .help-wrap {
 .column.drag-over {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
-  background: rgba(128, 131, 255, 0.06);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
 .column-header {
@@ -476,19 +479,23 @@ body.compact .help-wrap {
   font-weight: 600;
   font-size: 13px;
   background: var(--accent-gradient);
-  color: #ffffff;
-  border: none;
+  color: var(--accent-label);
+  border: 1px solid rgba(88, 72, 128, 0.5);
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
   margin-left: 8px;
   white-space: nowrap;
+  box-shadow: var(--accent-shadow);
 }
 
 .btn-add-card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 40px var(--accent-soft);
+  background: var(--accent-gradient-hover);
+  color: #e8e0fb;
+  border-color: rgba(120, 100, 168, 0.5);
+  box-shadow: var(--accent-shadow-hover);
 }
 
 .cards-container {

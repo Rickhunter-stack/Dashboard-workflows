@@ -114,19 +114,22 @@ body {
   font-weight: 600;
   font-size: 14px;
   background: var(--accent-gradient);
-  color: #ffffff;
-  border: none;
+  color: var(--accent-label);
+  border: 1px solid rgba(88, 72, 128, 0.5);
   padding: 12px 24px;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 16px 40px var(--accent-soft);
+  box-shadow: var(--accent-shadow);
   white-space: nowrap;
 }
 
 .btn-new-task:hover {
   transform: translateY(-2px);
-  box-shadow: 0 22px 54px rgba(128, 131, 255, 0.28);
+  background: var(--accent-gradient-hover);
+  color: #e8e0fb;
+  border-color: rgba(120, 100, 168, 0.5);
+  box-shadow: var(--accent-shadow-hover);
 }
 
 .header-actions {
@@ -286,8 +289,8 @@ body {
   height: 2px;
   background: linear-gradient(
     90deg,
-    rgba(128, 131, 255, 0.95),
-    rgba(128, 131, 255, 0.55)
+    color-mix(in srgb, var(--accent) 92%, white),
+    color-mix(in srgb, var(--accent) 48%, transparent)
   );
   opacity: 0.9;
 }
