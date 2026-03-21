@@ -1477,6 +1477,12 @@ body.readonly-mobile .action-buttons {
   font-weight: 500;
   color: rgba(245, 245, 247, 0.9);
 }
+
+.ishikawa-empty {
+  text-align: center;
+  color: var(--text-subtitle);
+  padding: 40px 20px;
+}
     </style>
   </head>
 
@@ -1700,7 +1706,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", () => {
     const readonly = isReadOnlyMobile();
     document.body.classList.toggle("readonly-mobile", readonly);
-    if (readonly && currentView === "diagram") {
+    if (readonly && (currentView === "diagram" || currentView === "cards")) {
       backToSummary();
     }
   });
@@ -1920,6 +1926,77 @@ function deleteWorkflowFromList(workflowId) {
 // ============================================================================
 // NIVEAU 2 : VUE DIAGRAMME
 // ============================================================================
+function openWorkflowView(workflowId) {
+  if (isReadOnlyMobile()) {
+    showIshikawaReadView(workflowId);
+  } else {
+    openDiagramView(workflowId);
+  }
+}
+
+function showIshikawaReadView(workflowId) {
+  const workflow = workflows.find(w => w.id == workflowId);
+  if (!workflow) return;
+
+  currentWorkflow = workflow;
+  currentView = "ishikawa-read";
+
+  document.getElementById("summary-view").style.display = "none";
+  document.getElementById("diagram-view").style.display = "none";
+  document.getElementById("cards-view").style.display = "none";
+  document.getElementById("ishikawa-read-view").style.display = "block";
+
+  document.getElementById("ishikawa-workflow-title").textContent = workflow.title || "Workflow";
+  document.getElementById("ishikawa-canvas").innerHTML = renderIshikawaDiagram(workflow.cards || []);
+}
+
+function backFromIshikawaReadView() {
+  currentView = "summary";
+  document.getElementById("ishikawa-read-view").style.display = "none";
+  showSummaryView();
+}
+
+function renderIshikawaDiagram(cards) {
+  if (!cards || cards.length === 0) {
+    return '<p class="ishikawa-empty">Aucun processus</p>';
+  }
+
+  const nodes = cards.map((card, index) => {
+    const isInput = card.type === "input" || index === 0;
+    const isOutput = card.type === "output" || index === cards.length - 1;
+    const hasSub = card.subProcess && card.subProcess.cards && card.subProcess.cards.length > 0;
+    const icon = isInput ? "📥" : isOutput ? "📤" : hasSub ? "📊" : "🔧";
+
+    let subHtml = "";
+    if (hasSub) {
+      const subs = card.subProcess.cards.map((sub) => {
+        const subIcon = sub.type === "input" ? "→" : sub.type === "output" ? "←" : "•";
+        return `<div class="ishikawa-sub-node">${subIcon} ${escapeHtml(sub.title || "Sans titre")}</div>`;
+      }).join("");
+      subHtml = `<div class="ishikawa-branch">${subs}</div>`;
+    }
+
+    const nodeClass = isInput ? "input-node" : isOutput ? "output-node" : "";
+    return `
+      <div class="ishikawa-node">
+        <div class="ishikawa-node-main ${nodeClass}">
+          <div class="ishikawa-node-icon">${icon}</div>
+          <div class="ishikawa-node-title">${escapeHtml(card.title || "Sans titre")}</div>
+          ${hasSub ? `<div class="ishikawa-node-badge">${card.subProcess.cards.length} sous-processus</div>` : ""}
+        </div>
+        ${subHtml}
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="ishikawa-spine">
+      <div class="ishikawa-spine-line" aria-hidden="true"></div>
+      ${nodes}
+    </div>
+  `;
+}
+
 function openDiagramView(workflowId) {
   currentWorkflow = workflows.find(w => w.id === workflowId);
   if (!currentWorkflow) {

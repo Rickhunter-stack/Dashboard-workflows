@@ -1023,7 +1023,10 @@
         });
 
         if (appPaths[appName]) {
-          frame.src = appPaths[appName];
+          const isMobile = window.innerWidth <= 640;
+          const basePath = appPaths[appName];
+          const suffix = (appName === "workflow" && isMobile) ? "?compact=1" : "";
+          frame.src = basePath + suffix;
         }
       }
 
