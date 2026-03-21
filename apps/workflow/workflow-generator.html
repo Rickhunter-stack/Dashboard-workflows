@@ -810,6 +810,111 @@ body.readonly-mobile .action-buttons {
   padding-top: 240px;
 }
 
+.cards-editor-header {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 12px 16px;
+  border-radius: 0 0 16px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: none;
+  margin-bottom: 0;
+  backdrop-filter: blur(10px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease;
+}
+
+.cards-header-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cards-header-main .back-btn {
+  flex-shrink: 0;
+}
+
+.cards-header-main .current-process-title {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: 16px;
+}
+
+.cards-header-toggle {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.cards-header-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cards-editor-header.expanded .cards-header-toggle .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.cards-header-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cards-editor-header:not(.expanded) .cards-header-toolbar {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .cards-editor-header .cards-header-toggle {
+    display: none;
+  }
+  .cards-editor-header .cards-header-toolbar {
+    display: flex !important;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .cards-editor-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 20px;
+  }
+  .cards-header-main {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  #cards-view.cards-header-collapsed {
+    padding-top: 140px;
+  }
+  #cards-view.cards-header-collapsed .breadcrumb-container {
+    top: 72px;
+  }
+}
+
 .current-process-title {
   flex: 1;
   font-size: 20px;
@@ -1631,22 +1736,25 @@ body.readonly-mobile .action-buttons {
     <!-- NIVEAU 3 : VUE CARTES -->
     <!-- ========================================== -->
     <div id="cards-view" class="view-container" style="display: none">
-      <div class="editor-header">
-        <button class="back-btn" id="cards-back-btn" onclick="backToDiagram()">← Retour au diagramme</button>
-        <div class="current-process-title" id="current-process-title"></div>
-        <div class="card-size-selector">
-          <span class="card-size-label">Cartes</span>
-          <button class="size-btn" data-size="4" onclick="setCardCount(4)">4</button>
-          <button class="size-btn" data-size="6" onclick="setCardCount(6)">6</button>
-          <button class="size-btn" data-size="9" onclick="setCardCount(9)">9</button>
-          <button class="size-btn active" data-size="12" onclick="setCardCount(12)">12</button>
-          <button class="size-btn" data-size="16" onclick="setCardCount(16)">16</button>
-          <button class="size-btn" data-size="20" onclick="setCardCount(20)">20</button>
-        </div>
-        <div class="editor-actions">
-          <button class="save-btn" onclick="saveWorkflow()">
-            💾 Sauvegarder
+      <div id="cards-editor-header" class="cards-editor-header">
+        <div class="cards-header-main">
+          <button class="back-btn" id="cards-back-btn" onclick="backToDiagram()">← Retour au diagramme</button>
+          <div class="current-process-title" id="current-process-title"></div>
+          <button type="button" class="cards-header-toggle" id="cards-header-toggle" onclick="toggleCardsHeader()" aria-label="Ouvrir les options">
+            <span class="toggle-icon">▼</span>
           </button>
+        </div>
+        <div class="cards-header-toolbar" id="cards-header-toolbar">
+          <div class="card-size-selector">
+            <span class="card-size-label">Cartes</span>
+            <button class="size-btn" data-size="4" onclick="setCardCount(4)">4</button>
+            <button class="size-btn" data-size="6" onclick="setCardCount(6)">6</button>
+            <button class="size-btn" data-size="9" onclick="setCardCount(9)">9</button>
+            <button class="size-btn active" data-size="12" onclick="setCardCount(12)">12</button>
+            <button class="size-btn" data-size="16" onclick="setCardCount(16)">16</button>
+            <button class="size-btn" data-size="20" onclick="setCardCount(20)">20</button>
+          </div>
+          <button class="save-btn" onclick="saveWorkflow()">💾 Sauvegarder</button>
         </div>
       </div>
 
@@ -1983,7 +2091,29 @@ function openSubProcessFromIshikawa(parentCardId, subCardId) {
   if (backBtn) backBtn.textContent = "← Retour";
   document.getElementById("ishikawa-read-view").style.display = "none";
   openCardsView(parentCardId);
+  setCardsHeaderCollapsed(true);
   setTimeout(() => scrollToCardForEdit(subCardId), 100);
+}
+
+function toggleCardsHeader() {
+  const header = document.getElementById("cards-editor-header");
+  const cardsView = document.getElementById("cards-view");
+  if (!header || !cardsView) return;
+  const isExpanded = header.classList.toggle("expanded");
+  cardsView.classList.toggle("cards-header-collapsed", !isExpanded);
+}
+
+function setCardsHeaderCollapsed(collapsed) {
+  const header = document.getElementById("cards-editor-header");
+  const cardsView = document.getElementById("cards-view");
+  if (!header || !cardsView) return;
+  if (window.matchMedia("(max-width: 900px)").matches) {
+    header.classList.toggle("expanded", !collapsed);
+    cardsView.classList.toggle("cards-header-collapsed", collapsed);
+  } else {
+    header.classList.add("expanded");
+    cardsView.classList.remove("cards-header-collapsed");
+  }
 }
 
 function scrollToCardForEdit(cardId) {
@@ -2311,6 +2441,9 @@ function openCardsView(cardId) {
   document.getElementById('diagram-view').style.display = 'none';
   document.getElementById('ishikawa-read-view').style.display = 'none';
   document.getElementById('cards-view').style.display = 'block';
+  if (window.matchMedia('(max-width: 900px)').matches) {
+    setCardsHeaderCollapsed(true);
+  }
   
   const card = findCardInContext(cardId);
   
