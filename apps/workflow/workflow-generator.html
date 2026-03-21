@@ -1378,25 +1378,10 @@ body.readonly-mobile .action-buttons {
 }
 
 .ishikawa-spine {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-}
-
-.ishikawa-spine-line {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(180deg,
-    rgba(184, 168, 220, 0.6) 0%,
-    rgba(184, 168, 220, 0.4) 50%,
-    rgba(184, 168, 220, 0.6) 100%);
-  transform: translateX(-50%);
-  z-index: 0;
+  gap: 4px;
 }
 
 .ishikawa-node {
@@ -1419,6 +1404,19 @@ body.readonly-mobile .action-buttons {
   box-shadow: var(--shadow-card);
   backdrop-filter: blur(var(--blur-card));
   -webkit-backdrop-filter: blur(var(--blur-card));
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.ishikawa-node-main:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border-card));
+  transform: translateY(-1px);
+}
+
+.ishikawa-node-main.has-sub::after {
+  content: " ›";
+  font-size: 14px;
+  opacity: 0.7;
 }
 
 .ishikawa-node-main.input-node {
@@ -1934,12 +1932,15 @@ function openWorkflowView(workflowId) {
   }
 }
 
+let ishikawaExpandedIds = new Set();
+
 function showIshikawaReadView(workflowId) {
   const workflow = workflows.find(w => w.id == workflowId);
   if (!workflow) return;
 
   currentWorkflow = workflow;
   currentView = "ishikawa-read";
+  ishikawaExpandedIds.clear();
 
   document.getElementById("summary-view").style.display = "none";
   document.getElementById("diagram-view").style.display = "none";
@@ -1947,7 +1948,22 @@ function showIshikawaReadView(workflowId) {
   document.getElementById("ishikawa-read-view").style.display = "block";
 
   document.getElementById("ishikawa-workflow-title").textContent = workflow.title || "Workflow";
-  document.getElementById("ishikawa-canvas").innerHTML = renderIshikawaDiagram(workflow.cards || []);
+  renderIshikawaToCanvas();
+}
+
+function toggleIshikawaExpand(cardId) {
+  if (ishikawaExpandedIds.has(cardId)) {
+    ishikawaExpandedIds.delete(cardId);
+  } else {
+    ishikawaExpandedIds.add(cardId);
+  }
+  renderIshikawaToCanvas();
+}
+
+function renderIshikawaToCanvas() {
+  const canvas = document.getElementById("ishikawa-canvas");
+  if (!canvas || !currentWorkflow) return;
+  canvas.innerHTML = renderIshikawaDiagram(currentWorkflow.cards || [], ishikawaExpandedIds);
 }
 
 function backFromIshikawaReadView() {
@@ -1956,19 +1972,34 @@ function backFromIshikawaReadView() {
   showSummaryView();
 }
 
-function renderIshikawaDiagram(cards) {
+function renderIshikawaDiagram(cards, expandedIds) {
   if (!cards || cards.length === 0) {
     return '<p class="ishikawa-empty">Aucun processus</p>';
   }
 
-  const nodes = cards.map((card, index) => {
+  expandedIds = expandedIds || new Set();
+
+  const mainCards = [];
+  if (cards.length >= 4) {
+    mainCards.push(cards[0]);
+    mainCards.push(cards[1]);
+    mainCards.push(cards[2]);
+    if (cards.length > 3) mainCards.push(cards[cards.length - 1]);
+  } else {
+    mainCards.push(...cards);
+  }
+
+  const nodes = mainCards.map((card, index) => {
     const isInput = card.type === "input" || index === 0;
-    const isOutput = card.type === "output" || index === cards.length - 1;
+    const isOutput = card.type === "output" || index === mainCards.length - 1;
     const hasSub = card.subProcess && card.subProcess.cards && card.subProcess.cards.length > 0;
+    const isExpanded = hasSub && expandedIds.has(card.id);
     const icon = isInput ? "📥" : isOutput ? "📤" : hasSub ? "📊" : "🔧";
 
+    const displayTitle = isInput ? "Input" : isOutput ? "Output" : card.title || `Processus ${index}`;
+
     let subHtml = "";
-    if (hasSub) {
+    if (hasSub && isExpanded) {
       const subs = card.subProcess.cards.map((sub) => {
         const subIcon = sub.type === "input" ? "→" : sub.type === "output" ? "←" : "•";
         return `<div class="ishikawa-sub-node">${subIcon} ${escapeHtml(sub.title || "Sans titre")}</div>`;
@@ -1977,11 +2008,13 @@ function renderIshikawaDiagram(cards) {
     }
 
     const nodeClass = isInput ? "input-node" : isOutput ? "output-node" : "";
+    const hasSubClass = hasSub ? " has-sub" : "";
+    const onClickAttr = hasSub ? `onclick="toggleIshikawaExpand(${card.id})"` : "";
     return `
       <div class="ishikawa-node">
-        <div class="ishikawa-node-main ${nodeClass}">
+        <div class="ishikawa-node-main ${nodeClass}${hasSubClass}" ${onClickAttr}>
           <div class="ishikawa-node-icon">${icon}</div>
-          <div class="ishikawa-node-title">${escapeHtml(card.title || "Sans titre")}</div>
+          <div class="ishikawa-node-title">${escapeHtml(displayTitle)}</div>
           ${hasSub ? `<div class="ishikawa-node-badge">${card.subProcess.cards.length} sous-processus</div>` : ""}
         </div>
         ${subHtml}
@@ -1989,12 +2022,7 @@ function renderIshikawaDiagram(cards) {
     `;
   }).join("");
 
-  return `
-    <div class="ishikawa-spine">
-      <div class="ishikawa-spine-line" aria-hidden="true"></div>
-      ${nodes}
-    </div>
-  `;
+  return `<div class="ishikawa-spine">${nodes}</div>`;
 }
 
 function openDiagramView(workflowId) {
