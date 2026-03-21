@@ -956,6 +956,10 @@ body.readonly-mobile .action-buttons {
   background: rgba(248, 113, 113, 0.08);
 }
 
+.process-card.highlight-card {
+  animation: highlightCard 1.5s ease;
+}
+
 /* Contenu de la carte */
 .card-header {
   display: flex;
@@ -1474,6 +1478,18 @@ body.readonly-mobile .action-buttons {
   font-size: 13px;
   font-weight: 500;
   color: rgba(245, 245, 247, 0.9);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.ishikawa-sub-node:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(184, 168, 220, 0.35);
+}
+
+@keyframes highlightCard {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 0 2px rgba(184, 168, 220, 0.5); }
 }
 
 .ishikawa-empty {
@@ -1616,7 +1632,7 @@ body.readonly-mobile .action-buttons {
     <!-- ========================================== -->
     <div id="cards-view" class="view-container" style="display: none">
       <div class="editor-header">
-        <button class="back-btn" onclick="backToDiagram()">← Retour au diagramme</button>
+        <button class="back-btn" id="cards-back-btn" onclick="backToDiagram()">← Retour au diagramme</button>
         <div class="current-process-title" id="current-process-title"></div>
         <div class="card-size-selector">
           <span class="card-size-label">Cartes</span>
@@ -1933,6 +1949,7 @@ function openWorkflowView(workflowId) {
 }
 
 let ishikawaExpandedIds = new Set();
+let cameFromIshikawa = false;
 
 function showIshikawaReadView(workflowId) {
   const workflow = workflows.find(w => w.id == workflowId);
@@ -1958,6 +1975,24 @@ function toggleIshikawaExpand(cardId) {
     ishikawaExpandedIds.add(cardId);
   }
   renderIshikawaToCanvas();
+}
+
+function openSubProcessFromIshikawa(parentCardId, subCardId) {
+  cameFromIshikawa = true;
+  const backBtn = document.getElementById("cards-back-btn");
+  if (backBtn) backBtn.textContent = "← Retour";
+  document.getElementById("ishikawa-read-view").style.display = "none";
+  openCardsView(parentCardId);
+  setTimeout(() => scrollToCardForEdit(subCardId), 100);
+}
+
+function scrollToCardForEdit(cardId) {
+  const el = document.querySelector(`.process-card[data-card-id="${cardId}"]`);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("highlight-card");
+    setTimeout(() => el.classList.remove("highlight-card"), 1500);
+  }
 }
 
 function renderIshikawaToCanvas() {
@@ -2002,7 +2037,7 @@ function renderIshikawaDiagram(cards, expandedIds) {
     if (hasSub && isExpanded) {
       const subs = card.subProcess.cards.map((sub) => {
         const subIcon = sub.type === "input" ? "→" : sub.type === "output" ? "←" : "•";
-        return `<div class="ishikawa-sub-node">${subIcon} ${escapeHtml(sub.title || "Sans titre")}</div>`;
+        return `<div class="ishikawa-sub-node" onclick="event.stopPropagation(); openSubProcessFromIshikawa(${card.id}, ${sub.id})">${subIcon} ${escapeHtml(sub.title || "Sans titre")}</div>`;
       }).join("");
       subHtml = `<div class="ishikawa-branch">${subs}</div>`;
     }
@@ -2266,10 +2301,15 @@ function deleteCurrentWorkflow() {
 // ============================================================================
 function openCardsView(cardId) {
   navigationPath.push(cardId);
-  
+  if (!cameFromIshikawa) {
+    const backBtn = document.getElementById("cards-back-btn");
+    if (backBtn) backBtn.textContent = "← Retour au diagramme";
+  }
+
   currentView = 'cards';
   document.getElementById('summary-view').style.display = 'none';
   document.getElementById('diagram-view').style.display = 'none';
+  document.getElementById('ishikawa-read-view').style.display = 'none';
   document.getElementById('cards-view').style.display = 'block';
   
   const card = findCardInContext(cardId);
@@ -2302,12 +2342,23 @@ function createSubProcess(cardId) {
 function backToDiagram() {
   navigationPath = [];
   updateCardCountButtons();
-  renderDiagram();
-  
-  currentView = 'diagram';
-  document.getElementById('summary-view').style.display = 'none';
-  document.getElementById('diagram-view').style.display = 'block';
-  document.getElementById('cards-view').style.display = 'none';
+  if (cameFromIshikawa) {
+    cameFromIshikawa = false;
+    currentView = "ishikawa-read";
+    document.getElementById("summary-view").style.display = "none";
+    document.getElementById("diagram-view").style.display = "none";
+    document.getElementById("cards-view").style.display = "none";
+    document.getElementById("ishikawa-read-view").style.display = "block";
+    renderIshikawaToCanvas();
+  } else {
+    const backBtn = document.getElementById("cards-back-btn");
+    if (backBtn) backBtn.textContent = "← Retour au diagramme";
+    renderDiagram();
+    currentView = "diagram";
+    document.getElementById("summary-view").style.display = "none";
+    document.getElementById("diagram-view").style.display = "block";
+    document.getElementById("cards-view").style.display = "none";
+  }
 }
 
 function getCurrentContext() {
