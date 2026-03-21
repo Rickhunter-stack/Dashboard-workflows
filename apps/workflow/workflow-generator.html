@@ -88,6 +88,19 @@ body.compact .action-buttons {
   display: none;
 }
 
+/* Mode lecture seule (smartphone) : masquer création/édition */
+body.readonly-mobile .create-workflow-btn,
+body.readonly-mobile .import-workflow-btn,
+body.readonly-mobile .help-wrap,
+body.readonly-mobile .hexagon-actions {
+  display: none !important;
+}
+
+body.readonly-mobile .action-buttons {
+  display: flex;
+  justify-content: center;
+}
+
 /* Aide (petit bouton + popover) */
 .help-wrap {
   position: relative;
@@ -1335,6 +1348,135 @@ body.compact .action-buttons {
     opacity: 0;
   }
 }
+
+/* ========================================== */
+/* VUE ISHIKAWA READ-ONLY (mobile) */
+/* ========================================== */
+.ishikawa-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ishikawa-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-title);
+  letter-spacing: -0.02em;
+  flex: 1;
+  min-width: 0;
+}
+
+.ishikawa-canvas {
+  padding: 24px 16px 40px;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ishikawa-spine {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.ishikawa-spine-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg,
+    rgba(184, 168, 220, 0.6) 0%,
+    rgba(184, 168, 220, 0.4) 50%,
+    rgba(184, 168, 220, 0.6) 100%);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.ishikawa-node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 12px 0;
+}
+
+.ishikawa-node-main {
+  background: var(--surface-card);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  padding: 14px 18px;
+  min-width: 200px;
+  max-width: 280px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
+}
+
+.ishikawa-node-main.input-node {
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.2);
+}
+
+.ishikawa-node-main.output-node {
+  border-color: rgba(248, 113, 113, 0.5);
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.2);
+}
+
+.ishikawa-node-icon {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.ishikawa-node-title {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.ishikawa-node-badge {
+  font-size: 11px;
+  color: var(--text-subtitle);
+  margin-top: 4px;
+}
+
+.ishikawa-branch {
+  margin: 8px 0 0 0;
+  padding-left: 24px;
+  border-left: 2px solid rgba(184, 168, 220, 0.35);
+  position: relative;
+}
+
+.ishikawa-branch::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 0;
+  width: 12px;
+  height: 2px;
+  background: rgba(184, 168, 220, 0.4);
+}
+
+.ishikawa-sub-node {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(245, 245, 247, 0.9);
+}
     </style>
   </head>
 
@@ -1408,6 +1550,19 @@ body.compact .action-buttons {
 
       <!-- Liste des workflows en pastilles hexagonales -->
       <div id="workflows-list" class="workflows-hexagon-grid"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VUE LECTURE ISHIKAWA (mobile uniquement) -->
+    <!-- ========================================== -->
+    <div id="ishikawa-read-view" class="view-container" style="display: none">
+      <div class="ishikawa-header">
+        <button type="button" class="back-btn" onclick="backFromIshikawaReadView()" aria-label="Retour">
+          ← Retour
+        </button>
+        <h2 class="ishikawa-title" id="ishikawa-workflow-title"></h2>
+      </div>
+      <div id="ishikawa-canvas" class="ishikawa-canvas"></div>
     </div>
 
     <!-- ========================================== -->
@@ -1521,6 +1676,12 @@ let diagramOrientation = 'horizontal'; // 'vertical' ou 'horizontal'
 // ============================================================================
 // INITIALISATION
 // ============================================================================
+function isReadOnlyMobile() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("compact") === "1") return true;
+  return window.matchMedia("(max-width: 900px)").matches;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const compact = params.get("compact") === "1";
@@ -1530,17 +1691,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (compact) {
     document.body.classList.add("compact");
-    currentView = 'cards';
-    // On affiche directement les cartes du workflow sélectionné (par défaut le premier)
-    if (workflows.length > 0) {
-      currentWorkflow = workflows[0];
-      openCardsView(currentWorkflow.id);
-    } else {
-      showSummaryView();
-    }
+    document.body.classList.add("readonly-mobile");
+    showSummaryView();
   } else {
     showSummaryView();
   }
+
+  window.addEventListener("resize", () => {
+    const readonly = isReadOnlyMobile();
+    document.body.classList.toggle("readonly-mobile", readonly);
+    if (readonly && currentView === "diagram") {
+      backToSummary();
+    }
+  });
 });
 
 // ============================================================================
@@ -1649,7 +1812,7 @@ function generateHexagonCard(workflow) {
   const colorClass = workflow.color !== "none" ? `hexagon-color-${workflow.color}` : "";
   
   return `
-    <div class="hexagon-workflow ${colorClass}" onclick="openDiagramView(${workflow.id})">
+    <div class="hexagon-workflow ${colorClass}" onclick="openWorkflowView(${JSON.stringify(workflow.id)})">
       <div class="hexagon-actions">
         <button class="color-badge-mini color-red ${workflow.color === 'red' ? 'active' : ''}" 
                 onclick="event.stopPropagation(); setWorkflowColor(${workflow.id}, 'red')" 
