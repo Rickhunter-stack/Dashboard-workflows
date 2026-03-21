@@ -1528,6 +1528,12 @@ body.readonly-mobile .action-buttons {
   opacity: 0.7;
 }
 
+.ishikawa-node-main.clickable::after {
+  content: " +";
+  font-size: 14px;
+  opacity: 0.7;
+}
+
 .ishikawa-node-main.input-node {
   border-color: rgba(96, 165, 250, 0.5);
   box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.2);
@@ -2095,6 +2101,34 @@ function openSubProcessFromIshikawa(parentCardId, subCardId) {
   setTimeout(() => scrollToCardForEdit(subCardId), 100);
 }
 
+function openOrCreateSubProcessFromIshikawa(cardId) {
+  const card = findCardById(currentWorkflow.cards, cardId);
+  if (!card) return;
+
+  if (!card.subProcess || !card.subProcess.cards || card.subProcess.cards.length === 0) {
+    card.subProcess = {
+      cardCount: 4,
+      cards: initializeCards(4)
+    };
+    saveWorkflows();
+    if (window.supabaseShared) {
+      workflows.forEach((wf) => {
+        window.supabaseShared.upsertWorkflow({
+          id: wf.id,
+          title: wf.title,
+          color: wf.color || "none",
+          created_at: wf.createdAt,
+          payload: wf
+        });
+      });
+    }
+    showNotification("✅ Sous-processus créé");
+  }
+
+  const firstEditableCardId = card.subProcess.cards[1]?.id || card.subProcess.cards[0]?.id;
+  openSubProcessFromIshikawa(cardId, firstEditableCardId);
+}
+
 function toggleCardsHeader() {
   const header = document.getElementById("cards-editor-header");
   const cardsView = document.getElementById("cards-view");
@@ -2173,14 +2207,16 @@ function renderIshikawaDiagram(cards, expandedIds) {
     }
 
     const nodeClass = isInput ? "input-node" : isOutput ? "output-node" : "";
-    const hasSubClass = hasSub ? " has-sub" : "";
-    const onClickAttr = hasSub ? `onclick="toggleIshikawaExpand(${card.id})"` : "";
+    const hasSubClass = hasSub ? " has-sub" : " clickable";
+    const onClickAttr = hasSub
+      ? `onclick="toggleIshikawaExpand(${card.id})"`
+      : `onclick="openOrCreateSubProcessFromIshikawa(${card.id})"`;
     return `
       <div class="ishikawa-node">
         <div class="ishikawa-node-main ${nodeClass}${hasSubClass}" ${onClickAttr}>
           <div class="ishikawa-node-icon">${icon}</div>
           <div class="ishikawa-node-title">${escapeHtml(displayTitle)}</div>
-          ${hasSub ? `<div class="ishikawa-node-badge">${card.subProcess.cards.length} sous-processus</div>` : ""}
+          ${hasSub ? `<div class="ishikawa-node-badge">${card.subProcess.cards.length} sous-processus</div>` : `<div class="ishikawa-node-badge">Cliquer pour créer</div>`}
         </div>
         ${subHtml}
       </div>
