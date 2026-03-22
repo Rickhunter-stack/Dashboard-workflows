@@ -212,4 +212,13 @@ body.dashboard-app .btn-primary-accent:hover {
   .dash-app-wrap {
     max-width: min(360px, 100%);
   }
+
+  /* Agenda : vue calendrier utilisable en pleine largeur */
+  body.agenda-app .dash-app-wrap {
+    max-width: 100%;
+  }
+
+  body.workflow-app .dash-app-wrap {
+    max-width: 100%;
+  }
 }
