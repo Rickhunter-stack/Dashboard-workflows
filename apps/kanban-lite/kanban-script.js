@@ -19,11 +19,16 @@ function initState() {
           {
             id: generateId(),
             title: "Exemple de carte",
-            note: "Vous pouvez ajouter des notes ici pour décrire cette tâche plus en détail.",
-            priority: null,
+            note:
+              "Knowledge Base Architecture\nVous pouvez ajouter des notes ici pour décrire cette tâche plus en détail.",
+            priority: "orange",
             startDate: null,
             dueDate: null,
-            checklist: [],
+            checklist: [
+              { text: "ChromaDB Integration", done: false },
+              { text: "API embeddings", done: false },
+            ],
+            updatedAt: new Date().toISOString(),
           },
         ],
       },
@@ -57,6 +62,64 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+function normalizeChecklistEntry(item) {
+  if (item == null) return { text: "", done: false };
+  if (typeof item === "string") return { text: item, done: false };
+  return {
+    text: String(item.text || ""),
+    done: !!item.done,
+  };
+}
+
+function migrateKanbanState(s) {
+  if (!s || !Array.isArray(s.lists)) return;
+  for (const list of s.lists) {
+    if (!Array.isArray(list.cards)) continue;
+    for (const card of list.cards) {
+      if (!card.checklist) card.checklist = [];
+      card.checklist = card.checklist.map(normalizeChecklistEntry).filter((e) => e.text.trim().length > 0);
+      if (!card.updatedAt) card.updatedAt = new Date().toISOString();
+    }
+  }
+}
+
+function cardSubtitleFromNote(note) {
+  const lines = (note || "").split(/\r?\n/);
+  const line = lines.map((l) => l.trim()).find((l) => l.length > 0);
+  if (!line) return "";
+  return line.length > 140 ? `${line.slice(0, 137)}…` : line;
+}
+
+function formatRelativeUpdated(iso) {
+  if (!iso) return "";
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return "";
+  const diff = Math.max(0, Date.now() - t);
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "À l'instant";
+  if (m < 60) return `Mis à jour il y a ${m} min`;
+  const h = Math.floor(diff / 3600000);
+  if (h < 24) return `Mis à jour il y a ${h}h`;
+  const d = Math.floor(h / 24);
+  if (d === 1) return "Mis à jour hier";
+  return `Mis à jour il y a ${d}j`;
+}
+
+function countPendingCards() {
+  const listTodo = state.lists.find((l) => l.id === "todo");
+  const listDoing = state.lists.find((l) => l.id === "doing");
+  return []
+    .concat(listTodo?.cards || [], listDoing?.cards || [])
+    .filter(cardMatchesFilter).length;
+}
+
+function updatePendingBadge() {
+  const el = document.getElementById("dashboard-pending-count");
+  if (!el) return;
+  const n = countPendingCards();
+  el.textContent = `${n} PENDING`;
+}
+
 // ===========================
 // PERSISTANCE
 // ===========================
@@ -69,6 +132,7 @@ function loadState() {
       state = JSON.parse(saved);
       if (!state.archived) state.archived = [];
       if (!state.viewMode) state.viewMode = "todo";
+      migrateKanbanState(state);
     } else {
       state = initState();
       saveState();
@@ -97,6 +161,7 @@ async function loadBoardState() {
       if (board && board.lists && Array.isArray(board.lists)) {
         state = board;
         if (board.filter !== undefined) state.filter = board.filter;
+        migrateKanbanState(state);
         return;
       }
     } catch (e) {
@@ -121,6 +186,7 @@ function addCard(listId) {
     startDate: null,
     dueDate: null,
     checklist: [],
+    updatedAt: new Date().toISOString(),
   };
 
   list.cards.push(newCard);
@@ -131,7 +197,7 @@ function addCard(listId) {
   setTimeout(() => {
     const cardElement = document.querySelector(`[data-card-id="${newCard.id}"]`);
     if (cardElement) {
-      const titleInput = cardElement.querySelector(".card-title");
+      const titleInput = cardElement.querySelector(".board-card-title input");
       if (titleInput) {
         titleInput.focus();
         titleInput.select();
@@ -145,6 +211,19 @@ function updateCardTitle(cardId, newTitle) {
     const card = list.cards.find((c) => c.id === cardId);
     if (card) {
       card.title = newTitle;
+      card.updatedAt = new Date().toISOString();
+      saveState();
+      return;
+    }
+  }
+}
+
+function updateCardNote(cardId, note) {
+  for (const list of state.lists) {
+    const card = list.cards.find((c) => c.id === cardId);
+    if (card) {
+      card.note = note;
+      card.updatedAt = new Date().toISOString();
       saveState();
       return;
     }
@@ -156,6 +235,25 @@ function updateCardPriority(cardId, priority) {
     const card = list.cards.find((c) => c.id === cardId);
     if (card) {
       card.priority = priority === card.priority ? null : priority;
+      card.updatedAt = new Date().toISOString();
+      saveState();
+      render();
+      return;
+    }
+  }
+}
+
+function cycleCardPriority(cardId) {
+  const order = [null, "orange", "green", "red"];
+  for (const list of state.lists) {
+    const card = list.cards.find((c) => c.id === cardId);
+    if (card) {
+      const cur = card.priority == null ? null : card.priority;
+      const i = order.indexOf(cur);
+      const idx = i === -1 ? 0 : i;
+      const next = order[(idx + 1) % order.length];
+      card.priority = next;
+      card.updatedAt = new Date().toISOString();
       saveState();
       render();
       return;
@@ -218,8 +316,10 @@ function toggleChecklistItem(cardId, index) {
   if (!found) return;
   const { card } = found;
   if (!card.checklist || !card.checklist[index]) return;
-  const removed = card.checklist[index];
-  card.checklist.splice(index, 1);
+  const entry = normalizeChecklistEntry(card.checklist[index]);
+  entry.done = !entry.done;
+  card.checklist[index] = entry;
+  card.updatedAt = new Date().toISOString();
   saveState();
   render();
 }
@@ -231,7 +331,8 @@ function addChecklistItemValue(cardId, label) {
   const clean = String(label || "").trim();
   if (!clean) return;
   if (!card.checklist) card.checklist = [];
-  card.checklist.push(clean);
+  card.checklist.push({ text: clean, done: false });
+  card.updatedAt = new Date().toISOString();
   saveState();
   render();
 }
@@ -637,86 +738,164 @@ function render() {
         ${state.filter ? "Aucune carte ne correspond au filtre" : "Aucune carte — ajoutez-en une !"}
       </div>
     `;
+    updatePendingBadge();
     setupKeyboardHandlers();
     return;
   }
 
   board.innerHTML = cards
-    .map((card) => {
+    .map((card, cardIndex) => {
+      const subtitle = cardSubtitleFromNote(card.note);
+      const checklist = (card.checklist || []).map(normalizeChecklistEntry);
+      const preview = checklist.slice(0, 2);
+      const extra = checklist.slice(2);
+      const moreCount = extra.length;
+      const doneCount = checklist.filter((c) => c.done).length;
+      const progressPct =
+        checklist.length > 0 ? Math.round((doneCount / checklist.length) * 100) : 0;
+      const statusClass =
+        card.priority === "red"
+          ? "is-blocked"
+          : card.priority === "green"
+            ? "is-active"
+            : card.priority === "orange"
+              ? "is-progress"
+              : "is-neutral";
+      const updatedLine = formatRelativeUpdated(card.updatedAt);
+
       return `
-        <section class="board-card ${card.priority ? "priority-" + card.priority : ""}" data-card-id="${card.id}">
+        <section
+          class="board-card ${card.priority ? "priority-" + card.priority : ""}"
+          data-card-id="${card.id}"
+          style="--card-stagger: ${cardIndex}"
+        >
           <div class="board-card-header">
-            <div class="board-card-title">
-              ${
-                state.viewMode === "done"
-                  ? ""
-                  : `<button
-                      class="card-done-toggle"
-                      onclick="event.stopPropagation(); toggleCardDone('${card.id}')"
-                      aria-label="Marquer la carte comme terminée"
-                      title="Terminer"
-                    >✓</button>`
-              }
+            <div class="board-card-heading">
               <button
                 type="button"
-                class="project-meta-btn"
-                onclick="event.stopPropagation(); openProjectMetaModal('${card.id}')"
-                aria-label="Gérer ce projet (dates et échéance)"
-                title="Dates & échéance"
-              >⏳</button>
-              <input
-                type="text"
-                value="${escapeHtml(card.title)}"
-                onchange="updateCardTitle('${card.id}', this.value)"
-                onclick="event.stopPropagation()"
-                aria-label="Titre de la carte"
-              />
+                class="card-status-pill ${statusClass}"
+                onclick="event.stopPropagation(); cycleCardPriority('${card.id}')"
+                aria-label="Changer le statut du projet (neutre, en cours, actif, bloqué)"
+                title="Statut"
+              ></button>
+              <div class="board-card-title-block">
+                <input
+                  type="text"
+                  class="board-card-title-input"
+                  value="${escapeHtml(card.title)}"
+                  onchange="updateCardTitle('${card.id}', this.value)"
+                  onclick="event.stopPropagation()"
+                  aria-label="Titre de la carte"
+                />
+                ${
+                  subtitle
+                    ? `<p class="board-card-subtitle">${escapeHtml(subtitle)}</p>`
+                    : ""
+                }
+              </div>
             </div>
-            <div class="priority-badges">
-              <button class="priority-badge-mini priority-red ${card.priority === "red" ? "active" : ""}"
-                      onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'red')"
-                      aria-label="Priorité haute" title="Priorité haute">●</button>
-              <button class="priority-badge-mini priority-orange ${card.priority === "orange" ? "active" : ""}"
-                      onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'orange')"
-                      aria-label="Priorité moyenne" title="Priorité moyenne">●</button>
-              <button class="priority-badge-mini priority-green ${card.priority === "green" ? "active" : ""}"
-                      onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'green')"
-                      aria-label="Priorité basse" title="Priorité basse">●</button>
-            </div>
+            <details class="board-card-menu" onclick="event.stopPropagation()">
+              <summary class="board-card-menu-trigger" aria-label="Actions du projet">⋯</summary>
+              <div class="board-card-menu-panel" role="menu">
+                ${
+                  state.viewMode === "done"
+                    ? ""
+                    : `<button type="button" class="board-card-menu-item" role="menuitem"
+                        onclick="event.stopPropagation(); toggleCardDone('${card.id}'); this.closest('details').removeAttribute('open')">
+                        Marquer terminée
+                      </button>`
+                }
+                <button type="button" class="board-card-menu-item" role="menuitem"
+                  onclick="event.stopPropagation(); openProjectMetaModal('${card.id}'); this.closest('details').removeAttribute('open')">
+                  Dates &amp; échéance
+                </button>
+                <div class="board-card-menu-divider" role="presentation"></div>
+                <button type="button" class="board-card-menu-item" role="menuitem"
+                  onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'red'); this.closest('details').removeAttribute('open')">
+                  Statut bloqué
+                </button>
+                <button type="button" class="board-card-menu-item" role="menuitem"
+                  onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'orange'); this.closest('details').removeAttribute('open')">
+                  En cours
+                </button>
+                <button type="button" class="board-card-menu-item" role="menuitem"
+                  onclick="event.stopPropagation(); updateCardPriority('${card.id}', 'green'); this.closest('details').removeAttribute('open')">
+                  Actif
+                </button>
+              </div>
+            </details>
           </div>
 
           <div class="card-checklist">
-            ${
-              card.checklist && card.checklist.length
-                ? card.checklist
-                    .map(
-                      (item, idx) => `
+            ${preview
+              .map(
+                (item, idx) => `
               <button
                 type="button"
-                class="checklist-row"
+                class="checklist-row ${item.done ? "is-done" : ""}"
                 onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${idx})"
-                aria-label="Terminer la sous-tâche"
-                title="Terminer"
+                aria-label="${item.done ? "Marquer la sous-tâche comme à faire" : "Marquer la sous-tâche comme faite"}"
+                title="Cocher / décocher"
               >
                 <span class="checklist-box" aria-hidden="true"></span>
-                <span class="checklist-text">${escapeHtml(item)}</span>
+                <span class="checklist-text">${escapeHtml(item.text)}</span>
               </button>
             `
-                    )
-                    .join("")
+              )
+              .join("")}
+            ${
+              moreCount > 0
+                ? `<details class="checklist-more-wrap" onclick="event.stopPropagation()">
+                    <summary class="checklist-more-summary">+${moreCount} autre${moreCount > 1 ? "s" : ""}</summary>
+                    ${extra
+                      .map(
+                        (item, j) => {
+                          const idx = 2 + j;
+                          return `
+                      <button
+                        type="button"
+                        class="checklist-row ${item.done ? "is-done" : ""}"
+                        onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${idx})"
+                        aria-label="${item.done ? "Marquer la sous-tâche comme à faire" : "Marquer la sous-tâche comme faite"}"
+                        title="Cocher / décocher"
+                      >
+                        <span class="checklist-box" aria-hidden="true"></span>
+                        <span class="checklist-text">${escapeHtml(item.text)}</span>
+                      </button>
+                    `;
+                        }
+                      )
+                      .join("")}
+                  </details>`
                 : ""
             }
           </div>
 
           ${
+            checklist.length > 0
+              ? `<div class="board-card-progress" role="presentation" aria-hidden="true">
+                  <span class="board-card-progress-bar" style="width:${progressPct}%"></span>
+                </div>`
+              : ""
+          }
+
+          <div class="board-card-meta-footer">
+            <div class="board-card-avatars" aria-hidden="true">
+              <span class="avatar-chip"></span>
+              <span class="avatar-chip"></span>
+            </div>
+            <time class="board-card-updated" datetime="${escapeHtml(card.updatedAt || "")}">${escapeHtml(updatedLine)}</time>
+          </div>
+
+          ${
             state.viewMode === "done"
               ? ""
-              : `<div class="board-card-footer">
+              : `<div class="board-card-compose">
                   <input
                     type="text"
                     class="board-card-input checklist-input"
                     data-card-id="${card.id}"
-                    placeholder="+ Nouvelle action… (Entrée)"
+                    placeholder="Nouvelle action…"
                     onclick="event.stopPropagation()"
                     aria-label="Ajouter une sous-tâche"
                   />
@@ -736,7 +915,7 @@ function render() {
     })
     .join("");
 
-  // Ajouter les gestionnaires d'événements pour le clavier
+  updatePendingBadge();
   setupKeyboardHandlers();
 }
 
@@ -857,4 +1036,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       filterInput.value = state.filter;
     }
   }
+
+  document.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      document.getElementById("filter-input")?.focus();
+    }
+  });
 });

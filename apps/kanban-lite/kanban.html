@@ -3,9 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Projets</title>
+    <title>Dashboard — Projets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../shared/theme.css" />
@@ -14,7 +16,7 @@
     <script src="../shared/supabase-client.js"></script>
   </head>
 
-  <body>
+  <body class="kanban-app">
     <!--
       README - KANBAN-LITE
       
@@ -42,68 +44,99 @@
 
     <div class="kanban-container">
       <header class="kanban-header">
-        <h1>Projets</h1>
-        
-        <div class="header-actions">
-          <div class="filter-container">
+        <div class="dashboard-hero">
+          <div class="dashboard-top-row">
+            <div class="dashboard-avatar" aria-hidden="true"></div>
+            <h1 class="dashboard-title">Dashboard</h1>
+            <button
+              type="button"
+              class="dashboard-icon-btn"
+              aria-label="Recherche"
+              onclick="document.getElementById('filter-input')?.focus()"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
+          </div>
+          <div class="dashboard-section-row">
+            <h2 class="dashboard-section-title">Active Projects</h2>
+            <span class="dashboard-pending-badge" id="dashboard-pending-count" aria-live="polite">0 PENDING</span>
+          </div>
+        </div>
+
+        <div class="kanban-toolbar">
+          <div class="search-field-wrap">
+            <span class="search-field-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </span>
             <input
-              type="text"
+              type="search"
               id="filter-input"
               class="filter-input"
-              placeholder="🔍 Filtrer les cartes..."
-              aria-label="Filtrer les cartes par titre ou note"
+              placeholder="Search your projects..."
+              aria-label="Rechercher un projet par titre ou note"
+              autocomplete="off"
             />
-          </div>
-          
-          <button class="btn-new-card btn-primary-accent" id="btn-new-card" aria-label="Ajouter une nouvelle carte">
-            ➕ Nouvelle carte
-          </button>
-
-          <div class="view-toggle" role="tablist" aria-label="Vue">
-            <button class="view-btn active" id="view-todo" type="button" role="tab" aria-selected="true">
-              À faire
-            </button>
-            <button class="view-btn" id="view-done" type="button" role="tab" aria-selected="false">
-              Fait
-            </button>
+            <kbd class="search-kbd-hint" aria-hidden="true">⌘K</kbd>
           </div>
 
-          <div class="help-wrap">
-            <button
-              class="help-btn"
-              id="help-toggle"
-              type="button"
-              aria-label="Aide"
-              aria-haspopup="dialog"
-              aria-expanded="false"
-              title="Aide"
-            >
-              ?
-            </button>
-            <div id="help-popover" class="help-popover" hidden>
-              <div class="help-title">Comment utiliser</div>
-              <div class="help-body">
-                <p>
-                  <strong>🎯 Fonctionnalités:</strong><br />
-                  • <strong>Ajouter des cartes:</strong> Bouton "Nouvelle carte" ou + dans une colonne<br />
-                  • <strong>Éditer:</strong> Cliquez sur le titre d'une carte ou colonne<br />
-                  • <strong>Réorganiser:</strong> Glissez-déposez les cartes entre les colonnes<br />
-                  • <strong>Filtrer:</strong> Utilisez la barre de recherche pour filtrer par titre ou note
-                </p>
-                <p>
-                  <strong>⌨️ Raccourcis:</strong><br />
-                  • <kbd>Enter</kbd>: Valider l'édition d'un titre<br />
-                  • <kbd>Esc</kbd>: Annuler l'édition
-                </p>
+          <div class="header-actions">
+            <div class="view-toggle" role="tablist" aria-label="Vue">
+              <button class="view-btn active" id="view-todo" type="button" role="tab" aria-selected="true">
+                À faire
+              </button>
+              <button class="view-btn" id="view-done" type="button" role="tab" aria-selected="false">
+                Fait
+              </button>
+            </div>
+
+            <div class="help-wrap">
+              <button
+                class="help-btn"
+                id="help-toggle"
+                type="button"
+                aria-label="Aide"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+                title="Aide"
+              >
+                ?
+              </button>
+              <div id="help-popover" class="help-popover" hidden>
+                <div class="help-title">Comment utiliser</div>
+                <div class="help-body">
+                  <p>
+                    <strong>Fonctionnalités</strong><br />
+                    • <strong>Nouvelle carte :</strong> bouton flottant + en bas à droite<br />
+                    • <strong>Éditer :</strong> cliquez sur le titre d'une carte<br />
+                    • <strong>Statut :</strong> pastille à gauche du titre (clic pour faire défiler : neutre → en cours → actif → bloqué)<br />
+                    • <strong>Actions :</strong> menu ⋮ — dates, marquer terminée<br />
+                    • <strong>Filtrer :</strong> barre de recherche (raccourci clavier selon l'OS)
+                  </p>
+                  <p>
+                    <strong>Raccourcis</strong><br />
+                    • <kbd>Enter</kbd> : valider l'édition d'un titre ou ajouter une sous-tâche<br />
+                    • <kbd>Esc</kbd> : annuler / fermer
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main class="board" id="board" role="list" aria-label="Tableau Kanban">
-        <!-- Les colonnes seront générées ici par JavaScript -->
+      <main class="board" id="board" role="list" aria-label="Tableau des projets">
+        <!-- Cartes générées par JavaScript -->
       </main>
+
+      <button class="btn-new-card fab-add" id="btn-new-card" type="button" aria-label="Ajouter une nouvelle carte">
+        <span class="fab-add-icon" aria-hidden="true">+</span>
+      </button>
     </div>
 
     <script src="kanban-script.js"></script>
