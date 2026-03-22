@@ -1052,7 +1052,8 @@
         if (e.key === "Escape") closeMobileNav();
       });
 
-      function setActive(appName) {
+      function setActive(appName, opts = {}) {
+        const { workflowOpenId } = opts;
         buttons.forEach((btn) => {
           btn.classList.toggle("active", btn.dataset.app === appName);
         });
@@ -1063,10 +1064,26 @@
         if (appPaths[appName]) {
           const isMobile = window.innerWidth <= 640;
           const basePath = appPaths[appName];
-          const suffix = (appName === "workflow" && isMobile) ? "?compact=1" : "";
-          frame.src = basePath + suffix;
+          if (appName === "workflow") {
+            const qs = new URLSearchParams();
+            if (isMobile) qs.set("compact", "1");
+            if (workflowOpenId) qs.set("open", String(workflowOpenId));
+            const q = qs.toString();
+            frame.src = q ? `${basePath}?${q}` : basePath + (isMobile ? "?compact=1" : "");
+          } else {
+            frame.src = basePath;
+          }
         }
       }
+
+      window.dashboardOpenWorkflow = function (workflowId) {
+        if (!frame || workflowId == null || workflowId === "") return;
+        closeQuickLinks();
+        window.history.pushState({}, "", "?app=workflow");
+        setActive("workflow", { workflowOpenId: workflowId });
+        showSingleView();
+        closeMobileNav();
+      };
 
       function showSingleView() {
         singleFrame.style.display = "block";
