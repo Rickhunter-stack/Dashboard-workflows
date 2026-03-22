@@ -676,8 +676,10 @@
           background: transparent;
           color: #8b8b9e;
           cursor: pointer;
-          font-family: var(--font-heading);
-          font-size: 9px;
+          /* DM Sans partout : évite mélange Inter / fallback sur « Rappels » et rendu bizarre en 9px */
+          font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
+            "Segoe UI", sans-serif;
+          font-size: 10px;
           font-weight: 500;
           letter-spacing: 0.04em;
           text-transform: uppercase;
@@ -705,8 +707,10 @@
 
         .mobile-tab span:not(.mobile-tab-icon) {
           opacity: 0.55;
+          font-family: inherit;
           font-weight: 500;
-          letter-spacing: 0.02em;
+          letter-spacing: inherit;
+          white-space: nowrap;
         }
 
         .mobile-tab.active span:not(.mobile-tab-icon) {
