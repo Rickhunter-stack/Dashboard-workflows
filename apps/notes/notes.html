@@ -106,16 +106,37 @@
             id="modal-title"
             class="modal-title-input"
             placeholder="Titre"
+            aria-label="Titre de la note"
           />
-          <button type="button" class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+          <div class="modal-header-actions">
+            <div id="color-picker" class="color-picker"></div>
+            <button type="button" class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+          </div>
         </div>
         <div class="modal-body">
-          <textarea id="modal-body" class="modal-body-input" placeholder="Contenu…" rows="12"></textarea>
+          <label class="modal-label" for="modal-content">Contenu</label>
+          <textarea
+            id="modal-content"
+            class="modal-content-input"
+            placeholder="Écrivez votre note…"
+            rows="8"
+            aria-label="Contenu de la note"
+          ></textarea>
+          <div class="modal-code-section">
+            <label class="modal-label" for="modal-code">Code (optionnel)</label>
+            <textarea
+              id="modal-code"
+              class="modal-code-input"
+              placeholder="Bloc de code…"
+              rows="6"
+              aria-label="Code optionnel"
+            ></textarea>
+            <button type="button" class="btn-copy-code" id="btn-copy-code">Copier le code</button>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="modal-btn modal-btn-delete" id="modal-delete">Supprimer</button>
-          <button type="button" class="modal-btn modal-btn-close" id="modal-cancel">Annuler</button>
-          <button type="button" class="modal-btn modal-btn-save" id="modal-save">Enregistrer</button>
+          <button type="button" class="modal-btn modal-btn-close" id="modal-save">Enregistrer</button>
         </div>
       </div>
     </div>
