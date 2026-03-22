@@ -151,23 +151,6 @@ body.compact .dashboard-hero {
   background: rgba(255, 255, 255, 0.07);
 }
 
-.dashboard-section-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.dashboard-section-title {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text-primary);
-  margin: 0;
-}
-
 .dashboard-pending-badge {
   font-family: var(--font-body);
   font-size: 10px;

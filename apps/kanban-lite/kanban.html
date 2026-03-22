@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard — Projets</title>
+    <title>Projets actifs</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -47,7 +47,8 @@
         <div class="dashboard-hero">
           <div class="dashboard-top-row">
             <div class="dashboard-avatar" aria-hidden="true"></div>
-            <h1 class="dashboard-title">Dashboard</h1>
+            <h1 class="dashboard-title">Active Projects</h1>
+            <span class="dashboard-pending-badge" id="dashboard-pending-count" aria-live="polite">0 PENDING</span>
             <button
               type="button"
               class="dashboard-icon-btn"
@@ -59,10 +60,6 @@
                 <path d="m21 21-4.3-4.3" />
               </svg>
             </button>
-          </div>
-          <div class="dashboard-section-row">
-            <h2 class="dashboard-section-title">Active Projects</h2>
-            <span class="dashboard-pending-badge" id="dashboard-pending-count" aria-live="polite">0 PENDING</span>
           </div>
         </div>
 
