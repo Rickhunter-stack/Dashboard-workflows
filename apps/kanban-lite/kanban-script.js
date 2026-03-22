@@ -1122,41 +1122,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   render();
   syncViewToggleUI();
 
-  // Toggle aide popover (petit bouton ?)
-  const helpToggle = document.getElementById("help-toggle");
-  const helpPopover = document.getElementById("help-popover");
-
-  const closeHelp = () => {
-    if (!helpToggle || !helpPopover) return;
-    helpPopover.hidden = true;
-    helpToggle.setAttribute("aria-expanded", "false");
-  };
-
-  const toggleHelp = () => {
-    if (!helpToggle || !helpPopover) return;
-    const willOpen = helpPopover.hidden;
-    helpPopover.hidden = !willOpen;
-    helpToggle.setAttribute("aria-expanded", String(willOpen));
-  };
-
-  if (helpToggle && helpPopover) {
-    helpToggle.addEventListener("click", (e) => {
-      e.preventDefault();
-      toggleHelp();
-    });
-
-    document.addEventListener("click", (e) => {
-      if (helpPopover.hidden) return;
-      const wrap = helpToggle.closest(".help-wrap");
-      if (!wrap) return closeHelp();
-      if (!wrap.contains(e.target)) closeHelp();
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeHelp();
-    });
-  }
-
   // Bouton "Nouvelle carte" dans le header
   const btnNewCard = document.getElementById("btn-new-card");
   if (btnNewCard) {
