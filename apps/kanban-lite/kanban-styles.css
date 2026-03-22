@@ -677,6 +677,94 @@ body.compact .dashboard-hero {
   background: var(--border-subtle);
 }
 
+.board-card-workflow-jump {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-top: 2px;
+  border-radius: 8px;
+  border: 1px solid rgba(124, 106, 247, 0.45);
+  background: rgba(124, 106, 247, 0.18);
+  color: #d4ccff;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease,
+    box-shadow 0.15s ease;
+}
+
+.board-card-workflow-jump:hover {
+  background: rgba(124, 106, 247, 0.32);
+  border-color: rgba(168, 155, 255, 0.65);
+  box-shadow: 0 0 16px rgba(124, 106, 247, 0.35);
+  transform: scale(1.05);
+}
+
+.workflow-link-modal .workflow-link-heading {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.workflow-picker-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+
+.workflow-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: min(52vh, 320px);
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.workflow-picker-row {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.workflow-picker-row:hover {
+  background: rgba(124, 106, 247, 0.15);
+  border-color: rgba(124, 106, 247, 0.35);
+}
+
+.workflow-picker-title {
+  display: block;
+}
+
+.workflow-picker-empty {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 8px 0 16px;
+  line-height: 1.45;
+}
+
+.workflow-picker-unlink {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
 .board-card-progress {
   height: 3px;
   border-radius: 999px;

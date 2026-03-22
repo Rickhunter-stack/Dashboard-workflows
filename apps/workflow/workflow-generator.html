@@ -1910,6 +1910,15 @@ document.addEventListener("DOMContentLoaded", () => {
 // ============================================================================
 // GESTION DES WORKFLOWS (CHARGEMENT/SAUVEGARDE)
 // ============================================================================
+function tryOpenWorkflowFromUrl() {
+  const id = new URLSearchParams(window.location.search).get("open");
+  if (!id || !workflows || workflows.length === 0) return;
+  const wf = workflows.find((w) => String(w.id) === String(id));
+  if (wf) {
+    openWorkflowView(wf.id);
+  }
+}
+
 function loadWorkflows() {
   // Si Supabase est configuré, on charge depuis la base.
   // Sinon on reste en mode localStorage comme avant.
@@ -1918,17 +1927,21 @@ function loadWorkflows() {
       if (rows && Array.isArray(rows) && rows.length > 0) {
         workflows = rows.map((row) => row.payload || row); // payload JSON stocké dans la table
         showSummaryView();
+        tryOpenWorkflowFromUrl();
         return;
       }
       loadWorkflowsFromLocalStorage();
       showSummaryView();
+      tryOpenWorkflowFromUrl();
     }).catch(() => {
       loadWorkflowsFromLocalStorage();
       showSummaryView();
+      tryOpenWorkflowFromUrl();
     });
   } else {
     loadWorkflowsFromLocalStorage();
     showSummaryView();
+    tryOpenWorkflowFromUrl();
   }
 }
 

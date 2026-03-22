@@ -29,6 +29,7 @@ function initState() {
               { text: "API embeddings", done: false },
             ],
             updatedAt: new Date().toISOString(),
+            linkedWorkflowId: null,
           },
         ],
       },
@@ -79,6 +80,11 @@ function migrateKanbanState(s) {
       if (!card.checklist) card.checklist = [];
       card.checklist = card.checklist.map(normalizeChecklistEntry).filter((e) => e.text.trim().length > 0);
       if (!card.updatedAt) card.updatedAt = new Date().toISOString();
+      if (card.linkedWorkflowId != null && card.linkedWorkflowId !== "") {
+        card.linkedWorkflowId = String(card.linkedWorkflowId);
+      } else {
+        card.linkedWorkflowId = null;
+      }
     }
   }
 }
@@ -187,6 +193,7 @@ function addCard(listId) {
     dueDate: null,
     checklist: [],
     updatedAt: new Date().toISOString(),
+    linkedWorkflowId: null,
   };
 
   list.cards.push(newCard);
@@ -510,6 +517,132 @@ function closeProjectMetaModal() {
   render();
 }
 
+function closeWorkflowLinkModal() {
+  document.querySelectorAll(".workflow-link-overlay").forEach((el) => el.remove());
+}
+
+function escapeJsString(s) {
+  return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+async function openWorkflowLinkModal(cardId) {
+  const found = findCard(cardId);
+  if (!found) return;
+
+  let list = [];
+  try {
+    if (window.supabaseShared && typeof window.supabaseShared.fetchWorkflows === "function") {
+      const rows = await window.supabaseShared.fetchWorkflows();
+      if (rows && Array.isArray(rows) && rows.length > 0) {
+        list = rows
+          .map((r) => (r && r.payload ? r.payload : r))
+          .filter((w) => w && w.id != null);
+      }
+    }
+  } catch (e) {
+    console.warn("[Kanban] fetchWorkflows (sélecteur)", e);
+  }
+  if (list.length === 0) {
+    try {
+      const raw = localStorage.getItem("workflows");
+      const parsed = raw ? JSON.parse(raw) : [];
+      list = Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      list = [];
+    }
+  }
+
+  const rowsHtml =
+    list.length === 0
+      ? `<p class="workflow-picker-empty">Aucun workflow pour l’instant. Créez-en un dans l’onglet Workflows.</p>`
+      : list
+          .slice()
+          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+          .map((w) => {
+            const wid = escapeJsString(String(w.id));
+            return `
+    <button type="button" class="workflow-picker-row" role="option"
+      onclick="setCardLinkedWorkflow('${escapeJsString(cardId)}', '${wid}')">
+      <span class="workflow-picker-title">${escapeHtml(w.title || "Sans titre")}</span>
+    </button>`;
+          })
+          .join("");
+
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay workflow-link-overlay";
+  modal.innerHTML = `
+    <div class="modal-card workflow-link-modal" role="dialog" aria-modal="true" aria-labelledby="workflow-link-heading">
+      <div class="modal-header">
+        <h2 id="workflow-link-heading" class="workflow-link-heading">Connecter un workflow</h2>
+        <button type="button" class="modal-close" aria-label="Fermer" onclick="closeWorkflowLinkModal()">✕</button>
+      </div>
+      <p class="workflow-picker-hint">Choisissez le workflow lié à ce projet. Un raccourci <strong>w</strong> apparaîtra sur la carte.</p>
+      <div class="workflow-picker-list" role="listbox">${rowsHtml}</div>
+      ${
+        found.card.linkedWorkflowId
+          ? `<button type="button" class="modal-btn modal-btn-delete workflow-picker-unlink" onclick="setCardLinkedWorkflow('${escapeJsString(cardId)}', null)">Dissocier le workflow</button>`
+          : ""
+      }
+      <div class="modal-footer">
+        <button type="button" class="modal-btn modal-btn-close" onclick="closeWorkflowLinkModal()">Fermer</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const handleEscape = (e) => {
+    if (e.key === "Escape") {
+      closeWorkflowLinkModal();
+      document.removeEventListener("keydown", handleEscape);
+    }
+  };
+  document.addEventListener("keydown", handleEscape);
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeWorkflowLinkModal();
+  });
+  modal.querySelector(".modal-card")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+}
+
+function setCardLinkedWorkflow(cardId, workflowId) {
+  const found = findCard(cardId);
+  if (!found) return;
+  const { card } = found;
+  if (workflowId == null || workflowId === "" || workflowId === "null") {
+    card.linkedWorkflowId = null;
+  } else {
+    card.linkedWorkflowId = String(workflowId);
+  }
+  card.updatedAt = new Date().toISOString();
+  saveState();
+  closeWorkflowLinkModal();
+  render();
+}
+
+function openLinkedWorkflowNavigation(workflowId) {
+  if (workflowId == null || workflowId === "") return;
+  const id = String(workflowId);
+  try {
+    if (
+      window.parent &&
+      window.parent !== window &&
+      typeof window.parent.dashboardOpenWorkflow === "function"
+    ) {
+      window.parent.dashboardOpenWorkflow(id);
+      return;
+    }
+  } catch (e) {
+    /* origine différente (iframe) */
+  }
+  const isMobile = window.matchMedia("(max-width: 640px)").matches;
+  const qs = new URLSearchParams();
+  if (isMobile) qs.set("compact", "1");
+  qs.set("open", id);
+  window.location.href = "../workflow/workflow-generator.html?" + qs.toString();
+}
+
 function openCardModal(cardId) {
   currentModalCardId = cardId;
   const result = findCard(cardId);
@@ -794,6 +927,17 @@ function render() {
                 }
               </div>
             </div>
+            ${
+              card.linkedWorkflowId
+                ? `<button
+                type="button"
+                class="board-card-workflow-jump"
+                onclick="event.stopPropagation(); openLinkedWorkflowNavigation('${escapeJsString(String(card.linkedWorkflowId))}')"
+                aria-label="Ouvrir le workflow lié"
+                title="Ouvrir le workflow"
+              >w</button>`
+                : ""
+            }
             <details class="board-card-menu" onclick="event.stopPropagation()">
               <summary class="board-card-menu-trigger" aria-label="Actions du projet">⋯</summary>
               <div class="board-card-menu-panel" role="menu">
@@ -808,6 +952,10 @@ function render() {
                 <button type="button" class="board-card-menu-item" role="menuitem"
                   onclick="event.stopPropagation(); openProjectMetaModal('${card.id}'); this.closest('details').removeAttribute('open')">
                   Dates &amp; échéance
+                </button>
+                <button type="button" class="board-card-menu-item" role="menuitem"
+                  onclick="event.stopPropagation(); openWorkflowLinkModal('${escapeJsString(card.id)}'); this.closest('details').removeAttribute('open')">
+                  Connecter un workflow…
                 </button>
                 <div class="board-card-menu-divider" role="presentation"></div>
                 <button type="button" class="board-card-menu-item" role="menuitem"
