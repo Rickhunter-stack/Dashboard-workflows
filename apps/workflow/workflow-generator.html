@@ -1902,6 +1902,8 @@ let draggedCard = null;
 let currentEditingCardId = null;
 let diagramOrientation = 'horizontal'; // 'vertical' ou 'horizontal'
 let didOpenWorkflowFromUrl = false; // évite une ouverture en double depuis `open=`
+let supabaseWorkflowsSaveTimeoutId = null;
+const SUPABASE_WORKFLOWS_SAVE_DEBOUNCE_MS = 400;
 
 // ============================================================================
 // INITIALISATION
@@ -1995,18 +1997,65 @@ function saveWorkflows() {
   localStorage.setItem("workflows", JSON.stringify(workflows));
 
   if (window.supabaseShared) {
-    // Optionnel : on pousse aussi dans Supabase si configuré
-    workflows.forEach((wf) => {
-      window.supabaseShared.upsertWorkflow({
+    // Optionnel : on pousse aussi dans Supabase si configuré.
+    // Débouncé pour éviter d'inonder le réseau lors de modifications rapides.
+    if (supabaseWorkflowsSaveTimeoutId) clearTimeout(supabaseWorkflowsSaveTimeoutId);
+    supabaseWorkflowsSaveTimeoutId = setTimeout(() => {
+      workflows.forEach((wf) => {
+        window.supabaseShared
+          .upsertWorkflow({
+            id: wf.id,
+            title: wf.title,
+            color: wf.color || "none",
+            created_at: wf.createdAt,
+            payload: wf,
+          })
+          .catch((error) => {
+            console.warn("[Workflow] Supabase upsertWorkflow failed", error);
+          });
+      });
+    }, SUPABASE_WORKFLOWS_SAVE_DEBOUNCE_MS);
+  }
+}
+
+// Flush final (iframe / navigation / fermeture navigateur)
+window.addEventListener("pagehide", () => {
+  if (!window.supabaseShared) return;
+  if (supabaseWorkflowsSaveTimeoutId) clearTimeout(supabaseWorkflowsSaveTimeoutId);
+  supabaseWorkflowsSaveTimeoutId = null;
+  workflows.forEach((wf) => {
+    window.supabaseShared
+      .upsertWorkflow({
         id: wf.id,
         title: wf.title,
         color: wf.color || "none",
         created_at: wf.createdAt,
         payload: wf,
+      })
+      .catch((error) => {
+        console.warn("[Workflow] Supabase final upsertWorkflow failed", error);
       });
-    });
-  }
-}
+  });
+});
+
+window.addEventListener("beforeunload", () => {
+  if (!window.supabaseShared) return;
+  if (supabaseWorkflowsSaveTimeoutId) clearTimeout(supabaseWorkflowsSaveTimeoutId);
+  supabaseWorkflowsSaveTimeoutId = null;
+  workflows.forEach((wf) => {
+    window.supabaseShared
+      .upsertWorkflow({
+        id: wf.id,
+        title: wf.title,
+        color: wf.color || "none",
+        created_at: wf.createdAt,
+        payload: wf,
+      })
+      .catch((error) => {
+        console.warn("[Workflow] Supabase final upsertWorkflow failed", error);
+      });
+  });
+});
 
 function saveWorkflow() {
   if (!currentWorkflow) return;

@@ -135,6 +135,10 @@ function updatePendingBadge() {
 // PERSISTANCE
 // ===========================
 const STORAGE_KEY = "kanbanLiteBoard";
+// Evite un nombre de requêtes Supabase excessif (souvent déclenché à chaque frappe).
+// Le localStorage reste instantané, seul l'upsert Supabase est débouncé.
+let supabaseSaveTimeoutId = null;
+const SUPABASE_SAVE_DEBOUNCE_MS = 400;
 
 function loadState() {
   try {
@@ -158,12 +162,39 @@ function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     if (window.supabaseShared) {
-      window.supabaseShared.upsertKanbanBoard(state);
+      if (supabaseSaveTimeoutId) clearTimeout(supabaseSaveTimeoutId);
+      supabaseSaveTimeoutId = setTimeout(() => {
+        // Snapshot: on envoie l'état courant au moment du flush.
+        window.supabaseShared
+          .upsertKanbanBoard(state)
+          .catch((error) => {
+            console.warn("[Kanban] Supabase upsert failed", error);
+          });
+      }, SUPABASE_SAVE_DEBOUNCE_MS);
     }
   } catch (error) {
     console.error("Erreur lors de la sauvegarde:", error);
   }
 }
+
+// Flush final (iframe / navigation / fermeture navigateur)
+window.addEventListener("pagehide", () => {
+  if (!window.supabaseShared) return;
+  if (supabaseSaveTimeoutId) clearTimeout(supabaseSaveTimeoutId);
+  supabaseSaveTimeoutId = null;
+  window.supabaseShared
+    .upsertKanbanBoard(state)
+    .catch((error) => console.warn("[Kanban] Supabase final upsert failed", error));
+});
+
+window.addEventListener("beforeunload", () => {
+  if (!window.supabaseShared) return;
+  if (supabaseSaveTimeoutId) clearTimeout(supabaseSaveTimeoutId);
+  supabaseSaveTimeoutId = null;
+  window.supabaseShared
+    .upsertKanbanBoard(state)
+    .catch((error) => console.warn("[Kanban] Supabase final upsert failed", error));
+});
 
 async function loadBoardState() {
   if (window.supabaseShared) {
