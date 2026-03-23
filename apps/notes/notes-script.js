@@ -15,6 +15,10 @@ const COLORS = [
   { id: "purple", hex: "#a78bfa" },
 ];
 
+// Débouncer uniquement les upserts Supabase (localStorage reste instantané).
+let supabaseNotesSaveTimeoutId = null;
+const SUPABASE_NOTES_SAVE_DEBOUNCE_MS = 400;
+
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
@@ -42,12 +46,41 @@ function saveState() {
       filter: state.filter,
     }));
     if (window.supabaseShared) {
-      state.notes.forEach((n) => window.supabaseShared.upsertNote(n));
+      if (supabaseNotesSaveTimeoutId) clearTimeout(supabaseNotesSaveTimeoutId);
+      supabaseNotesSaveTimeoutId = setTimeout(() => {
+        state.notes.forEach((n) => {
+          window.supabaseShared
+            .upsertNote(n)
+            .catch((error) => console.warn("[Notes] Supabase upsertNote failed", error));
+        });
+      }, SUPABASE_NOTES_SAVE_DEBOUNCE_MS);
     }
   } catch (e) {
     console.error("Erreur sauvegarde notes:", e);
   }
 }
+
+window.addEventListener("pagehide", () => {
+  if (!window.supabaseShared) return;
+  if (supabaseNotesSaveTimeoutId) clearTimeout(supabaseNotesSaveTimeoutId);
+  supabaseNotesSaveTimeoutId = null;
+  state.notes.forEach((n) => {
+    window.supabaseShared.upsertNote(n).catch((error) => {
+      console.warn("[Notes] Supabase final upsertNote failed", error);
+    });
+  });
+});
+
+window.addEventListener("beforeunload", () => {
+  if (!window.supabaseShared) return;
+  if (supabaseNotesSaveTimeoutId) clearTimeout(supabaseNotesSaveTimeoutId);
+  supabaseNotesSaveTimeoutId = null;
+  state.notes.forEach((n) => {
+    window.supabaseShared.upsertNote(n).catch((error) => {
+      console.warn("[Notes] Supabase final upsertNote failed", error);
+    });
+  });
+});
 
 async function loadNotesState() {
   if (window.supabaseShared) {
@@ -286,6 +319,7 @@ function deleteNote() {
 document.getElementById("btn-copy-code")?.addEventListener("click", () => {
   const code = document.getElementById("modal-code").value;
   if (!code) return;
+  if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") return;
   navigator.clipboard.writeText(code).then(() => {
     const btn = document.getElementById("btn-copy-code");
     const orig = btn.textContent;
