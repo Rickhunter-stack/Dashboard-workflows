@@ -1901,6 +1901,7 @@ let currentCardCount = 12;
 let draggedCard = null;
 let currentEditingCardId = null;
 let diagramOrientation = 'horizontal'; // 'vertical' ou 'horizontal'
+let didOpenWorkflowFromUrl = false; // évite une ouverture en double depuis `open=`
 
 // ============================================================================
 // INITIALISATION
@@ -1940,9 +1941,11 @@ document.addEventListener("DOMContentLoaded", () => {
 // ============================================================================
 function tryOpenWorkflowFromUrl() {
   const id = new URLSearchParams(window.location.search).get("open");
+  if (didOpenWorkflowFromUrl) return;
   if (!id || !workflows || workflows.length === 0) return;
   const wf = workflows.find((w) => String(w.id) === String(id));
   if (wf) {
+    didOpenWorkflowFromUrl = true;
     openWorkflowView(wf.id);
   }
 }

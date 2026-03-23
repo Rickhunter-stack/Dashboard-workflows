@@ -8,6 +8,11 @@ let state = {
   viewMode: "todo", // 'todo' | 'done'
 };
 
+// Handlers Escape pour éviter les fuites / doublons lors de la fermeture par bouton
+let projectMetaEscapeHandler = null;
+let cardModalEscapeHandler = null;
+let workflowLinkEscapeHandler = null;
+
 // Initialiser l'état par défaut
 function initState() {
   return {
@@ -491,10 +496,17 @@ function openProjectMetaModal(cardId) {
   const handleEscape = (e) => {
     if (e.key === "Escape") {
       closeProjectMetaModal();
-      document.removeEventListener("keydown", handleEscape);
+      if (projectMetaEscapeHandler) {
+        document.removeEventListener("keydown", projectMetaEscapeHandler);
+        projectMetaEscapeHandler = null;
+      }
     }
   };
-  document.addEventListener("keydown", handleEscape);
+  if (projectMetaEscapeHandler) {
+    document.removeEventListener("keydown", projectMetaEscapeHandler);
+  }
+  projectMetaEscapeHandler = handleEscape;
+  document.addEventListener("keydown", projectMetaEscapeHandler);
 
   modal.addEventListener("click", (e) => {
     if (e.target === modal) closeProjectMetaModal();
@@ -514,10 +526,18 @@ function closeProjectMetaModal() {
     if (title) o.remove();
   });
   currentProjectModalCardId = null;
+  if (projectMetaEscapeHandler) {
+    document.removeEventListener("keydown", projectMetaEscapeHandler);
+    projectMetaEscapeHandler = null;
+  }
   render();
 }
 
 function closeWorkflowLinkModal() {
+  if (workflowLinkEscapeHandler) {
+    document.removeEventListener("keydown", workflowLinkEscapeHandler);
+    workflowLinkEscapeHandler = null;
+  }
   document.querySelectorAll(".workflow-link-overlay").forEach((el) => el.remove());
 }
 
@@ -593,10 +613,17 @@ async function openWorkflowLinkModal(cardId) {
   const handleEscape = (e) => {
     if (e.key === "Escape") {
       closeWorkflowLinkModal();
-      document.removeEventListener("keydown", handleEscape);
+      if (workflowLinkEscapeHandler) {
+        document.removeEventListener("keydown", workflowLinkEscapeHandler);
+        workflowLinkEscapeHandler = null;
+      }
     }
   };
-  document.addEventListener("keydown", handleEscape);
+  if (workflowLinkEscapeHandler) {
+    document.removeEventListener("keydown", workflowLinkEscapeHandler);
+  }
+  workflowLinkEscapeHandler = handleEscape;
+  document.addEventListener("keydown", workflowLinkEscapeHandler);
 
   modal.addEventListener("click", (e) => {
     if (e.target === modal) closeWorkflowLinkModal();
@@ -724,10 +751,17 @@ function openCardModal(cardId) {
   const handleEscape = (e) => {
     if (e.key === "Escape") {
       closeCardModal();
-      document.removeEventListener("keydown", handleEscape);
+      if (cardModalEscapeHandler) {
+        document.removeEventListener("keydown", cardModalEscapeHandler);
+        cardModalEscapeHandler = null;
+      }
     }
   };
-  document.addEventListener("keydown", handleEscape);
+  if (cardModalEscapeHandler) {
+    document.removeEventListener("keydown", cardModalEscapeHandler);
+  }
+  cardModalEscapeHandler = handleEscape;
+  document.addEventListener("keydown", cardModalEscapeHandler);
 
   // Fermer en cliquant sur l'overlay
   modal.addEventListener("click", (e) => {
@@ -751,6 +785,10 @@ function closeCardModal() {
     modal.remove();
   }
   currentModalCardId = null;
+  if (cardModalEscapeHandler) {
+    document.removeEventListener("keydown", cardModalEscapeHandler);
+    cardModalEscapeHandler = null;
+  }
   render();
 }
 
