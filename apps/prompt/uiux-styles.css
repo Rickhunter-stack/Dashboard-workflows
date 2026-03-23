@@ -73,12 +73,12 @@ h1 {
   display: block;
   margin: 24px auto;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
+  box-shadow: 0 16px 40px var(--accent-soft);
 }
 
 .create-project-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 44px rgba(79, 140, 255, 0.32);
+  box-shadow: 0 22px 54px rgba(128, 131, 255, 0.32);
 }
 
 /* Grille des projets */
@@ -226,13 +226,13 @@ h1 {
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 26px rgba(79, 140, 255, 0.22);
+  box-shadow: 0 16px 40px var(--accent-soft);
   white-space: nowrap;
 }
 
 .export-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
+  box-shadow: 0 22px 54px rgba(128, 131, 255, 0.28);
 }
 
 .save-btn {
@@ -661,12 +661,12 @@ h1 {
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 26px rgba(79, 140, 255, 0.22);
+  box-shadow: 0 16px 40px var(--accent-soft);
 }
 
 .copy-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
+  box-shadow: 0 22px 54px rgba(128, 131, 255, 0.28);
 }
 
 .close-modal-btn {

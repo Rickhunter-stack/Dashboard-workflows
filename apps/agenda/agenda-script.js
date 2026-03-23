@@ -306,7 +306,10 @@
           : [];
       const events = buildEvents(reminders, roadmap);
       return groupEventsByDay(events);
-    })();
+    })().catch((err) => {
+      console.warn("[Agenda] renderAll failed, fallback to empty", err);
+      return {};
+    });
 
     eventsPromise.then((eventsByDay) => {
       const allEvents = [];

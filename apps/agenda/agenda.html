@@ -4,36 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agenda</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Sora:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../shared/theme.css" />
+    <link rel="stylesheet" href="../shared/dashboard-app.css" />
     <link rel="stylesheet" href="agenda-styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="../shared/supabase-client.js"></script>
   </head>
-  <body>
-    <div class="agenda-container">
+  <body class="dashboard-app agenda-app">
+    <div class="agenda-container dash-app-wrap">
       <header class="agenda-header">
-        <div class="agenda-header-main">
-          <h1>Agenda</h1>
-          <div class="agenda-period">
-            <button class="btn-ghost" id="btn-prev-period" aria-label="Période précédente">
-              ◀
-            </button>
-            <div class="agenda-current-label" id="agenda-current-label"></div>
-            <button class="btn-ghost" id="btn-next-period" aria-label="Période suivante">
-              ▶
-            </button>
-            <button class="btn-outline" id="btn-today">Aujourd'hui</button>
+        <div class="agenda-header-dash">
+          <div class="dash-hero">
+            <div class="dash-top-row">
+              <div class="dash-avatar" aria-hidden="true"></div>
+              <h1 class="dash-title">Agenda</h1>
+            </div>
           </div>
-        </div>
-        <div class="agenda-header-actions">
-          <select id="agenda-view-select" class="agenda-view-select" aria-label="Type de vue">
-            <option value="week">Semaine</option>
-            <option value="month">Mois</option>
-          </select>
+          <div class="dash-toolbar agenda-dash-toolbar">
+            <div class="agenda-period">
+              <button class="btn-ghost" id="btn-prev-period" aria-label="Période précédente" type="button">
+                ◀
+              </button>
+              <div class="agenda-current-label" id="agenda-current-label"></div>
+              <button class="btn-ghost" id="btn-next-period" aria-label="Période suivante" type="button">
+                ▶
+              </button>
+              <button class="btn-outline" id="btn-today" type="button">Aujourd'hui</button>
+            </div>
+            <div class="agenda-header-actions">
+              <select id="agenda-view-select" class="agenda-view-select" aria-label="Type de vue">
+                <option value="week">Semaine</option>
+                <option value="month">Mois</option>
+              </select>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -65,4 +75,3 @@
     <script src="agenda-script.js"></script>
   </body>
 </html>
-

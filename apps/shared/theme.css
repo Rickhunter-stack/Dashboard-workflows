@@ -1,67 +1,137 @@
-/* Shared glassmorphic theme tokens (app-wide) */
-:root {
-  /* Palette sombre neutre, style IDE */
-  --bg: #050505;
-  --surface: rgba(255, 255, 255, 0.04);
-  --surface-hover: rgba(255, 255, 255, 0.07);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(255, 255, 255, 0.18);
-  --text: #e8eaf0;
-  --muted: rgba(232, 234, 240, 0.45);
-  --muted-2: rgba(232, 234, 240, 0.70);
+/* Shared glassmorphic theme tokens (app-wide) — premium dark + glass */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap");
 
-  --accent: #4f46e5;
-  --accent-2: #1e293b;
-  --accent-gradient: linear-gradient(135deg, #1e293b, #020617);
-  --accent-soft: rgba(108, 143, 255, 0.18);
-  --accent-soft-2: rgba(167, 139, 250, 0.16);
+:root {
+  /* Titres géométriques type ref « Lumina » */
+  --font-heading: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --text-title: #ffffff;
+  --text-subtitle: #949494;
+
+  /* Fond quasi noir (#0D0D0F), halos très discrets */
+  --bg: #0d0d0f;
+  --text: #f5f5f7;
+  --muted: rgba(245, 245, 247, 0.45);
+  --muted-2: rgba(245, 245, 247, 0.72);
+
+  /* Glass : surfaces claires très transparentes sur fond sombre */
+  --surface: rgba(255, 255, 255, 0.055);
+  --surface-hover: rgba(255, 255, 255, 0.09);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-active: rgba(95, 78, 138, 0.48);
+  --glass-highlight: rgba(255, 255, 255, 0.06);
+
+  /* Lavande / violet poussiéreux (ref segmented control — discret, premium) */
+  --accent: #b8a8dc;
+  --accent-label: #d4c8f0;
+  --accent-label-muted: rgba(212, 200, 240, 0.52);
+  --accent-2: #00bd85;
+  /* Boutons : ardoise violacée + texte lavande, pas de dégradé néon */
+  --accent-gradient: linear-gradient(155deg, #3d354e 0%, #2a2438 52%, #1c1726 100%);
+  --accent-gradient-hover: linear-gradient(155deg, #484060 0%, #322a42 52%, #241e32 100%);
+  --accent-soft: rgba(184, 168, 220, 0.2);
+  --accent-soft-2: rgba(184, 168, 220, 0.1);
+  --accent-shadow: 0 18px 44px rgba(32, 26, 48, 0.55);
+  --accent-shadow-hover: 0 24px 56px rgba(40, 32, 62, 0.6);
 
   --green: #34d399;
   --red: #f87171;
   --amber: #fbbf24;
 
-  /* Compat layer pour les anciens tokens du dashboard workflows */
-  --bg-0: #050505;
-  --bg-1: #050505;
-  --bg-2: #050505;
-  --bg-gradient: radial-gradient(circle at 10% 0%, #111827 0%, transparent 55%),
-    radial-gradient(circle at 90% 100%, #020617 0%, transparent 55%),
-    #050505;
+  /* Compat anciens tokens */
+  --bg-0: #0d0d0f;
+  --bg-1: #0d0d0f;
+  --bg-2: #121214;
+  --bg-gradient:
+    radial-gradient(ellipse 130% 90% at 50% -25%, rgba(120, 100, 180, 0.07) 0%, transparent 58%),
+    radial-gradient(ellipse 80% 55% at 100% 100%, rgba(0, 189, 133, 0.04) 0%, transparent 52%),
+    linear-gradient(180deg, #101012 0%, #0d0d0f 42%, #09090b 100%);
 
-  --surface-0: rgba(255, 255, 255, 0.032);
-  --surface-1: var(--surface);
-  --surface-2: var(--surface-hover);
-  --surface-3: rgba(255, 255, 255, 0.10);
+  /* Surfaces générales */
+  --surface-0: rgba(255, 255, 255, 0.045);
+  --surface-1: rgba(255, 255, 255, 0.065);
+  --surface-2: rgba(255, 255, 255, 0.095);
+  --surface-3: rgba(255, 255, 255, 0.06);
+
+  /* Cartes : glass plus lisible + bordure hairline (ref premium) */
+  --surface-card: rgba(255, 255, 255, 0.07);
+  --surface-card-hover: rgba(255, 255, 255, 0.095);
+  --border-card: rgba(255, 255, 255, 0.11);
+  --border-card-strong: rgba(255, 255, 255, 0.14);
+  --blur-card: 26px;
+  --r-card: 22px;
+  --card-padding: 18px 20px;
+  --shadow-card:
+    0 10px 40px rgba(0, 0, 0, 0.48),
+    0 0 0 1px rgba(255, 255, 255, 0.07) inset;
 
   --border-0: var(--border);
-  --border-1: var(--border-active);
-  --border-2: rgba(255, 255, 255, 0.22);
+  --border-1: rgba(255, 255, 255, 0.14);
+  --border-2: rgba(184, 168, 220, 0.22);
 
-  /* Elevation + blur */
-  --blur: 20px;
-  --blur-strong: 24px;
-  --shadow-sm: 0 4px 18px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 12px 34px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 22px 70px rgba(0, 0, 0, 0.65);
+  /* Blur + ombres plus « premium » */
+  --blur: 28px;
+  --blur-strong: 40px;
+  --shadow-sm:
+    0 4px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  --shadow-md:
+    0 12px 40px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.65);
 
-  /* Radius */
   --r-sm: 10px;
   --r-md: 14px;
-  --r-lg: 16px;
+  --r-lg: 18px;
+
+  /* Style « classy » : glow bleu/indigo + accent gradient (boutons & cartes) */
+  --btn-surface: rgba(18, 22, 38, 0.95);
+  --btn-surface-hover: rgba(24, 30, 52, 0.98);
+  --btn-glow: 0 0 36px rgba(59, 130, 246, 0.28), 0 8px 24px rgba(0, 0, 0, 0.4);
+  --btn-glow-hover: 0 0 48px rgba(59, 130, 246, 0.38), 0 12px 32px rgba(0, 0, 0, 0.45);
+  --card-accent-line: linear-gradient(90deg, #3b82f6 0%, #7c6db8 50%, #b8a8dc 100%);
 }
 
 html,
 body {
   background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text);
 }
 
-/* Optional helpers (useful for future refactors) */
+/* Grain très léger (matière premium, non intrusif) */
+body {
+  position: relative;
+  isolation: isolate;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.042;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* Titres module (h1 principal) — léger / géométrique */
+.page-title,
+.module-title {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  color: var(--text-title);
+  line-height: 1.15;
+}
+
+/* Helpers glass */
 .glass {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  backdrop-filter: blur(var(--blur));
+  backdrop-filter: blur(var(--blur)) saturate(1.35);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.35);
   box-shadow: var(--shadow-sm);
 }
 
@@ -69,12 +139,13 @@ body {
   background: var(--surface-hover);
   border: 1px solid var(--border-active);
   border-radius: var(--r-lg);
-  backdrop-filter: blur(var(--blur-strong));
+  backdrop-filter: blur(var(--blur-strong)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--blur-strong)) saturate(1.4);
   box-shadow: var(--shadow-md);
 }
 
 .accent-text {
-  background: var(--accent-gradient);
+  background: linear-gradient(135deg, #ebe4ff 0%, var(--accent) 55%, #8f7ab8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -85,20 +156,21 @@ body {
     sans-serif;
   font-weight: 600;
   font-size: 14px;
-  background: var(--accent-gradient);
-  color: #ffffff;
-  border: none;
+  background: var(--btn-surface);
+  color: rgba(232, 234, 240, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 12px 24px;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 26px rgba(79, 140, 255, 0.22);
+  box-shadow: var(--btn-glow);
   white-space: nowrap;
 }
 
 .btn-primary-accent:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
+  background: var(--btn-surface-hover);
+  box-shadow: var(--btn-glow-hover);
 }
 
 /* Scrollbar */
@@ -108,17 +180,19 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(79, 140, 255, 0.55);
+  background: rgba(184, 168, 220, 0.42);
   border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(79, 140, 255, 0.75);
+  background: rgba(200, 186, 232, 0.58);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -15,6 +15,10 @@ const COLORS = [
   { id: "purple", hex: "#a78bfa" },
 ];
 
+// Débouncer uniquement les upserts Supabase (localStorage reste instantané).
+let supabaseNotesSaveTimeoutId = null;
+const SUPABASE_NOTES_SAVE_DEBOUNCE_MS = 400;
+
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
@@ -42,12 +46,41 @@ function saveState() {
       filter: state.filter,
     }));
     if (window.supabaseShared) {
-      state.notes.forEach((n) => window.supabaseShared.upsertNote(n));
+      if (supabaseNotesSaveTimeoutId) clearTimeout(supabaseNotesSaveTimeoutId);
+      supabaseNotesSaveTimeoutId = setTimeout(() => {
+        state.notes.forEach((n) => {
+          window.supabaseShared
+            .upsertNote(n)
+            .catch((error) => console.warn("[Notes] Supabase upsertNote failed", error));
+        });
+      }, SUPABASE_NOTES_SAVE_DEBOUNCE_MS);
     }
   } catch (e) {
     console.error("Erreur sauvegarde notes:", e);
   }
 }
+
+window.addEventListener("pagehide", () => {
+  if (!window.supabaseShared) return;
+  if (supabaseNotesSaveTimeoutId) clearTimeout(supabaseNotesSaveTimeoutId);
+  supabaseNotesSaveTimeoutId = null;
+  state.notes.forEach((n) => {
+    window.supabaseShared.upsertNote(n).catch((error) => {
+      console.warn("[Notes] Supabase final upsertNote failed", error);
+    });
+  });
+});
+
+window.addEventListener("beforeunload", () => {
+  if (!window.supabaseShared) return;
+  if (supabaseNotesSaveTimeoutId) clearTimeout(supabaseNotesSaveTimeoutId);
+  supabaseNotesSaveTimeoutId = null;
+  state.notes.forEach((n) => {
+    window.supabaseShared.upsertNote(n).catch((error) => {
+      console.warn("[Notes] Supabase final upsertNote failed", error);
+    });
+  });
+});
 
 async function loadNotesState() {
   if (window.supabaseShared) {
@@ -134,8 +167,66 @@ function render() {
   }).join("");
 
   grid.querySelectorAll(".note-card").forEach(card => {
-    card.addEventListener("click", () => openModal(card.dataset.noteId));
+    card.addEventListener("click", () => openReadView(card.dataset.noteId));
   });
+}
+
+// ===========================
+// VUE LECTURE (plein écran)
+// ===========================
+let readViewNoteId = null;
+
+function openReadView(noteId) {
+  if (!noteId) return;
+  const note = state.notes.find(n => n.id === noteId);
+  if (!note) return;
+
+  readViewNoteId = noteId;
+  const overlay = document.getElementById("read-view");
+  const panel = document.getElementById("read-view-panel");
+  const titleEl = document.getElementById("read-view-title");
+  const contentEl = document.getElementById("read-view-content");
+  const codeWrap = document.getElementById("read-view-code-wrap");
+  const codeEl = document.getElementById("read-view-code");
+
+  if (!overlay || !panel || !titleEl || !contentEl || !codeWrap || !codeEl) return;
+
+  panel.className = "read-view-panel";
+  const colorClass = note.color ? `note-color-${note.color}` : "";
+  if (colorClass) panel.classList.add(colorClass);
+
+  titleEl.textContent = note.title || "Sans titre";
+  const body = (note.content || "").trim();
+  if (body) {
+    contentEl.textContent = note.content || "";
+    contentEl.hidden = false;
+  } else {
+    contentEl.textContent = "";
+    contentEl.hidden = true;
+  }
+
+  const code = (note.code || "").trim();
+  if (code) {
+    codeEl.textContent = note.code || "";
+    codeWrap.hidden = false;
+  } else {
+    codeEl.textContent = "";
+    codeWrap.hidden = true;
+  }
+
+  overlay.classList.add("active");
+  overlay.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+function closeReadView() {
+  const overlay = document.getElementById("read-view");
+  if (overlay) {
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
+  }
+  readViewNoteId = null;
+  document.body.style.overflow = "";
 }
 
 // ===========================
@@ -228,11 +319,14 @@ function deleteNote() {
 document.getElementById("btn-copy-code")?.addEventListener("click", () => {
   const code = document.getElementById("modal-code").value;
   if (!code) return;
+  if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") return;
   navigator.clipboard.writeText(code).then(() => {
     const btn = document.getElementById("btn-copy-code");
     const orig = btn.textContent;
     btn.textContent = "Copié !";
     setTimeout(() => { btn.textContent = orig; }, 1500);
+  }).catch(() => {
+    // Pas de changement visuel : on évite seulement les erreurs non gérées
   });
 });
 
@@ -266,7 +360,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.target.id === "note-modal") closeModal();
   });
 
+  document.getElementById("read-view")?.addEventListener("click", e => {
+    if (e.target === e.currentTarget) closeReadView();
+  });
+
+  document.getElementById("read-view-close")?.addEventListener("click", () => closeReadView());
+
+  document.getElementById("read-view-edit")?.addEventListener("click", () => {
+    const id = readViewNoteId;
+    closeReadView();
+    if (id) openModal(id);
+  });
+
   document.addEventListener("keydown", e => {
-    if (e.key === "Escape") closeModal();
+    if (e.key !== "Escape") return;
+    const readOpen = document.getElementById("read-view")?.classList.contains("active");
+    if (readOpen) {
+      closeReadView();
+      return;
+    }
+    if (document.getElementById("note-modal")?.classList.contains("active")) {
+      closeModal();
+    }
   });
 });

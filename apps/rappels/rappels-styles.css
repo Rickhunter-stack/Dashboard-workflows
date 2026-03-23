@@ -1,94 +1,28 @@
 /* ===========================
-   STYLES GÉNÉRAUX
+   STYLES GÉNÉRAUX (body : dashboard-app.css)
    =========================== */
-body {
-  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 20px;
-  background: var(--bg-gradient);
-  color: var(--text);
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
 * {
   box-sizing: border-box;
 }
 
-/* ===========================
-   CONTENEUR PRINCIPAL
-   =========================== */
 .rappels-container {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
-/* ===========================
-   HEADER
-   =========================== */
 .rappels-header {
-  margin-bottom: 24px;
+  margin-bottom: 8px;
 }
 
-body.compact .header-actions {
+body.compact .dash-header-actions {
   display: none;
-}
-
-.rappels-header h1 {
-  text-align: center;
-  color: var(--text);
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin-bottom: 20px;
-}
-
-.header-actions {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.filter-container {
-  flex: 1;
-  max-width: 400px;
-  min-width: 200px;
-}
-
-.filter-input {
-  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  font-size: 14px;
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid var(--border-0);
-  border-radius: 10px;
-  background: var(--surface-1);
-  color: var(--text);
-  transition: all 0.15s ease;
-}
-
-.filter-input:hover {
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border-1));
-  background: var(--surface-2);
-}
-
-.filter-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-  background: var(--surface-2);
 }
 
 .btn-new-reminder {
   white-space: nowrap;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-weight: 600;
+  font-size: 14px;
 }
 
 /* ===========================
@@ -98,15 +32,17 @@ body.compact .header-actions {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 14px;
 }
 
 .reminder-item {
-  background: var(--surface-0);
-  padding: 12px 16px;
-  border-radius: 14px;
-  border: 1px solid var(--border-0);
-  box-shadow: none;
+  background: var(--surface-card);
+  padding: var(--card-padding);
+  border-radius: var(--r-card);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(var(--blur-card)) saturate(1.3);
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.3);
   transition: background 0.15s ease, border-color 0.15s ease,
     transform 0.15s ease;
   display: flex;
@@ -122,13 +58,9 @@ body.compact .header-actions {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    rgba(79, 140, 255, 0.95),
-    rgba(79, 70, 229, 0.85)
-  );
-  opacity: 0.9;
+  height: 3px;
+  border-radius: var(--r-card) var(--r-card) 0 0;
+  background: var(--card-accent-line);
 }
 
 .reminder-item.priority-red::before {
@@ -152,8 +84,8 @@ body.compact .header-actions {
 }
 
 .reminder-item:hover {
-  border-color: color-mix(in srgb, var(--accent) 25%, var(--border-1));
-  background: var(--surface-1);
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border-card-strong));
+  background: var(--surface-card-hover);
   transform: translateY(-1px);
 }
 
@@ -266,12 +198,12 @@ body.compact .header-actions {
 }
 
 .reminder-text {
-  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  font-family: var(--font-heading);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   background: transparent;
-  color: var(--text);
+  color: var(--text-title);
   border: none;
   padding: 4px 8px;
   border-radius: 6px;
@@ -295,7 +227,7 @@ body.compact .header-actions {
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: var(--muted);
+  color: var(--text-subtitle);
 }
 
 .datetime-info {
@@ -565,13 +497,17 @@ body.compact .header-actions {
 
 .modal-btn-primary {
   background: var(--accent-gradient);
-  color: #ffffff;
-  box-shadow: 0 10px 26px rgba(79, 140, 255, 0.22);
+  color: var(--accent-label);
+  border: 1px solid rgba(88, 72, 128, 0.5);
+  box-shadow: var(--accent-shadow);
 }
 
 .modal-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(79, 140, 255, 0.28);
+  background: var(--accent-gradient-hover);
+  color: #e8e0fb;
+  border-color: rgba(120, 100, 168, 0.5);
+  box-shadow: var(--accent-shadow-hover);
 }
 
 .modal-btn-secondary {

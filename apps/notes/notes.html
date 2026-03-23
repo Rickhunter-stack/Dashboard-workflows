@@ -4,38 +4,97 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../shared/theme.css" />
+    <link rel="stylesheet" href="../shared/dashboard-app.css" />
     <link rel="stylesheet" href="notes-styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="../shared/supabase-client.js"></script>
   </head>
-  <body>
-    <div class="notes-container">
+  <body class="dashboard-app">
+    <div class="notes-container dash-app-wrap">
       <header class="notes-header">
-        <h1>Notes</h1>
-        <div class="header-actions">
-          <div class="filter-container">
+        <div class="dash-hero">
+          <div class="dash-top-row">
+            <div class="dash-avatar" aria-hidden="true"></div>
+            <h1 class="dash-title">Notes</h1>
+            <button
+              type="button"
+              class="dash-icon-btn"
+              aria-label="Rechercher"
+              onclick="document.getElementById('filter-input')?.focus()"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="dash-toolbar">
+          <div class="dash-search-wrap">
+            <span class="dash-search-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </span>
             <input
-              type="text"
+              type="search"
               id="filter-input"
-              class="filter-input"
-              placeholder="Filtrer les notes..."
+              class="filter-input dash-filter-input"
+              placeholder="Search your notes..."
               aria-label="Filtrer les notes"
+              autocomplete="off"
             />
           </div>
-          <button class="btn-new-note btn-primary-accent" id="btn-new-note" aria-label="Nouvelle note">
-            Nouvelle note
-          </button>
+          <div class="dash-header-actions">
+            <button class="btn-new-note btn-primary-accent" id="btn-new-note" aria-label="Nouvelle note" type="button">
+              Nouvelle note
+            </button>
+          </div>
         </div>
       </header>
 
       <main class="notes-grid" id="notes-grid" role="list">
         <!-- Les cartes seront générées par JavaScript -->
       </main>
+    </div>
+
+    <!-- Vue lecture plein écran -->
+    <div class="read-view-overlay" id="read-view" aria-hidden="true">
+      <div class="read-view-panel" id="read-view-panel" role="document">
+        <header class="read-view-header">
+          <button
+            type="button"
+            class="read-view-back"
+            id="read-view-close"
+            aria-label="Retour à la liste"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        </header>
+        <div class="read-view-scroll">
+          <h2 class="read-view-title" id="read-view-title"></h2>
+          <div class="read-view-body" id="read-view-content"></div>
+          <div class="read-view-code-wrap" id="read-view-code-wrap" hidden>
+            <div class="read-view-code-label">Code</div>
+            <pre class="read-view-code"><code id="read-view-code"></code></pre>
+          </div>
+        </div>
+        <footer class="read-view-footer">
+          <button type="button" class="read-view-edit-btn btn-primary-accent" id="read-view-edit">
+            Modifier
+          </button>
+        </footer>
+      </div>
     </div>
 
     <!-- Modal création/édition -->
@@ -50,35 +109,34 @@
             aria-label="Titre de la note"
           />
           <div class="modal-header-actions">
-            <div class="color-picker" id="color-picker"></div>
-            <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+            <div id="color-picker" class="color-picker"></div>
+            <button type="button" class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
           </div>
         </div>
         <div class="modal-body">
+          <label class="modal-label" for="modal-content">Contenu</label>
           <textarea
             id="modal-content"
             class="modal-content-input"
-            placeholder="Contenu de la note..."
-            aria-label="Contenu"
+            placeholder="Écrivez votre note…"
+            rows="8"
+            aria-label="Contenu de la note"
           ></textarea>
           <div class="modal-code-section">
-            <label class="modal-label">Bloc code (optionnel)</label>
+            <label class="modal-label" for="modal-code">Code (optionnel)</label>
             <textarea
               id="modal-code"
               class="modal-code-input"
-              placeholder="Collez vos lignes de code ici..."
-              spellcheck="false"
+              placeholder="Bloc de code…"
+              rows="6"
+              aria-label="Code optionnel"
             ></textarea>
             <button type="button" class="btn-copy-code" id="btn-copy-code">Copier le code</button>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="modal-btn modal-btn-danger" id="modal-delete">
-            Supprimer
-          </button>
-          <button type="button" class="modal-btn modal-btn-primary" id="modal-save">
-            Enregistrer
-          </button>
+          <button type="button" class="modal-btn modal-btn-delete" id="modal-delete">Supprimer</button>
+          <button type="button" class="modal-btn modal-btn-close" id="modal-save">Enregistrer</button>
         </div>
       </div>
     </div>

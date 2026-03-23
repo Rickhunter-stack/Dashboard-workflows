@@ -1,47 +1,28 @@
-body {
-  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 24px 20px;
-  background: var(--bg-gradient);
-  color: var(--text);
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
 * {
   box-sizing: border-box;
 }
 
 .agenda-container {
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
 }
 
 .agenda-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
-.agenda-header-main {
+.agenda-header-dash {
+  width: 100%;
+}
+
+.agenda-dash-toolbar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: stretch;
+  gap: 12px;
 }
 
-.agenda-header h1 {
-  color: var(--text);
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin: 0;
+.agenda-dash-toolbar .agenda-header-actions {
+  justify-content: flex-end;
 }
 
 .agenda-period {
@@ -367,8 +348,8 @@ body {
 }
 
 @media (max-width: 900px) {
-  body {
-    padding: 16px 14px;
+  body.dashboard-app.agenda-app {
+    padding: 14px 14px 96px;
   }
 
   .agenda-main {

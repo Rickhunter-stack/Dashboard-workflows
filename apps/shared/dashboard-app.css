@@ -1,0 +1,224 @@
+/* Shell visuel commun (Notes, Rappels, Agenda, Workflow) — aligné sur l’app Projets */
+body.dashboard-app {
+  --bg-base: #0d0d12;
+  --bg-card: #16161e;
+  --bg-card-hover: #1c1c28;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --accent-primary: #7c6af7;
+  --text-primary: #f1f1f3;
+  --text-secondary: #8b8b9e;
+  --font-display: "Sora", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --text: var(--text-primary);
+  --text-title: var(--text-primary);
+  --text-subtitle: var(--text-secondary);
+  --muted: rgba(241, 241, 243, 0.42);
+  --muted-2: rgba(241, 241, 243, 0.72);
+  --font-heading: var(--font-display);
+  --surface-card: var(--bg-card);
+  --surface-card-hover: var(--bg-card-hover);
+  --border-card: var(--border-subtle);
+  --border-card-strong: rgba(255, 255, 255, 0.1);
+  --r-card: 14px;
+  --card-padding: 16px 18px;
+  --accent: var(--accent-primary);
+  --accent-label: #e8e4ff;
+  --accent-label-muted: rgba(232, 228, 255, 0.45);
+  --accent-soft: rgba(124, 106, 247, 0.22);
+  --border-0: var(--border-subtle);
+  --border-1: rgba(255, 255, 255, 0.12);
+  --surface-0: rgba(255, 255, 255, 0.04);
+  --surface-1: rgba(255, 255, 255, 0.055);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --shadow-card:
+    0 12px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  --blur-card: 0px;
+
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 16px 16px 100px;
+  background: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(124, 106, 247, 0.08) 0%, transparent 55%),
+    linear-gradient(180deg, #0d0d12 0%, #0a0a0f 100%);
+  color: var(--text);
+  line-height: 1.55;
+  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+}
+
+body.dashboard-app::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+.dash-app-wrap {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.dash-hero {
+  margin-bottom: 6px;
+}
+
+.dash-top-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dash-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 55%),
+    linear-gradient(135deg, rgba(124, 106, 247, 0.85), rgba(59, 130, 246, 0.65));
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.dash-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.15;
+  text-align: left;
+}
+
+.dash-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.dash-icon-btn:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.dash-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 10px 0 12px;
+  margin-bottom: 4px;
+  background: linear-gradient(180deg, rgba(13, 13, 18, 0.92) 0%, rgba(13, 13, 18, 0.78) 70%, transparent 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dash-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dash-search-wrap:last-child {
+  margin-bottom: 0;
+}
+
+.dash-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  display: flex;
+}
+
+.dash-filter-input {
+  font-family: var(--font-body);
+  font-size: 14px;
+  width: 100%;
+  padding: 12px 16px 12px 42px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.dash-filter-input::placeholder {
+  color: rgba(139, 139, 158, 0.75);
+}
+
+.dash-filter-input:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.dash-filter-input:focus {
+  outline: none;
+  border-color: rgba(124, 106, 247, 0.45);
+  box-shadow: 0 0 0 3px rgba(124, 106, 247, 0.15);
+  background: rgba(22, 22, 30, 0.85);
+}
+
+.dash-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+body.dashboard-app .btn-primary-accent {
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, #7c6af7 0%, #4f8df5 48%, #6366f1 100%);
+  border: 1px solid rgba(124, 106, 247, 0.45);
+  color: #fff;
+  box-shadow: 0 8px 28px rgba(124, 106, 247, 0.32);
+}
+
+body.dashboard-app .btn-primary-accent:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 12px 36px rgba(124, 106, 247, 0.4);
+}
+
+@media (max-width: 639px) {
+  body.dashboard-app {
+    padding: 12px 18px 96px;
+  }
+
+  .dash-app-wrap {
+    max-width: min(360px, 100%);
+  }
+
+  /* Agenda : vue calendrier utilisable en pleine largeur */
+  body.agenda-app .dash-app-wrap {
+    max-width: 100%;
+  }
+
+  body.workflow-app .dash-app-wrap {
+    max-width: 100%;
+  }
+}

@@ -6,6 +6,9 @@ let state = {
   filter: "",
 };
 
+// Evite les doublons/fuites si l'iframe est rechargée (ou passe en cache navigateur).
+let alertsIntervalId = null;
+
 // ===========================
 // UTILITAIRES
 // ===========================
@@ -67,6 +70,10 @@ function shouldShowAlert(reminder) {
 // ===========================
 const STORAGE_KEY = "rappelsData";
 
+// Débouncer uniquement les upserts Supabase (localStorage reste instantané).
+let supabaseRappelsSaveTimeoutId = null;
+const SUPABASE_RAPPELS_SAVE_DEBOUNCE_MS = 400;
+
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -84,14 +91,41 @@ function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     if (window.supabaseShared) {
-      state.reminders.forEach((r) => {
-        window.supabaseShared.upsertRappel(r);
-      });
+      if (supabaseRappelsSaveTimeoutId) clearTimeout(supabaseRappelsSaveTimeoutId);
+      supabaseRappelsSaveTimeoutId = setTimeout(() => {
+        state.reminders.forEach((r) => {
+          window.supabaseShared
+            .upsertRappel(r)
+            .catch((error) => console.warn("[Rappels] Supabase upsertRappel failed", error));
+        });
+      }, SUPABASE_RAPPELS_SAVE_DEBOUNCE_MS);
     }
   } catch (error) {
     console.error("Erreur lors de la sauvegarde:", error);
   }
 }
+
+window.addEventListener("pagehide", () => {
+  if (!window.supabaseShared) return;
+  if (supabaseRappelsSaveTimeoutId) clearTimeout(supabaseRappelsSaveTimeoutId);
+  supabaseRappelsSaveTimeoutId = null;
+  state.reminders.forEach((r) => {
+    window.supabaseShared
+      .upsertRappel(r)
+      .catch((error) => console.warn("[Rappels] Supabase final upsertRappel failed", error));
+  });
+});
+
+window.addEventListener("beforeunload", () => {
+  if (!window.supabaseShared) return;
+  if (supabaseRappelsSaveTimeoutId) clearTimeout(supabaseRappelsSaveTimeoutId);
+  supabaseRappelsSaveTimeoutId = null;
+  state.reminders.forEach((r) => {
+    window.supabaseShared
+      .upsertRappel(r)
+      .catch((error) => console.warn("[Rappels] Supabase final upsertRappel failed", error));
+  });
+});
 
 async function initState() {
   if (window.supabaseShared) {
@@ -492,7 +526,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   checkAlerts();
   
   // Vérifier les alertes toutes les 5 minutes
-  setInterval(checkAlerts, 5 * 60 * 1000);
+  alertsIntervalId = setInterval(checkAlerts, 5 * 60 * 1000);
 
   // Bouton "Nouveau rappel"
   const btnNewReminder = document.getElementById("btn-new-reminder");
@@ -512,4 +546,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       filterInput.value = state.filter;
     }
   }
+});
+
+window.addEventListener("pagehide", () => {
+  if (alertsIntervalId) clearInterval(alertsIntervalId);
+});
+
+window.addEventListener("beforeunload", () => {
+  if (alertsIntervalId) clearInterval(alertsIntervalId);
 });

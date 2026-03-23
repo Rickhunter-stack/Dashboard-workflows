@@ -1,56 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
   <defs>
-    <!-- Main sphere gradient: dark blue-grey base -->
-    <radialGradient id="sphereGrad" cx="38%" cy="32%" r="65%" fx="38%" fy="32%">
-      <stop offset="0%"   stop-color="#b8cfe8"/>
-      <stop offset="18%"  stop-color="#7aa0c4"/>
-      <stop offset="45%"  stop-color="#3a5a7a"/>
-      <stop offset="72%"  stop-color="#1a2f45"/>
-      <stop offset="100%" stop-color="#0a1520"/>
+    <!-- Base sombre -->
+    <radialGradient id="orb-base" cx="38%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#1a1a28" />
+      <stop offset="55%" stop-color="#0d0d12" />
+      <stop offset="100%" stop-color="#09090f" />
     </radialGradient>
 
-    <!-- Specular highlight top-left -->
-    <radialGradient id="highlightGrad" cx="35%" cy="28%" r="40%">
-      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.75"/>
-      <stop offset="55%"  stop-color="#c8dff2" stop-opacity="0.18"/>
-      <stop offset="100%" stop-color="#ffffff"  stop-opacity="0"/>
+    <!-- Highlight blanc (haut-gauche) -->
+    <radialGradient id="orb-white" cx="30%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.92" />
+      <stop offset="48%" stop-color="#ffffff" stop-opacity="0.16" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
 
-    <!-- Subtle rim light bottom-right -->
-    <radialGradient id="rimGrad" cx="72%" cy="75%" r="38%">
-      <stop offset="0%"   stop-color="#4a7fa8" stop-opacity="0.45"/>
-      <stop offset="100%" stop-color="#4a7fa8" stop-opacity="0"/>
+    <!-- Halo bleu (bas-droit) -->
+    <radialGradient id="orb-blue" cx="72%" cy="72%" r="58%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.98" />
+      <stop offset="55%" stop-color="#3b82f6" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
     </radialGradient>
 
-    <!-- Reflection band (equatorial sheen) -->
-    <linearGradient id="reflectGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0"/>
-      <stop offset="52%"  stop-color="#88b8d8" stop-opacity="0.12"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-    </linearGradient>
+    <!-- Halo violet (bas) -->
+    <radialGradient id="orb-violet" cx="40%" cy="78%" r="58%">
+      <stop offset="0%" stop-color="#7c6af7" stop-opacity="0.86" />
+      <stop offset="55%" stop-color="#7c6af7" stop-opacity="0.20" />
+      <stop offset="100%" stop-color="#7c6af7" stop-opacity="0" />
+    </radialGradient>
 
-    <clipPath id="sphereClip">
-      <circle cx="16" cy="16" r="14"/>
+    <clipPath id="orb-clip">
+      <circle cx="16" cy="16" r="14.2" />
     </clipPath>
   </defs>
 
-  <!-- Subtle outer glow ring -->
-  <circle cx="16" cy="16" r="15.5" fill="none" stroke="#3a6a9a" stroke-width="0.4" opacity="0.35"/>
-  <circle cx="16" cy="16" r="14.8" fill="none" stroke="#5a8aba" stroke-width="0.3" opacity="0.2"/>
+  <!-- Halo externe subtil -->
+  <circle cx="16" cy="16" r="15.4" fill="none" stroke="#3b82f6" stroke-width="0.6" opacity="0.20" />
+  <circle cx="16" cy="16" r="14.9" fill="none" stroke="#7c6af7" stroke-width="0.5" opacity="0.18" />
 
-  <!-- Main sphere body -->
-  <circle cx="16" cy="16" r="14" fill="url(#sphereGrad)"/>
+  <!-- Orbe -->
+  <circle cx="16" cy="16" r="14.2" fill="url(#orb-base)" />
 
-  <!-- Equatorial reflection band -->
-  <rect x="2" y="2" width="28" height="28" fill="url(#reflectGrad)" clip-path="url(#sphereClip)"/>
+  <g clip-path="url(#orb-clip)">
+    <circle cx="16" cy="16" r="14.2" fill="url(#orb-blue)" />
+    <circle cx="16" cy="16" r="14.2" fill="url(#orb-violet)" opacity="0.95" />
+    <circle cx="16" cy="16" r="14.2" fill="url(#orb-white)" opacity="0.95" />
+  </g>
 
-  <!-- Rim light (bottom-right warmth) -->
-  <circle cx="16" cy="16" r="14" fill="url(#rimGrad)"/>
-
-  <!-- Primary specular highlight -->
-  <circle cx="16" cy="16" r="14" fill="url(#highlightGrad)"/>
-
-  <!-- Small sharp glint (top-left catchlight) -->
-  <ellipse cx="10.5" cy="9.5" rx="2.8" ry="1.8" fill="white" opacity="0.55" transform="rotate(-20 10.5 9.5)"/>
-  <ellipse cx="10.5" cy="9.5" rx="1.3" ry="0.8" fill="white" opacity="0.9"  transform="rotate(-20 10.5 9.5)"/>
+  <!-- Glint -->
+  <ellipse cx="11" cy="9.5" rx="2.1" ry="1.3" fill="#ffffff" opacity="0.55" />
+  <ellipse cx="11" cy="9.5" rx="1.0" ry="0.6" fill="#ffffff" opacity="0.85" />
 </svg>
