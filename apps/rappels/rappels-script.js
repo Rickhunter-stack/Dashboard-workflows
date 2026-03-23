@@ -6,6 +6,9 @@ let state = {
   filter: "",
 };
 
+// Evite les doublons/fuites si l'iframe est rechargée (ou passe en cache navigateur).
+let alertsIntervalId = null;
+
 // ===========================
 // UTILITAIRES
 // ===========================
@@ -492,7 +495,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   checkAlerts();
   
   // Vérifier les alertes toutes les 5 minutes
-  setInterval(checkAlerts, 5 * 60 * 1000);
+  alertsIntervalId = setInterval(checkAlerts, 5 * 60 * 1000);
 
   // Bouton "Nouveau rappel"
   const btnNewReminder = document.getElementById("btn-new-reminder");
@@ -512,4 +515,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       filterInput.value = state.filter;
     }
   }
+});
+
+window.addEventListener("pagehide", () => {
+  if (alertsIntervalId) clearInterval(alertsIntervalId);
+});
+
+window.addEventListener("beforeunload", () => {
+  if (alertsIntervalId) clearInterval(alertsIntervalId);
 });

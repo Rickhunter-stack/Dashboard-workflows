@@ -1085,7 +1085,10 @@
         if (!frame || workflowId == null || workflowId === "") return;
         closeQuickLinks();
         currentWorkflowOpenId = workflowId;
-        window.history.pushState({}, "", "?app=workflow");
+        const params = new URLSearchParams(window.location.search);
+        params.set("app", "workflow");
+        params.set("open", String(workflowId));
+        window.history.pushState({}, "", "?" + params.toString());
         setActive("workflow", { workflowOpenId: workflowId });
         showSingleView();
         closeMobileNav();
@@ -1109,6 +1112,8 @@
       function syncFromUrl() {
         const params = new URLSearchParams(window.location.search);
         const nextApp = params.get("app") || "kanban";
+        const openId = params.get("open");
+        if (nextApp === "workflow" && openId) currentWorkflowOpenId = openId;
         setActive(
           nextApp,
           nextApp === "workflow" && currentWorkflowOpenId
@@ -1249,12 +1254,7 @@
         });
       }
 
-      window.addEventListener("popstate", () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const app = urlParams.get("app") || "kanban";
-        setActive(app);
-        showSingleView();
-      });
+      // Note: la synchronisation UI depuis l'URL est gérée plus haut via `syncFromUrl`.
     </script>
   </body>
 </html>
