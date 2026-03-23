@@ -1005,7 +1005,7 @@
 
     <script>
       const urlParams = new URLSearchParams(window.location.search);
-      const app = urlParams.get("app") || "kanban";
+      let currentWorkflowOpenId = null;
 
       const buttons = document.querySelectorAll(".nav-item");
       const frame = document.getElementById("app-frame");
@@ -1058,6 +1058,7 @@
 
       function setActive(appName, opts = {}) {
         const { workflowOpenId } = opts;
+        if (!appPaths[appName]) appName = "kanban";
         buttons.forEach((btn) => {
           btn.classList.toggle("active", btn.dataset.app === appName);
         });
@@ -1083,6 +1084,7 @@
       window.dashboardOpenWorkflow = function (workflowId) {
         if (!frame || workflowId == null || workflowId === "") return;
         closeQuickLinks();
+        currentWorkflowOpenId = workflowId;
         window.history.pushState({}, "", "?app=workflow");
         setActive("workflow", { workflowOpenId: workflowId });
         showSingleView();
@@ -1104,8 +1106,20 @@
       }
 
       // Initialisation de la vue
-      setActive(app);
-      showSingleView();
+      function syncFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const nextApp = params.get("app") || "kanban";
+        setActive(
+          nextApp,
+          nextApp === "workflow" && currentWorkflowOpenId
+            ? { workflowOpenId: currentWorkflowOpenId }
+            : {}
+        );
+        showSingleView();
+      }
+
+      syncFromUrl();
+      window.addEventListener("popstate", syncFromUrl);
 
       const QUICK_LINKS = [
         { label: "Claude", url: "https://claude.ai", group: "IA" },
