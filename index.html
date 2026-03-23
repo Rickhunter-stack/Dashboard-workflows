@@ -556,6 +556,8 @@
       @media (max-width: 640px) {
         body {
           padding-bottom: 84px;
+          /* Sur certains mobile/PWA (Chrome), `fixed` peut provoquer une zone claire en haut. */
+          background-attachment: scroll;
         }
 
         .sidebar {
