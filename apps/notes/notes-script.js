@@ -291,6 +291,8 @@ document.getElementById("btn-copy-code")?.addEventListener("click", () => {
     const orig = btn.textContent;
     btn.textContent = "Copié !";
     setTimeout(() => { btn.textContent = orig; }, 1500);
+  }).catch(() => {
+    // Pas de changement visuel : on évite seulement les erreurs non gérées
   });
 });
 
