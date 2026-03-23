@@ -1066,6 +1066,9 @@
 
       function setActive(appName, opts = {}) {
         const { workflowOpenId } = opts;
+        // Alias de fiabilité : le tab "Projets" correspond au Kanban.
+        // Si l'URL contient encore `app=project` (ancienne version), on route vers `kanban`.
+        if (appName === "project") appName = "kanban";
         if (!appPaths[appName]) appName = "kanban";
         buttons.forEach((btn) => {
           btn.classList.toggle("active", btn.dataset.app === appName);
@@ -1119,7 +1122,8 @@
       // Initialisation de la vue
       function syncFromUrl() {
         const params = new URLSearchParams(window.location.search);
-        const nextApp = params.get("app") || "kanban";
+        const rawApp = params.get("app") || "kanban";
+        const nextApp = rawApp === "project" ? "kanban" : rawApp;
         const openId = params.get("open");
         if (nextApp === "workflow" && openId) currentWorkflowOpenId = openId;
         setActive(
