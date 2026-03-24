@@ -26,26 +26,63 @@
     <!-- Onglets -->
     <div class="tabs-container">
       <div class="tabs">
-        <button class="tab-btn active" onclick="openTab(event, 'redaction')">
+        <button
+          type="button"
+          class="tab-btn active"
+          data-tab="redaction"
+          onclick="openTab(event, 'redaction')"
+        >
           ✍️ Rédaction
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'image')">
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="image"
+          onclick="openTab(event, 'image')"
+        >
           🎨 Génération d'images
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'voyage')">
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="voyage"
+          onclick="openTab(event, 'voyage')"
+        >
           ✈️ Planification voyage
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'code')">
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="code"
+          onclick="openTab(event, 'code')"
+        >
           💻 Génération de Code
         </button>
-                <button class="tab-btn" onclick="openTab(event, 'uiux')">
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="uiux"
+          onclick="openTab(event, 'uiux')"
+        >
           🎨 UI/UX Designer
         </button>
-<button class="tab-btn" onclick="openTab(event, 'app')">
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="app"
+          onclick="openTab(event, 'app')"
+        >
           📱 Génération application
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'prompt-templates')">
-          📋 Templates
+      </div>
+      <div class="prompt-templates-tab-row">
+        <button
+          type="button"
+          class="tab-btn tab-btn-templates"
+          data-tab="prompt-templates"
+          onclick="openTab(event, 'prompt-templates')"
+        >
+          📋 Templates — prompts enregistrés
         </button>
       </div>
     </div>

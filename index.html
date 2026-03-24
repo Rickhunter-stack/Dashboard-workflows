@@ -1120,7 +1120,13 @@
             const q = qs.toString();
             frame.src = q ? `${basePath}?${q}` : basePath + (isMobile ? "?compact=1" : "");
           } else {
-            frame.src = basePath;
+            /* Évite le cache agressif de l’iframe : sans cela, d’anciennes
+               versions de prompt.html peuvent rester affichées indéfiniment. */
+            const bust =
+              appName === "prompt"
+                ? (basePath.includes("?") ? "&" : "?") + "v=6"
+                : "";
+            frame.src = basePath + bust;
           }
         }
       }
