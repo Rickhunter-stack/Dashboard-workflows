@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Templates</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../shared/theme.css" />
+    <link rel="stylesheet" href="../shared/dashboard-app.css" />
+    <link rel="stylesheet" href="templates-styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="../shared/supabase-client.js"></script>
+  </head>
+  <body class="dashboard-app">
+    <div class="templates-container dash-app-wrap">
+      <header class="templates-header">
+        <div class="dash-hero">
+          <div class="dash-top-row">
+            <div class="dash-avatar" aria-hidden="true"></div>
+            <h1 class="dash-title">Templates</h1>
+            <button
+              type="button"
+              class="dash-icon-btn"
+              aria-label="Rechercher"
+              onclick="document.getElementById('filter-input')?.focus()"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="dash-toolbar">
+          <div class="dash-search-wrap">
+            <span class="dash-search-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </span>
+            <input
+              type="search"
+              id="filter-input"
+              class="dash-filter-input"
+              placeholder="Search your templates..."
+              aria-label="Filtrer les templates"
+              autocomplete="off"
+            />
+          </div>
+          <div class="dash-header-actions">
+            <button class="btn-primary-accent btn-new-template" id="btn-new-template" type="button">
+              Nouveau template
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="templates-grid" id="templates-grid" role="list"></main>
+    </div>
+
+    <div class="modal-overlay" id="template-modal">
+      <div class="modal-card" role="dialog" aria-labelledby="template-modal-title" aria-modal="true">
+        <div class="modal-header">
+          <input
+            type="text"
+            id="template-modal-title"
+            class="modal-title-input"
+            placeholder="Titre du template"
+            aria-label="Titre du template"
+          />
+          <button type="button" class="modal-close" id="template-modal-close" aria-label="Fermer">✕</button>
+        </div>
+        <div class="modal-body">
+          <label class="modal-label" for="template-modal-prompt">Prompt</label>
+          <textarea
+            id="template-modal-prompt"
+            class="modal-prompt-input"
+            rows="10"
+            placeholder="Écris ici ton prompt parfait pour dashboard, appli, landing page, etc."
+            aria-label="Prompt du template"
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="modal-btn modal-btn-delete" id="template-modal-delete">Supprimer</button>
+          <button type="button" class="modal-btn modal-btn-close" id="template-modal-save">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="templates-script.js"></script>
+  </body>
+</html>

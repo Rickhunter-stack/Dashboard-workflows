@@ -215,6 +215,48 @@ async function deleteNoteSupabase(id) {
   return true;
 }
 
+// ——— Templates ———
+async function fetchTemplates() {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const { data, error } = await client
+    .from("templates")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[Supabase] fetchTemplates error", error);
+    return null;
+  }
+  return data || [];
+}
+
+async function upsertTemplate(template) {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const row = { id: template.id, payload: template };
+  const { error } = await client.from("templates").upsert(row);
+  if (error) {
+    console.error("[Supabase] upsertTemplate error", error);
+    return null;
+  }
+  return true;
+}
+
+async function deleteTemplate(id) {
+  const client = await initSupabase();
+  if (!client) return null;
+
+  const { error } = await client.from("templates").delete().eq("id", id);
+  if (error) {
+    console.error("[Supabase] deleteTemplate error", error);
+    return null;
+  }
+  return true;
+}
+
 window.supabaseShared = {
   initSupabase,
   fetchWorkflows,
@@ -230,6 +272,9 @@ window.supabaseShared = {
   fetchNotes,
   upsertNote,
   deleteNoteSupabase,
+  fetchTemplates,
+  upsertTemplate,
+  deleteTemplate,
 };
 
 
