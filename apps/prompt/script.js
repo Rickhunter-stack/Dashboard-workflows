@@ -1,3 +1,7 @@
+function escapeDataTabSelectorValue(value) {
+  return String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
 // Gestion des onglets
 function setupTabs() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -14,7 +18,7 @@ function setupTabs() {
   if (activeContent) {
     activeContent.classList.add("active");
     const activeButton = document.querySelector(
-      `[onclick="openTab(event, '${activeTab}')"]`
+      `.tab-btn[data-tab="${escapeDataTabSelectorValue(activeTab)}"]`
     );
     if (activeButton) {
       activeButton.classList.add("active");
@@ -30,7 +34,9 @@ function openTab(evt, tabName) {
     btn.classList.remove("active");
   });
 
-  document.getElementById(tabName).classList.add("active");
+  const panel = document.getElementById(tabName);
+  if (!panel) return;
+  panel.classList.add("active");
   evt.currentTarget.classList.add("active");
 
   const url = new URL(window.location);

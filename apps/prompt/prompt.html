@@ -26,23 +26,63 @@
     <!-- Onglets -->
     <div class="tabs-container">
       <div class="tabs">
-        <button class="tab-btn active" onclick="openTab(event, 'redaction')">
+        <button
+          type="button"
+          class="tab-btn active"
+          data-tab="redaction"
+          onclick="openTab(event, 'redaction')"
+        >
           ✍️ Rédaction
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'image')">
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="image"
+          onclick="openTab(event, 'image')"
+        >
           🎨 Génération d'images
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'voyage')">
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="voyage"
+          onclick="openTab(event, 'voyage')"
+        >
           ✈️ Planification voyage
         </button>
-        <button class="tab-btn" onclick="openTab(event, 'code')">
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="code"
+          onclick="openTab(event, 'code')"
+        >
           💻 Génération de Code
         </button>
-                <button class="tab-btn" onclick="openTab(event, 'uiux')">
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="uiux"
+          onclick="openTab(event, 'uiux')"
+        >
           🎨 UI/UX Designer
         </button>
-<button class="tab-btn" onclick="openTab(event, 'app')">
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="app"
+          onclick="openTab(event, 'app')"
+        >
           📱 Génération application
+        </button>
+      </div>
+      <div class="prompt-templates-tab-row">
+        <button
+          type="button"
+          class="tab-btn tab-btn-templates"
+          data-tab="prompt-templates"
+          onclick="openTab(event, 'prompt-templates')"
+        >
+          📋 Templates — prompts enregistrés
         </button>
       </div>
     </div>
@@ -2563,7 +2603,88 @@ Actionnable : le lecteur doit pouvoir saisir l'essentiel en 2 minutes
       <div class="result" id="result-app"></div>
     </div>
 
+    <!-- Onglet Templates (prompts réutilisables) -->
+    <div id="prompt-templates" class="tab-content">
+      <p class="prompt-templates-intro">
+        Enregistrez vos prompts « parfaits » pour les réutiliser. Cliquez sur une
+        carte pour modifier ; le bouton ✕ supprime le template.
+      </p>
+      <div class="prompt-templates-toolbar">
+        <input
+          type="search"
+          id="prompt-templates-filter"
+          class="prompt-templates-search"
+          placeholder="Filtrer par titre ou contenu…"
+          aria-label="Filtrer les templates"
+          autocomplete="off"
+        />
+        <button type="button" id="prompt-templates-new" class="prompt-templates-new-btn">
+          + Nouveau template
+        </button>
+      </div>
+      <div
+        class="prompt-templates-grid"
+        id="prompt-templates-grid"
+        role="list"
+      ></div>
+    </div>
+
+    <div
+      class="pt-modal-overlay"
+      id="prompt-template-modal"
+      aria-hidden="true"
+    >
+      <div
+        class="pt-modal-card"
+        role="dialog"
+        aria-labelledby="prompt-template-modal-heading"
+      >
+        <div class="pt-modal-header">
+          <h2 id="prompt-template-modal-heading" class="pt-modal-heading">
+            Template
+          </h2>
+          <button
+            type="button"
+            class="pt-modal-close"
+            id="prompt-template-modal-close"
+            aria-label="Fermer"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="pt-modal-body">
+          <label class="pt-modal-label" for="prompt-template-modal-title"
+            >Titre</label
+          >
+          <input
+            type="text"
+            id="prompt-template-modal-title"
+            class="pt-modal-title-input"
+            placeholder="Titre affiché sur la carte"
+          />
+          <label class="pt-modal-label" for="prompt-template-modal-body"
+            >Prompt</label
+          >
+          <textarea
+            id="prompt-template-modal-body"
+            class="pt-modal-textarea"
+            placeholder="Collez ou rédigez le texte du prompt ici…"
+            rows="12"
+          ></textarea>
+        </div>
+        <div class="pt-modal-footer">
+          <button type="button" id="prompt-template-copy-btn" class="pt-modal-secondary">
+            📋 Copier
+          </button>
+          <button type="button" id="prompt-template-modal-save" class="pt-modal-primary">
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script src="script.js"></script>
+    <script src="prompt-templates.js"></script>
       <script src="uiux-script.js"></script>
 </body>
 </html>

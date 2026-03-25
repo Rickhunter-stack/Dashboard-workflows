@@ -2,7 +2,13 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d0d12" />
+    <meta name="theme-color" content="#0d0d12" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0d12" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Dashboard IA - Outils de Productivité & Création</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link
@@ -17,14 +23,24 @@
         box-sizing: border-box;
       }
 
+      html {
+        background: #0d0d12;
+        background-color: #0d0d12;
+        color-scheme: dark;
+        min-height: 100%;
+      }
+
       body {
         font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont,
           "Segoe UI", sans-serif;
+        background-color: #0d0d12;
         background: var(--bg-gradient);
         background-attachment: fixed;
         color: var(--text);
         min-height: 100vh;
+        min-height: 100dvh;
         display: flex;
+        overscroll-behavior-y: none;
       }
 
       .layout {
@@ -548,6 +564,8 @@
       @media (max-width: 640px) {
         body {
           padding-bottom: 84px;
+          /* Sur certains mobile/PWA (Chrome), `fixed` peut provoquer une zone claire en haut. */
+          background-attachment: scroll;
         }
 
         .sidebar {
@@ -648,7 +666,7 @@
           right: 10px;
           bottom: 10px;
           display: grid;
-          grid-template-columns: repeat(5, 1fr);
+          grid-template-columns: repeat(6, 1fr);
           gap: 4px;
           padding: 10px 8px 12px;
           border-radius: 20px;
@@ -775,6 +793,17 @@
               <polyline points="10 9 9 9 8 9" />
             </svg>
             <span class="label">Notes</span>
+          </a>
+          <a href="#" class="nav-item" id="btn-templates" data-app="templates">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M3 7a2 2 0 0 1 2-2h5v5H3V7Z" />
+              <path d="M14 5h5a2 2 0 0 1 2 2v3h-7V5Z" />
+              <path d="M3 14h7v5H5a2 2 0 0 1-2-2v-3Z" />
+              <path d="M14 14h7v3a2 2 0 0 1-2 2h-5v-5Z" />
+            </svg>
+            <span class="label">Template</span>
           </a>
           <a href="#" class="nav-item" id="btn-rappels" data-app="rappels">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
@@ -959,6 +988,17 @@
         </span>
         <span>Notes</span>
       </button>
+      <button type="button" class="mobile-tab" data-app="templates">
+        <span class="mobile-tab-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 0 1 2-2h5v5H3V7Z" />
+            <path d="M14 5h5a2 2 0 0 1 2 2v3h-7V5Z" />
+            <path d="M3 14h7v5H5a2 2 0 0 1-2-2v-3Z" />
+            <path d="M14 14h7v3a2 2 0 0 1-2 2h-5v-5Z" />
+          </svg>
+        </span>
+        <span>Template</span>
+      </button>
       <button type="button" class="mobile-tab" data-app="workflow">
         <span class="mobile-tab-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
@@ -1018,6 +1058,7 @@
         project: "apps/project/project.html",
         workflow: "apps/workflow/workflow-generator.html",
         notes: "apps/notes/notes.html",
+        templates: "apps/templates/templates.html",
         rappels: "apps/rappels/rappels.html",
         kanban: "apps/kanban-lite/kanban.html",
         agenda: "apps/agenda/agenda.html",
@@ -1058,6 +1099,9 @@
 
       function setActive(appName, opts = {}) {
         const { workflowOpenId } = opts;
+        // Alias de fiabilité : le tab "Projets" correspond au Kanban.
+        // Si l'URL contient encore `app=project` (ancienne version), on route vers `kanban`.
+        if (appName === "project") appName = "kanban";
         if (!appPaths[appName]) appName = "kanban";
         buttons.forEach((btn) => {
           btn.classList.toggle("active", btn.dataset.app === appName);
@@ -1076,7 +1120,13 @@
             const q = qs.toString();
             frame.src = q ? `${basePath}?${q}` : basePath + (isMobile ? "?compact=1" : "");
           } else {
-            frame.src = basePath;
+            /* Évite le cache agressif de l’iframe : sans cela, d’anciennes
+               versions de prompt.html peuvent rester affichées indéfiniment. */
+            const bust =
+              appName === "prompt"
+                ? (basePath.includes("?") ? "&" : "?") + "v=6"
+                : "";
+            frame.src = basePath + bust;
           }
         }
       }
@@ -1111,7 +1161,8 @@
       // Initialisation de la vue
       function syncFromUrl() {
         const params = new URLSearchParams(window.location.search);
-        const nextApp = params.get("app") || "kanban";
+        const rawApp = params.get("app") || "kanban";
+        const nextApp = rawApp === "project" ? "kanban" : rawApp;
         const openId = params.get("open");
         if (nextApp === "workflow" && openId) currentWorkflowOpenId = openId;
         setActive(
