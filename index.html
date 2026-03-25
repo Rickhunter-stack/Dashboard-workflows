@@ -803,7 +803,7 @@
               <path d="M3 14h7v5H5a2 2 0 0 1-2-2v-3Z" />
               <path d="M14 14h7v3a2 2 0 0 1-2 2h-5v-5Z" />
             </svg>
-            <span class="label">Template</span>
+            <span class="label">Prompts templates</span>
           </a>
           <a href="#" class="nav-item" id="btn-rappels" data-app="rappels">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
@@ -848,15 +848,6 @@
               <path d="M14 11a5 5 0 0 0-7.54-.54L4.54 12.38a4 4 0 1 0 5.66 5.66l1.03-1.03" />
             </svg>
             <span class="label">Liens</span>
-          </a>
-          <a href="#" class="nav-item" id="btn-prompt" data-app="prompt">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5 20.5 7.5 9 19l-4 1 1-4 10.5-12.5Z" />
-            </svg>
-            <span class="label">Prompts</span>
           </a>
         </nav>
 
@@ -997,7 +988,7 @@
             <path d="M14 14h7v3a2 2 0 0 1-2 2h-5v-5Z" />
           </svg>
         </span>
-        <span>Template</span>
+        <span>Prompts templates</span>
       </button>
       <button type="button" class="mobile-tab" data-app="workflow">
         <span class="mobile-tab-icon" aria-hidden="true">
@@ -1064,7 +1055,6 @@
         agenda: "apps/agenda/agenda.html",
         calc: "apps/calculator/calculator.html",
         links: "apps/links/links.html",
-        prompt: "apps/prompt/prompt.html",
       };
 
       const singleFrame = document.getElementById("single-frame");
@@ -1120,13 +1110,7 @@
             const q = qs.toString();
             frame.src = q ? `${basePath}?${q}` : basePath + (isMobile ? "?compact=1" : "");
           } else {
-            /* Évite le cache agressif de l’iframe : sans cela, d’anciennes
-               versions de prompt.html peuvent rester affichées indéfiniment. */
-            const bust =
-              appName === "prompt"
-                ? (basePath.includes("?") ? "&" : "?") + "v=6"
-                : "";
-            frame.src = basePath + bust;
+            frame.src = basePath;
           }
         }
       }
