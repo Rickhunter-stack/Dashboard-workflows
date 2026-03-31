@@ -1093,7 +1093,7 @@ body.dashboard-app .create-workflow-btn:hover {
 .process-card {
   background: var(--surface-card);
   border: 1px solid var(--border-card);
-  border-radius: var(--r-card);
+  border-radius: 26px;
   padding: var(--card-padding);
   transition: all 0.3s ease;
   cursor: move;
@@ -1146,7 +1146,15 @@ body.dashboard-app .create-workflow-btn:hover {
 }
 
 .card-icon {
-  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .card-order {
@@ -2191,27 +2199,21 @@ function getCardDepth(cards, targetId, depth = 0) {
 
 function getChildProcessLabel(parentDepth) {
   // parentDepth: 0 = workflow principal, 1 = sous-processus, 2 = sous-sous-processus, ...
-  const next = parentDepth + 1;
+  const next = parentDepth + 2;
   if (next <= 1) return "Sous-processus";
-  return "Sous-sous-processus";
+  return `${"Sous-".repeat(next)}processus`;
 }
 
 function initializeCardsForDepth(count, parentDepth) {
   const label = getChildProcessLabel(parentDepth);
   const cards = [];
   for (let i = 0; i < count; i++) {
-    const isInput = i === 0;
-    const isOutput = i === count - 1;
     cards.push({
       id: Date.now() + i,
       order: i + 1,
-      type: isInput ? "input" : isOutput ? "output" : "process",
-      title: isInput ? "Input" : isOutput ? "Output" : `${label} ${i}`,
-      description: isInput
-        ? "Décrivez les données d'entrée..."
-        : isOutput
-        ? "Décrivez les données de sortie..."
-        : `Décrivez ce ${label.toLowerCase()}...`,
+      type: "process",
+      title: `${label} ${i + 1}`,
+      description: `Décrivez ce ${label.toLowerCase()}...`,
       titleEdited: false,
       descriptionEdited: false,
       color: "none",
@@ -2695,6 +2697,7 @@ function openCardsView(cardId) {
   
   renderBreadcrumb();
   updateCardCountButtons();
+  normalizeNestedSubProcessCards();
   renderCardsCanvas();
 }
 
@@ -2863,11 +2866,51 @@ function renderCardsCanvas() {
   setupDragAndDrop();
 }
 
+function normalizeNestedSubProcessCards() {
+  if (navigationPath.length === 0) return;
+  const context = getCurrentContext();
+  if (!context || !Array.isArray(context.cards)) return;
+
+  const parentDepth = Math.max(0, navigationPath.length - 1);
+  const label = getChildProcessLabel(parentDepth);
+
+  let changed = false;
+  context.cards.forEach((c, idx) => {
+    if (c.type === "input" || c.type === "output") {
+      c.type = "process";
+      changed = true;
+    }
+
+    const expectedTitle = `${label} ${idx + 1}`;
+    if (!c.titleEdited) {
+      const t = (c.title || "").trim().toLowerCase();
+      if (!t || t === "input" || t === "output") {
+        c.title = expectedTitle;
+        changed = true;
+      }
+    }
+
+    if (!c.descriptionEdited) {
+      const d = (c.description || "").toLowerCase();
+      if (!d || d.includes("données d'entrée") || d.includes("données de sortie")) {
+        c.description = `Décrivez ce ${label.toLowerCase()}...`;
+        changed = true;
+      }
+    }
+  });
+
+  if (changed) {
+    saveWorkflows();
+  }
+}
+
 function generateCardHTML(card) {
-  const isInput = card.type === 'input';
-  const isOutput = card.type === 'output';
+  const inNestedSubProcess = navigationPath.length > 0;
+  const isInput = !inNestedSubProcess && card.type === 'input';
+  const isOutput = !inNestedSubProcess && card.type === 'output';
   const cardClass = isInput ? 'input-card' : isOutput ? 'output-card' : '';
   const icon = isInput ? '📥' : isOutput ? '📤' : card.subProcess ? '📊' : '🔧';
+  const displayTitle = inNestedSubProcess ? (card.title || '') : card.title;
   
   return `
     <div class="process-card ${cardClass}" 
@@ -2885,7 +2928,7 @@ function generateCardHTML(card) {
       
       <input type="text" 
              class="card-title-input" 
-             value="${escapeHtml(card.title)}"
+             value="${escapeHtml(displayTitle)}"
              onchange="updateCardTitle(${card.id}, this.value)"
              ${isInput || isOutput ? 'readonly' : ''}>
       
