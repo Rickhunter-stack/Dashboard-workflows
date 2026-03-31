@@ -363,8 +363,8 @@
         padding: 6px 12px;
         border-radius: 999px;
         border: none;
-        background: transparent;
-        color: var(--accent-label-muted);
+        background: rgba(255, 255, 255, 0.03);
+        color: rgba(232, 234, 240, 0.78);
         cursor: pointer;
         transition: all 0.15s ease;
       }
@@ -382,7 +382,8 @@
       }
 
       .view-toggle-btn:not(.view-active):hover {
-        color: var(--accent-label);
+        color: rgba(232, 234, 240, 0.92);
+        background: rgba(255, 255, 255, 0.06);
       }
 
       .single-frame {
@@ -950,14 +951,15 @@
           <iframe
             id="app-frame"
             class="app-frame"
+            title="Application"
             src="apps/kanban-lite/kanban.html"
           ></iframe>
         </div>
         <div class="multi-frame" id="multi-frame">
-          <iframe src="apps/workflow/workflow-generator.html?compact=1"></iframe>
-          <iframe src="apps/notes/notes.html?compact=1"></iframe>
-          <iframe src="apps/rappels/rappels.html?compact=1"></iframe>
-          <iframe src="apps/kanban-lite/kanban.html?compact=1"></iframe>
+          <iframe title="Workflows (compact)" data-src="apps/workflow/workflow-generator.html?compact=1"></iframe>
+          <iframe title="Notes (compact)" data-src="apps/notes/notes.html?compact=1"></iframe>
+          <iframe title="Rappels (compact)" data-src="apps/rappels/rappels.html?compact=1"></iframe>
+          <iframe title="Projets (compact)" data-src="apps/kanban-lite/kanban.html?compact=1"></iframe>
         </div>
       </main>
     </div>
@@ -1137,6 +1139,27 @@
         multiFrame.style.display = "none";
         btnSingleView.classList.add("view-active");
         btnMultiView.classList.remove("view-active");
+        // Libère CPU/mémoire : décharge les apps compact en arrière-plan.
+        if (multiFrame) {
+          multiFrame.querySelectorAll("iframe[data-src]").forEach((f) => {
+            // Ne pas toucher si déjà vide
+            if (f.getAttribute("src")) {
+              f.removeAttribute("src");
+            }
+          });
+        }
+      }
+
+      function ensureMultiIframesLoaded() {
+        if (!multiFrame) return;
+        multiFrame.querySelectorAll("iframe[data-src]").forEach((f) => {
+          const src = f.getAttribute("data-src");
+          if (!src) return;
+          // Charger une seule fois
+          if (!f.getAttribute("src")) {
+            f.setAttribute("src", src);
+          }
+        });
       }
 
       function showMultiView() {
@@ -1144,6 +1167,7 @@
         multiFrame.style.display = "grid";
         btnSingleView.classList.remove("view-active");
         btnMultiView.classList.add("view-active");
+        ensureMultiIframesLoaded();
       }
 
       // Initialisation de la vue
