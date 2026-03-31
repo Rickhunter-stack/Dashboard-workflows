@@ -2511,18 +2511,21 @@ function generateVerticalConnections(count) {
 }
 
 function generateDiagramNodeStyled(card, index, total, label) {
-  const isInput = card.type === 'input' || index === 0;
-  const isOutput = card.type === 'output' || index === total - 1;
-  const hasSubProcess = card.subProcess !== null;
+  const isInput = card.type === "input";
+  const isOutput = card.type === "output";
+  const hasSubProcess = !!card.subProcess;
   const subProcessCount = hasSubProcess ? (card.subProcess.cards?.length || 0) : 0;
   
   const nodeClass = isInput ? 'input-node' : isOutput ? 'output-node' : '';
   const icon = getProcessIcon(card, index, total);
   const displayTitle = isInput ? "Input" : isOutput ? "Output" : (card.title || "");
   
-  const clickAction = hasSubProcess 
-    ? `onclick="openCardsView(${card.id})"` 
-    : `onclick="createSubProcess(${card.id})"`;
+  const clickAction =
+    isInput || isOutput
+      ? ""
+      : hasSubProcess
+      ? `onclick="openCardsView(${card.id})"`
+      : `onclick="createSubProcess(${card.id})"`;
   
   const isLeft = index % 2 === 0;
   
@@ -2541,8 +2544,14 @@ function generateDiagramNodeStyled(card, index, total, label) {
       <div class="node-details ${isLeft ? 'details-right' : 'details-left'}">
         <div class="node-title-box">
           <div class="diagram-node-title">${escapeHtml(displayTitle)}</div>
-          ${hasSubProcess ? `<div class="diagram-subprocess-badge">${subProcessCount} cartes</div>` : ''}
-          <div class="diagram-node-subtitle">${hasSubProcess ? 'Cliquez pour voir' : 'Cliquez pour créer'}</div>
+          ${!isInput && !isOutput && hasSubProcess ? `<div class="diagram-subprocess-badge">${subProcessCount} cartes</div>` : ''}
+          <div class="diagram-node-subtitle">${
+            isInput || isOutput
+              ? ""
+              : hasSubProcess
+              ? "Cliquez pour voir"
+              : "Cliquez pour créer"
+          }</div>
         </div>
       </div>
     </div>
@@ -2585,18 +2594,21 @@ function generateHorizontalConnections(count) {
 }
 
 function generateDiagramNodeHorizontal(card, index, total, label) {
-  const isInput = card.type === 'input' || index === 0;
-  const isOutput = card.type === 'output' || index === total - 1;
-  const hasSubProcess = card.subProcess !== null;
+  const isInput = card.type === "input";
+  const isOutput = card.type === "output";
+  const hasSubProcess = !!card.subProcess;
   const subProcessCount = hasSubProcess ? (card.subProcess.cards?.length || 0) : 0;
   
   const nodeClass = isInput ? 'input-node' : isOutput ? 'output-node' : '';
   const icon = getProcessIcon(card, index, total);
   const displayTitle = isInput ? "Input" : isOutput ? "Output" : (card.title || "");
   
-  const clickAction = hasSubProcess 
-    ? `onclick="openCardsView(${card.id})"` 
-    : `onclick="createSubProcess(${card.id})"`;
+  const clickAction =
+    isInput || isOutput
+      ? ""
+      : hasSubProcess
+      ? `onclick="openCardsView(${card.id})"`
+      : `onclick="createSubProcess(${card.id})"`;
   
   return `
     <div class="diagram-column">
@@ -2611,8 +2623,14 @@ function generateDiagramNodeHorizontal(card, index, total, label) {
       <div class="node-details-h">
         <div class="node-title-box">
           <div class="diagram-node-title">${escapeHtml(displayTitle)}</div>
-          ${hasSubProcess ? `<div class="diagram-subprocess-badge">${subProcessCount} cartes</div>` : ''}
-          <div class="diagram-node-subtitle">${hasSubProcess ? 'Cliquez pour voir' : 'Cliquez pour créer'}</div>
+          ${!isInput && !isOutput && hasSubProcess ? `<div class="diagram-subprocess-badge">${subProcessCount} cartes</div>` : ''}
+          <div class="diagram-node-subtitle">${
+            isInput || isOutput
+              ? ""
+              : hasSubProcess
+              ? "Cliquez pour voir"
+              : "Cliquez pour créer"
+          }</div>
         </div>
       </div>
     </div>
