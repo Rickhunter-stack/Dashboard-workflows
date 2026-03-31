@@ -370,13 +370,13 @@ body.dashboard-app .create-workflow-btn:hover {
 .hexagon-shape::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
+  inset: -1px;
+  border-radius: 999px;
   background: var(--card-accent-line);
-  border-radius: 2px 2px 0 0;
-  z-index: 1;
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  mask: radial-gradient(closest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 .hexagon-workflow:hover .hexagon-shape {
