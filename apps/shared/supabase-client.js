@@ -5,9 +5,36 @@ const SUPABASE_URL = "https://lrggcxdzihpwikttgkls.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxyZ2djeGR6aWhwd2lrdHRna2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjUwNDEsImV4cCI6MjA4ODkwMTA0MX0.OXfBWGvW-wUshdIl_RBuGBpOkAaCam1oBc-i1yq-Rjk";
 
 let supabaseClient = null;
+let supabaseLoadPromise = null;
 
 async function initSupabase() {
-  if (!window.supabase) return null;
+  if (!window.supabase) {
+    if (!supabaseLoadPromise) {
+      supabaseLoadPromise = new Promise((resolve, reject) => {
+        const existing = document.querySelector('script[data-supabase-umd="1"]');
+        if (existing) {
+          existing.addEventListener("load", () => resolve(true), { once: true });
+          existing.addEventListener("error", reject, { once: true });
+          return;
+        }
+
+        const s = document.createElement("script");
+        s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js";
+        s.async = true;
+        s.defer = true;
+        s.setAttribute("data-supabase-umd", "1");
+        s.onload = () => resolve(true);
+        s.onerror = reject;
+        document.head.appendChild(s);
+      }).catch((error) => {
+        console.warn("[Supabase] UMD load failed, fallback localStorage.", error);
+        return false;
+      });
+    }
+
+    const ok = await supabaseLoadPromise;
+    if (!ok || !window.supabase) return null;
+  }
 
   if (supabaseClient) {
     return supabaseClient;
