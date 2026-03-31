@@ -2205,15 +2205,14 @@ function getChildProcessLabel(parentDepth) {
 }
 
 function initializeCardsForDepth(count, parentDepth) {
-  const label = getChildProcessLabel(parentDepth);
   const cards = [];
   for (let i = 0; i < count; i++) {
     cards.push({
       id: Date.now() + i,
       order: i + 1,
       type: "process",
-      title: `${label} ${i + 1}`,
-      description: `Décrivez ce ${label.toLowerCase()}...`,
+      title: `Étape ${i + 1}`,
+      description: "Décrivez cette étape...",
       titleEdited: false,
       descriptionEdited: false,
       color: "none",
@@ -2871,9 +2870,6 @@ function normalizeNestedSubProcessCards() {
   const context = getCurrentContext();
   if (!context || !Array.isArray(context.cards)) return;
 
-  const parentDepth = Math.max(0, navigationPath.length - 1);
-  const label = getChildProcessLabel(parentDepth);
-
   let changed = false;
   context.cards.forEach((c, idx) => {
     if (c.type === "input" || c.type === "output") {
@@ -2881,10 +2877,17 @@ function normalizeNestedSubProcessCards() {
       changed = true;
     }
 
-    const expectedTitle = `${label} ${idx + 1}`;
+    const expectedTitle = `Étape ${idx + 1}`;
     if (!c.titleEdited) {
       const t = (c.title || "").trim().toLowerCase();
-      if (!t || t === "input" || t === "output") {
+      if (
+        !t ||
+        t === "input" ||
+        t === "output" ||
+        t.startsWith("sous-processus") ||
+        t.startsWith("sous-sous-processus") ||
+        t.startsWith("sous-sous-sous-processus")
+      ) {
         c.title = expectedTitle;
         changed = true;
       }
@@ -2892,8 +2895,14 @@ function normalizeNestedSubProcessCards() {
 
     if (!c.descriptionEdited) {
       const d = (c.description || "").toLowerCase();
-      if (!d || d.includes("données d'entrée") || d.includes("données de sortie")) {
-        c.description = `Décrivez ce ${label.toLowerCase()}...`;
+      if (
+        !d ||
+        d.includes("données d'entrée") ||
+        d.includes("données de sortie") ||
+        d.includes("décrivez ce sous-processus") ||
+        d.includes("décrivez ce sous-sous-processus")
+      ) {
+        c.description = "Décrivez cette étape...";
         changed = true;
       }
     }
