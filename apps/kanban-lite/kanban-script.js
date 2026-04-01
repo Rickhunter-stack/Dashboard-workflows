@@ -1122,7 +1122,7 @@ function render() {
           </div>
 
           ${
-            checklist.length > 0
+            sortedChecklist.length > 0
               ? `<div class="board-card-progress" role="presentation" aria-hidden="true">
                   <span class="board-card-progress-bar" style="width:${progressPct}%"></span>
                 </div>`
