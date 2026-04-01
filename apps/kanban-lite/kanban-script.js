@@ -74,6 +74,8 @@ function normalizeChecklistEntry(item) {
   return {
     text: String(item.text || ""),
     done: !!item.done,
+    createdAt: item.createdAt || null,
+    updatedAt: item.updatedAt || null,
   };
 }
 
@@ -83,7 +85,15 @@ function migrateKanbanState(s) {
     if (!Array.isArray(list.cards)) continue;
     for (const card of list.cards) {
       if (!card.checklist) card.checklist = [];
-      card.checklist = card.checklist.map(normalizeChecklistEntry).filter((e) => e.text.trim().length > 0);
+      card.checklist = card.checklist
+        .map(normalizeChecklistEntry)
+        .filter((e) => e.text.trim().length > 0)
+        .map((e) => {
+          // Ajoute une date pour pouvoir trier sans casser les anciens boards
+          if (!e.createdAt) e.createdAt = card.updatedAt || card.createdAt || new Date().toISOString();
+          if (!e.updatedAt) e.updatedAt = e.createdAt;
+          return e;
+        });
       if (!card.updatedAt) card.updatedAt = new Date().toISOString();
       if (card.linkedWorkflowId != null && card.linkedWorkflowId !== "") {
         card.linkedWorkflowId = String(card.linkedWorkflowId);
@@ -92,6 +102,28 @@ function migrateKanbanState(s) {
       }
     }
   }
+}
+
+function sortChecklistForPreview(checklist) {
+  const items = (checklist || []).map((item, originalIndex) => ({
+    item: normalizeChecklistEntry(item),
+    originalIndex,
+  }));
+
+  items.sort((a, b) => {
+    // 1) Non terminées d'abord
+    if (a.item.done !== b.item.done) return a.item.done ? 1 : -1;
+    // 2) Plus récent d'abord (updatedAt puis createdAt)
+    const at =
+      new Date(a.item.updatedAt || a.item.createdAt || 0).getTime() || 0;
+    const bt =
+      new Date(b.item.updatedAt || b.item.createdAt || 0).getTime() || 0;
+    if (at !== bt) return bt - at;
+    // 3) Stable
+    return a.originalIndex - b.originalIndex;
+  });
+
+  return items;
 }
 
 function cardSubtitleFromNote(note) {
@@ -361,6 +393,7 @@ function toggleChecklistItem(cardId, index) {
   if (!card.checklist || !card.checklist[index]) return;
   const entry = normalizeChecklistEntry(card.checklist[index]);
   entry.done = !entry.done;
+  entry.updatedAt = new Date().toISOString();
   card.checklist[index] = entry;
   card.updatedAt = new Date().toISOString();
   saveState();
@@ -374,7 +407,8 @@ function addChecklistItemValue(cardId, label) {
   const clean = String(label || "").trim();
   if (!clean) return;
   if (!card.checklist) card.checklist = [];
-  card.checklist.push({ text: clean, done: false });
+  const now = new Date().toISOString();
+  card.checklist.push({ text: clean, done: false, createdAt: now, updatedAt: now });
   card.updatedAt = new Date().toISOString();
   saveState();
   render();
@@ -948,13 +982,13 @@ function render() {
   board.innerHTML = cards
     .map((card, cardIndex) => {
       const subtitle = cardSubtitleFromNote(card.note);
-      const checklist = (card.checklist || []).map(normalizeChecklistEntry);
-      const preview = checklist.slice(0, 2);
-      const extra = checklist.slice(2);
+      const sortedChecklist = sortChecklistForPreview(card.checklist || []);
+      const preview = sortedChecklist.slice(0, 2);
+      const extra = sortedChecklist.slice(2);
       const moreCount = extra.length;
-      const doneCount = checklist.filter((c) => c.done).length;
+      const doneCount = sortedChecklist.filter((c) => c.item.done).length;
       const progressPct =
-        checklist.length > 0 ? Math.round((doneCount / checklist.length) * 100) : 0;
+        sortedChecklist.length > 0 ? Math.round((doneCount / sortedChecklist.length) * 100) : 0;
       const statusClass =
         card.priority === "red"
           ? "is-blocked"
@@ -1046,11 +1080,11 @@ function render() {
           <div class="card-checklist">
             ${preview
               .map(
-                (item, idx) => `
+                ({ item, originalIndex }) => `
               <button
                 type="button"
                 class="checklist-row ${item.done ? "is-done" : ""}"
-                onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${idx})"
+                onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${originalIndex})"
                 aria-label="${item.done ? "Marquer la sous-tâche comme à faire" : "Marquer la sous-tâche comme faite"}"
                 title="Cocher / décocher"
               >
@@ -1066,13 +1100,12 @@ function render() {
                     <summary class="checklist-more-summary">+${moreCount} autre${moreCount > 1 ? "s" : ""}</summary>
                     ${extra
                       .map(
-                        (item, j) => {
-                          const idx = 2 + j;
+                        ({ item, originalIndex }) => {
                           return `
                       <button
                         type="button"
                         class="checklist-row ${item.done ? "is-done" : ""}"
-                        onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${idx})"
+                        onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${originalIndex})"
                         aria-label="${item.done ? "Marquer la sous-tâche comme à faire" : "Marquer la sous-tâche comme faite"}"
                         title="Cocher / décocher"
                       >
