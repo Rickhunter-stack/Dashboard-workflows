@@ -983,9 +983,9 @@ function render() {
     .map((card, cardIndex) => {
       const subtitle = cardSubtitleFromNote(card.note);
       const sortedChecklist = sortChecklistForPreview(card.checklist || []);
-      const preview = sortedChecklist.slice(0, 2);
-      const extra = sortedChecklist.slice(2);
-      const moreCount = extra.length;
+      const pendingItems = sortedChecklist.filter((c) => !c.item.done);
+      const doneItems = sortedChecklist.filter((c) => c.item.done);
+      const doneCountHidden = doneItems.length;
       const doneCount = sortedChecklist.filter((c) => c.item.done).length;
       const progressPct =
         sortedChecklist.length > 0 ? Math.round((doneCount / sortedChecklist.length) * 100) : 0;
@@ -1078,7 +1078,7 @@ function render() {
           </div>
 
           <div class="card-checklist">
-            ${preview
+            ${pendingItems
               .map(
                 ({ item, originalIndex }) => `
               <button
@@ -1095,26 +1095,24 @@ function render() {
               )
               .join("")}
             ${
-              moreCount > 0
+              doneCountHidden > 0
                 ? `<details class="checklist-more-wrap" onclick="event.stopPropagation()">
-                    <summary class="checklist-more-summary">+${moreCount} autre${moreCount > 1 ? "s" : ""}</summary>
-                    ${extra
-                      .map(
-                        ({ item, originalIndex }) => {
-                          return `
+                    <summary class="checklist-more-summary">Tâches terminées (${doneCountHidden})</summary>
+                    ${doneItems
+                      .map(({ item, originalIndex }) => {
+                        return `
                       <button
                         type="button"
-                        class="checklist-row ${item.done ? "is-done" : ""}"
+                        class="checklist-row is-done"
                         onclick="event.stopPropagation(); toggleChecklistItem('${card.id}', ${originalIndex})"
-                        aria-label="${item.done ? "Marquer la sous-tâche comme à faire" : "Marquer la sous-tâche comme faite"}"
-                        title="Cocher / décocher"
+                        aria-label="Marquer la sous-tâche comme à faire"
+                        title="Décocher"
                       >
                         <span class="checklist-box" aria-hidden="true"></span>
                         <span class="checklist-text">${escapeHtml(item.text)}</span>
                       </button>
                     `;
-                        }
-                      )
+                      })
                       .join("")}
                   </details>`
                 : ""
