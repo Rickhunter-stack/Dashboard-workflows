@@ -8,6 +8,19 @@ let state = {
   viewMode: "todo", // 'todo' | 'done'
 };
 
+// ===========================
+// RENDER SCHEDULING (rAF)
+// ===========================
+let renderScheduled = false;
+function scheduleRender() {
+  if (renderScheduled) return;
+  renderScheduled = true;
+  requestAnimationFrame(() => {
+    renderScheduled = false;
+    render();
+  });
+}
+
 // Handlers Escape pour éviter les fuites / doublons lors de la fermeture par bouton
 let projectMetaEscapeHandler = null;
 let cardModalEscapeHandler = null;
@@ -312,7 +325,7 @@ function updateCardPriority(cardId, priority) {
       card.priority = priority === card.priority ? null : priority;
       card.updatedAt = new Date().toISOString();
       saveState();
-      render();
+      scheduleRender();
       return;
     }
   }
@@ -330,7 +343,7 @@ function cycleCardPriority(cardId) {
       card.priority = next;
       card.updatedAt = new Date().toISOString();
       saveState();
-      render();
+      scheduleRender();
       return;
     }
   }
@@ -383,7 +396,7 @@ function toggleCardDone(cardId) {
     _done: true,
   });
   saveState();
-  render();
+  scheduleRender();
 }
 
 function toggleChecklistItem(cardId, index) {
@@ -397,7 +410,7 @@ function toggleChecklistItem(cardId, index) {
   card.checklist[index] = entry;
   card.updatedAt = new Date().toISOString();
   saveState();
-  render();
+  scheduleRender();
 }
 
 function addChecklistItemValue(cardId, label) {
@@ -411,7 +424,7 @@ function addChecklistItemValue(cardId, label) {
   card.checklist.push({ text: clean, done: false, createdAt: now, updatedAt: now });
   card.updatedAt = new Date().toISOString();
   saveState();
-  render();
+  scheduleRender();
 }
 
 // ===========================
@@ -430,7 +443,7 @@ function updateListTitle(listId, newTitle) {
 // ===========================
 function updateFilter(filterText) {
   state.filter = filterText.toLowerCase();
-  render();
+  scheduleRender();
 }
 
 function cardMatchesFilter(card) {
@@ -446,7 +459,7 @@ function setViewMode(mode) {
   state.viewMode = mode === "done" ? "done" : "todo";
   saveState();
   syncViewToggleUI();
-  render();
+  scheduleRender();
 }
 
 function syncViewToggleUI() {
@@ -944,7 +957,7 @@ function handleDrop(event) {
   targetList.cards.push(draggedCard);
 
   saveState();
-  render();
+  scheduleRender();
 }
 
 // ===========================
@@ -993,7 +1006,7 @@ function render() {
       </div>
     `;
     updatePendingBadge();
-    setupKeyboardHandlers();
+    ensureDelegatedHandlers();
     return;
   }
 
@@ -1182,47 +1195,39 @@ function render() {
     .join("");
 
   updatePendingBadge();
-  setupKeyboardHandlers();
+  ensureDelegatedHandlers();
 }
 
 // ===========================
-// GESTION DU CLAVIER
+// EVENTS (delegation)
 // ===========================
-function setupKeyboardHandlers() {
-  // Gestion de Enter et Esc pour les inputs de titre
-  document.querySelectorAll(".card-title, .column-title").forEach((input) => {
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        input.blur();
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        input.blur();
-      }
-    });
-  });
+let delegatedHandlersInstalled = false;
+function ensureDelegatedHandlers() {
+  if (delegatedHandlersInstalled) return;
+  delegatedHandlersInstalled = true;
 
-  // Permettre l'activation des cartes avec Enter
-  document.querySelectorAll(".card").forEach((card) => {
-    card.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && e.target === card) {
-        e.preventDefault();
-        const cardId = card.dataset.cardId;
-        openCardModal(cardId);
-      }
-    });
-  });
+  const board = document.getElementById("board");
+  if (!board) return;
 
-  // Ajout de sous-tâches via input (Entrée)
-  document.querySelectorAll(".checklist-input").forEach((input) => {
-    input.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter") return;
+  board.addEventListener("keydown", (e) => {
+    // 1) Enter/Escape -> blur sur champs titre
+    const titleInput = e.target.closest(".board-card-title-input");
+    if (titleInput && (e.key === "Enter" || e.key === "Escape")) {
       e.preventDefault();
-      const cardId = input.dataset.cardId;
-      const value = input.value;
-      input.value = "";
+      titleInput.blur();
+      return;
+    }
+
+    // 2) Entrée sur "Nouvelle action…" -> ajoute la sous-tâche
+    const checklistInput = e.target.closest(".checklist-input");
+    if (checklistInput && e.key === "Enter") {
+      e.preventDefault();
+      const cardId = checklistInput.dataset.cardId;
+      const value = checklistInput.value;
+      checklistInput.value = "";
       addChecklistItemValue(cardId, value);
-    });
+      return;
+    }
   });
 }
 
@@ -1233,6 +1238,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   if (params.get("compact") === "1") {
     document.body.classList.add("compact");
+  }
+  if (params.get("perf") === "1" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.body.classList.add("perf");
   }
 
   await loadBoardState();

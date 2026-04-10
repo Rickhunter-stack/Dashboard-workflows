@@ -67,6 +67,45 @@ body.kanban-app::before {
   mix-blend-mode: overlay;
 }
 
+/* ===========================
+   PERF MODE (opt-in)
+   - Active via ?perf=1 (JS) or prefers-reduced-motion
+   =========================== */
+body.kanban-app.perf * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body.kanban-app.perf .board-card,
+body.kanban-app.perf .modal-card,
+body.kanban-app.perf .dashboard-hero,
+body.kanban-app.perf .kanban-toolbar {
+  box-shadow: none !important;
+}
+
+body.kanban-app.perf .board-card:hover {
+  transform: none !important;
+}
+
+body.kanban-app.perf .checklist-row:hover,
+body.kanban-app.perf .board-card-menu-trigger:hover,
+body.kanban-app.perf .dashboard-icon-btn:hover {
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.kanban-app {
+    scroll-behavior: auto;
+  }
+  body.kanban-app * {
+    transition: none !important;
+    animation: none !important;
+  }
+  body.kanban-app {
+    /* Active implicit perf mode for reduced motion users */
+  }
+}
+
 * {
   box-sizing: border-box;
 }
