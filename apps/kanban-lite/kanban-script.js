@@ -965,6 +965,24 @@ function render() {
   const cardsDone = (listDone?.cards || []).filter(cardMatchesFilter);
 
   const cards = state.viewMode === "done" ? cardsDone : cardsTodo;
+  const sortedCards =
+    state.viewMode === "done"
+      ? cards
+      : cards
+          .slice()
+          .sort((a, b) => {
+            const aChecklist = (a.checklist || []).map(normalizeChecklistEntry);
+            const bChecklist = (b.checklist || []).map(normalizeChecklistEntry);
+            const aPending = aChecklist.filter((t) => !t.done).length;
+            const bPending = bChecklist.filter((t) => !t.done).length;
+            if (aPending !== bPending) return bPending - aPending;
+
+            const at = new Date(a.updatedAt || 0).getTime() || 0;
+            const bt = new Date(b.updatedAt || 0).getTime() || 0;
+            if (at !== bt) return bt - at;
+
+            return String(a.id).localeCompare(String(b.id));
+          });
 
   board.classList.add("board-cards");
 
@@ -979,7 +997,7 @@ function render() {
     return;
   }
 
-  board.innerHTML = cards
+  board.innerHTML = sortedCards
     .map((card, cardIndex) => {
       const subtitle = cardSubtitleFromNote(card.note);
       const sortedChecklist = sortChecklistForPreview(card.checklist || []);
