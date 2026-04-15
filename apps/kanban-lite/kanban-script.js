@@ -237,6 +237,14 @@ window.addEventListener("beforeunload", () => {
 
 async function loadBoardState() {
   if (window.supabaseShared) {
+    let hasSupabaseClient = false;
+    try {
+      const client = await window.supabaseShared.initSupabase?.();
+      hasSupabaseClient = !!client;
+    } catch (e) {
+      hasSupabaseClient = false;
+    }
+
     try {
       const board = await window.supabaseShared.fetchKanbanBoard();
       if (board && board.lists && Array.isArray(board.lists)) {
@@ -248,6 +256,15 @@ async function loadBoardState() {
       }
     } catch (e) {
       console.warn("[Kanban] Supabase load failed", e);
+    }
+
+    // Si Supabase est joignable mais qu'il n'y a pas encore de board en base,
+    // on repart sur un état par défaut ET on autorise les sauvegardes futures.
+    if (hasSupabaseClient) {
+      state = initState();
+      migrateKanbanState(state);
+      supabaseHydrated = true;
+      return;
     }
   }
   // Repartir de zéro (mémoire) : pas de localStorage.
