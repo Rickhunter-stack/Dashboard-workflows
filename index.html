@@ -387,6 +387,7 @@
       }
 
       .single-frame {
+        position: relative;
         flex: 1;
       }
 
@@ -948,12 +949,7 @@
           </div>
         </div>
         <div class="single-frame" id="single-frame">
-          <iframe
-            id="app-frame"
-            class="app-frame"
-            title="Application"
-            src="apps/kanban-lite/kanban.html"
-          ></iframe>
+          <!-- Les iframes sont créées dynamiquement et gardées en vie (jamais rechargées) -->
         </div>
         <div class="multi-frame" id="multi-frame">
           <iframe title="Workflows (compact)" data-src="apps/workflow/workflow-generator.html?compact=1"></iframe>
@@ -1045,8 +1041,9 @@
       let currentWorkflowOpenId = null;
 
       const buttons = document.querySelectorAll(".nav-item");
-      const frame = document.getElementById("app-frame");
       const btnLinks = document.getElementById("btn-links");
+      // Pool d'iframes persistantes : créées une seule fois, jamais rechargées
+      const iframePool = {};
       const quicklinksOverlay = document.getElementById("quicklinks-overlay");
       const quicklinksClose = document.getElementById("quicklinks-close");
       const quicklinksBody = document.getElementById("quicklinks-body");
@@ -1093,12 +1090,30 @@
         if (e.key === "Escape") closeMobileNav();
       });
 
+      function getOrCreateIframe(appName, src) {
+        if (iframePool[appName]) return iframePool[appName];
+        const iframe = document.createElement("iframe");
+        iframe.className = "app-frame";
+        iframe.title = appName;
+        iframe.src = src;
+        iframe.style.display = "none";
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        iframe.style.border = "none";
+        iframe.style.position = "absolute";
+        iframe.style.inset = "0";
+        singleFrame.appendChild(iframe);
+        iframePool[appName] = iframe;
+        return iframe;
+      }
+
       function setActive(appName, opts = {}) {
         const { workflowOpenId } = opts;
-        // Alias de fiabilité : le tab "Projets" correspond au Kanban.
-        // Si l'URL contient encore `app=project` (ancienne version), on route vers `kanban`.
+        // Alias de fiabilité
         if (appName === "project") appName = "kanban";
         if (!appPaths[appName]) appName = "kanban";
+
+        // Mettre à jour les boutons actifs
         buttons.forEach((btn) => {
           btn.classList.toggle("active", btn.dataset.app === appName);
         });
@@ -1106,23 +1121,41 @@
           btn.classList.toggle("active", btn.dataset.app === appName);
         });
 
-        if (appPaths[appName]) {
-          const isMobile = window.innerWidth <= 640;
-          const basePath = appPaths[appName];
-          if (appName === "workflow") {
-            const qs = new URLSearchParams();
-            if (isMobile) qs.set("compact", "1");
-            if (workflowOpenId) qs.set("open", String(workflowOpenId));
-            const q = qs.toString();
-            frame.src = q ? `${basePath}?${q}` : basePath + (isMobile ? "?compact=1" : "");
-          } else {
-            frame.src = basePath;
+        if (!appPaths[appName]) return;
+
+        const isMobile = window.innerWidth <= 640;
+        const basePath = appPaths[appName];
+
+        // Construire le src (workflow peut avoir des query params)
+        let src = basePath;
+        if (appName === "workflow") {
+          const qs = new URLSearchParams();
+          if (isMobile) qs.set("compact", "1");
+          if (workflowOpenId) qs.set("open", String(workflowOpenId));
+          const q = qs.toString();
+          src = q ? `${basePath}?${q}` : basePath;
+        }
+
+        // Cas spécial workflow avec un open ID différent : forcer le rechargement
+        if (appName === "workflow" && workflowOpenId && iframePool["workflow"]) {
+          const currentSrc = iframePool["workflow"].src;
+          const newUrl = new URL(src, window.location.href);
+          const currentUrl = new URL(currentSrc, window.location.href);
+          if (currentUrl.searchParams.get("open") !== newUrl.searchParams.get("open")) {
+            iframePool["workflow"].src = src;
           }
         }
+
+        // Cacher toutes les iframes du pool
+        Object.values(iframePool).forEach((f) => { f.style.display = "none"; });
+
+        // Afficher ou créer l'iframe demandée
+        const target = getOrCreateIframe(appName, src);
+        target.style.display = "block";
       }
 
       window.dashboardOpenWorkflow = function (workflowId) {
-        if (!frame || workflowId == null || workflowId === "") return;
+        if (workflowId == null || workflowId === "") return;
         closeQuickLinks();
         currentWorkflowOpenId = workflowId;
         const params = new URLSearchParams(window.location.search);
