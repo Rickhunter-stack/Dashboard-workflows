@@ -21,33 +21,46 @@ function nowIso() {
   return new Date().toISOString();
 }
 
+async function ensureSupabaseUmdLoaded() {
+  if (window.supabase) return true;
+
+  const candidates = [
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js",
+    "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js",
+  ];
+
+  for (const src of candidates) {
+    // eslint-disable-next-line no-await-in-loop
+    const ok = await new Promise((resolve) => {
+      const existing = document.querySelector(`script[data-supabase-umd="1"][src="${src}"]`);
+      if (existing) {
+        if (window.supabase) return resolve(true);
+        existing.addEventListener("load", () => resolve(true), { once: true });
+        existing.addEventListener("error", () => resolve(false), { once: true });
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      script.defer = true;
+      script.setAttribute("data-supabase-umd", "1");
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.head.appendChild(script);
+    });
+
+    if (ok && window.supabase) return true;
+  }
+
+  return false;
+}
+
 async function initSupabase() {
   if (!window.supabase) {
     if (!supabaseLoadPromise) {
-      supabaseLoadPromise = new Promise((resolve, reject) => {
-        const existing = document.querySelector('script[data-supabase-umd="1"]');
-
-        if (existing) {
-          if (window.supabase) {
-            resolve(true);
-            return;
-          }
-          existing.addEventListener("load", () => resolve(true), { once: true });
-          existing.addEventListener("error", reject, { once: true });
-          return;
-        }
-
-        const script = document.createElement("script");
-        script.src =
-          "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js";
-        script.async = true;
-        script.defer = true;
-        script.setAttribute("data-supabase-umd", "1");
-        script.onload = () => resolve(true);
-        script.onerror = reject;
-        document.head.appendChild(script);
-      }).catch((error) => {
-        console.warn("[Supabase] UMD load failed, fallback localStorage.", error);
+      supabaseLoadPromise = ensureSupabaseUmdLoaded().catch((error) => {
+        console.warn("[Supabase] UMD load failed.", error);
         return false;
       });
     }

@@ -206,9 +206,20 @@ function saveState(opts = {}) {
 
   if (supabaseSaveTimeoutId) clearTimeout(supabaseSaveTimeoutId);
   supabaseSaveTimeoutId = setTimeout(() => {
-    window.supabaseShared.upsertKanbanBoard(state).catch((error) => {
-      console.warn("[Kanban] Supabase upsert failed", error);
-    });
+    window.supabaseShared
+      .upsertKanbanBoard(state)
+      .then((ok) => {
+        if (!ok) console.warn("[Kanban] Supabase upsert refused/failed (see prior logs).");
+      })
+      .catch((error) => {
+        console.warn("[Kanban] Supabase upsert failed", {
+          message: error?.message ?? null,
+          details: error?.details ?? null,
+          hint: error?.hint ?? null,
+          code: error?.code ?? null,
+          raw: error ?? null,
+        });
+      });
   }, SUPABASE_SAVE_DEBOUNCE_MS);
 }
 
@@ -252,6 +263,7 @@ async function loadBoardState() {
         if (board.filter !== undefined) state.filter = board.filter;
         migrateKanbanState(state);
         supabaseHydrated = true;
+        console.info("[Kanban] Supabase hydrated: existing board.");
         return;
       }
     } catch (e) {
@@ -264,8 +276,11 @@ async function loadBoardState() {
       state = initState();
       migrateKanbanState(state);
       supabaseHydrated = true;
+      console.info("[Kanban] Supabase ready: no board found, starting fresh.");
       return;
     }
+
+    console.warn("[Kanban] Supabase not ready (client null). No persistence.");
   }
   // Repartir de zéro (mémoire) : pas de localStorage.
   state = initState();
